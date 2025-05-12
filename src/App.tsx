@@ -12,6 +12,12 @@ import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminMovies from "./pages/admin/Movies";
+import AdminCinemas from "./pages/admin/Cinemas";
+import AdminShowtimes from "./pages/admin/Showtimes";
+import AdminUsers from "./pages/admin/Users";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +35,16 @@ const App = () => (
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="movies" element={<AdminMovies />} />
+            <Route path="cinemas" element={<AdminCinemas />} />
+            <Route path="showtimes" element={<AdminShowtimes />} />
+            <Route path="users" element={<AdminUsers />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
