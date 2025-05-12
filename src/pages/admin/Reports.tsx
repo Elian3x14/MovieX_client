@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
@@ -147,7 +146,12 @@ const AdminReports = () => {
             <CardDescription>Distribution across genres</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center">
-            <ChartContainer className="h-80">
+            <ChartContainer 
+              className="h-80"
+              config={{
+                value: { theme: { light: "#8884d8", dark: "#8884d8" } }
+              }}
+            >
               <PieChart>
                 <Pie
                   data={categoryData}
