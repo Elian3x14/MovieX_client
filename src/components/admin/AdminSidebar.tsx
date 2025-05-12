@@ -1,6 +1,6 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { Film, MapPin, Calendar, Users, Home, Database } from "lucide-react";
+import { Film, MapPin, Calendar, Users, Home, Database, ChartBar } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -88,6 +88,18 @@ const AdminSidebar = () => {
               <Link to="/admin/users">
                 <Users />
                 <span>Users</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/admin/reports")}
+              tooltip="Reports"
+            >
+              <Link to="/admin/reports">
+                <ChartBar />
+                <span>Revenue Reports</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

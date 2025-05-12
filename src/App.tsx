@@ -18,6 +18,7 @@ import AdminMovies from "./pages/admin/Movies";
 import AdminCinemas from "./pages/admin/Cinemas";
 import AdminShowtimes from "./pages/admin/Showtimes";
 import AdminUsers from "./pages/admin/Users";
+import AdminReports from "./pages/admin/Reports";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="cinemas" element={<AdminCinemas />} />
             <Route path="showtimes" element={<AdminShowtimes />} />
             <Route path="users" element={<AdminUsers />} />
+            <Route path="reports" element={<AdminReports />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
