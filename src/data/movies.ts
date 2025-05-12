@@ -1,4 +1,3 @@
-
 export interface Movie {
   id: string;
   title: string;
@@ -12,6 +11,16 @@ export interface Movie {
   director: string;
   cast: string[];
   releaseStatus: "now-showing" | "upcoming";
+  reviews?: Review[];
+}
+
+export interface Review {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
 }
 
 export interface ShowTime {
@@ -47,6 +56,24 @@ export const movies: Movie[] = [
     director: "Anthony Russo, Joe Russo",
     cast: ["Robert Downey Jr.", "Chris Evans", "Mark Ruffalo"],
     releaseStatus: "now-showing",
+    reviews: [
+      {
+        id: "r1",
+        userId: "u1",
+        userName: "John Doe",
+        rating: 5,
+        comment: "This film was the perfect conclusion to the Infinity Saga. The emotional moments were incredibly powerful, and the action was spectacular. Robert Downey Jr.'s performance was outstanding!",
+        date: "2024-01-15T10:30:00Z"
+      },
+      {
+        id: "r2",
+        userId: "u2",
+        userName: "Jane Smith",
+        rating: 4,
+        comment: "Loved most of it, though some parts felt a little rushed. The final battle was absolutely worth the wait and years of build-up!",
+        date: "2024-02-20T14:45:00Z"
+      }
+    ]
   },
   {
     id: "2",
@@ -62,6 +89,16 @@ export const movies: Movie[] = [
     director: "Todd Phillips",
     cast: ["Joaquin Phoenix", "Robert De Niro", "Zazie Beetz"],
     releaseStatus: "now-showing",
+    reviews: [
+      {
+        id: "r3",
+        userId: "u3",
+        userName: "Robert Johnson",
+        rating: 5,
+        comment: "Joaquin Phoenix's performance is nothing short of mesmerizing. A disturbing but thought-provoking take on the character.",
+        date: "2024-03-10T09:15:00Z"
+      }
+    ]
   },
   {
     id: "3",
@@ -77,6 +114,7 @@ export const movies: Movie[] = [
     director: "Bong Joon Ho",
     cast: ["Kang-ho Song", "Sun-kyun Lee", "Yeo-jeong Jo"],
     releaseStatus: "now-showing",
+    reviews: []
   },
   {
     id: "4",
@@ -92,6 +130,7 @@ export const movies: Movie[] = [
     director: "Chris McKay",
     cast: ["Chris Pratt", "Yvonne Strahovski", "J.K. Simmons"],
     releaseStatus: "now-showing",
+    reviews: []
   },
   {
     id: "5",
@@ -107,6 +146,7 @@ export const movies: Movie[] = [
     director: "Denis Villeneuve",
     cast: ["Timothée Chalamet", "Rebecca Ferguson", "Zendaya"],
     releaseStatus: "upcoming",
+    reviews: []
   },
   {
     id: "6",
@@ -122,6 +162,7 @@ export const movies: Movie[] = [
     director: "Cary Joji Fukunaga",
     cast: ["Daniel Craig", "Ana de Armas", "Rami Malek"],
     releaseStatus: "upcoming",
+    reviews: []
   },
 ];
 

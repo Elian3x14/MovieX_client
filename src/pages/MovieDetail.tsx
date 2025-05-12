@@ -1,14 +1,15 @@
-
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ReviewSection from "@/components/ReviewSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { movies, showtimes } from "@/data/movies";
+import { movies, showtimes, Review } from "@/data/movies";
 import { Star, Clock, Calendar, Play } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -27,6 +28,8 @@ const MovieDetail = () => {
   const movie = movies.find((m) => m.id === id);
   const [selectedCinema, setSelectedCinema] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [localReviews, setLocalReviews] = useState<Review[]>([]);
+  const { toast } = useToast();
 
   if (!movie) {
     return <div className="container py-12 text-center">Movie not found.</div>;
@@ -77,6 +80,20 @@ const MovieDetail = () => {
       day: "numeric",
       year: "numeric",
     });
+  };
+
+  // Combine server reviews with local reviews
+  const allReviews = [...(movie.reviews || []), ...localReviews];
+
+  // Handle adding a new review
+  const handleAddReview = (review: Omit<Review, "id" | "date">) => {
+    const newReview: Review = {
+      ...review,
+      id: `local-${Date.now()}`,
+      date: new Date().toISOString(),
+    };
+    
+    setLocalReviews((prev) => [...prev, newReview]);
   };
 
   return (
@@ -262,11 +279,11 @@ const MovieDetail = () => {
             </TabsContent>
 
             <TabsContent value="reviews">
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium mb-2">No reviews yet</h3>
-                <p className="text-cinema-muted mb-4">Be the first to review this movie.</p>
-                <Button variant="outline">Write a Review</Button>
-              </div>
+              <ReviewSection 
+                movieId={movie.id} 
+                reviews={allReviews}
+                onAddReview={handleAddReview}
+              />
             </TabsContent>
           </Tabs>
         </section>
