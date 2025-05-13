@@ -5,20 +5,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Star, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-interface Review {
-  id: string;
-  userId: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
+import { Review as MovieReview } from "@/data/movies";
 
 interface ReviewSectionProps {
   movieId: string;
-  reviews: Review[];
-  onAddReview?: (review: Omit<Review, "id" | "date">) => void;
+  reviews: MovieReview[];
+  onAddReview?: (review: Omit<MovieReview, "id" | "date">) => void;
 }
 
 const ReviewSection = ({ movieId, reviews = [], onAddReview }: ReviewSectionProps) => {
@@ -58,8 +50,7 @@ const ReviewSection = ({ movieId, reviews = [], onAddReview }: ReviewSectionProp
 
     if (onAddReview) {
       onAddReview({
-        userId: "guest",
-        userName: name,
+        author: name,
         rating,
         comment,
       });
@@ -86,7 +77,7 @@ const ReviewSection = ({ movieId, reviews = [], onAddReview }: ReviewSectionProp
               <div key={review.id} className="bg-card p-4 rounded-lg shadow">
                 <div className="flex justify-between items-start">
                   <div>
-                    <div className="font-medium">{review.userName}</div>
+                    <div className="font-medium">{review.author}</div>
                     <div className="flex items-center mt-1">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star

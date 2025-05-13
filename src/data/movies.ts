@@ -54,7 +54,7 @@ export interface Seat {
   row: string;
   number: number;
   status: "available" | "reserved" | "selected" | "unavailable";
-  type: "standard" | "vip" | "couple";
+  type: "standard" | "vip" | "premium" | "couple";
   price: number;
 }
 
@@ -354,8 +354,8 @@ export const seats: Seat[] = [
     id: `A${i+1}`,
     row: "A",
     number: i+1,
-    status: "available",
-    type: "vip",
+    status: "available" as "available",
+    type: "vip" as "vip",
     price: 150000
   })),
   // Row B (VIP)
@@ -363,8 +363,8 @@ export const seats: Seat[] = [
     id: `B${i+1}`,
     row: "B",
     number: i+1,
-    status: "available",
-    type: "vip",
+    status: "available" as "available",
+    type: "vip" as "vip",
     price: 150000
   })),
   // Row C (Couple)
@@ -372,8 +372,8 @@ export const seats: Seat[] = [
     id: `C${i+1}`,
     row: "C",
     number: i+1,
-    status: i === 2 ? "unavailable" : "available",
-    type: "couple",
+    status: i === 2 ? "unavailable" as "unavailable" : "available" as "available",
+    type: "couple" as "couple",
     price: 250000
   })),
   // Row D (Standard)
@@ -381,8 +381,8 @@ export const seats: Seat[] = [
     id: `D${i+1}`,
     row: "D",
     number: i+1,
-    status: i === 5 || i === 6 ? "reserved" : "available",
-    type: "standard",
+    status: i === 5 || i === 6 ? "reserved" as "reserved" : "available" as "available",
+    type: "standard" as "standard",
     price: 100000
   })),
   // Row E (Standard)
@@ -390,8 +390,8 @@ export const seats: Seat[] = [
     id: `E${i+1}`,
     row: "E",
     number: i+1,
-    status: "available",
-    type: "standard",
+    status: "available" as "available",
+    type: "standard" as "standard",
     price: 100000
   })),
   // Row F (Standard)
@@ -399,8 +399,8 @@ export const seats: Seat[] = [
     id: `F${i+1}`,
     row: "F",
     number: i+1,
-    status: i === 0 || i === 1 ? "reserved" : "available",
-    type: "standard",
+    status: i === 0 || i === 1 ? "reserved" as "reserved" : "available" as "available",
+    type: "standard" as "standard",
     price: 100000
   })),
 ];

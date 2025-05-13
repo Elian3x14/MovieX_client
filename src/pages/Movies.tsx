@@ -14,7 +14,7 @@ import {
 import { movies } from "@/data/movies";
 
 const Movies = () => {
-  const [filter, setFilter] = useState<"all" | "now-showing" | "upcoming">("all");
+  const [filter, setFilter] = useState<"all" | "now-showing" | "coming-soon">("all");
   const [genreFilter, setGenreFilter] = useState<string>("all");
 
   // Get all unique genres
@@ -26,7 +26,7 @@ const Movies = () => {
     const statusFilter =
       filter === "all" ||
       (filter === "now-showing" && movie.releaseStatus === "now-showing") ||
-      (filter === "upcoming" && movie.releaseStatus === "upcoming");
+      (filter === "coming-soon" && movie.releaseStatus === "coming-soon");
 
     // Filter by genre
     const genre =
@@ -66,8 +66,8 @@ const Movies = () => {
                 Now Showing
               </Button>
               <Button
-                variant={filter === "upcoming" ? "default" : "outline"}
-                onClick={() => setFilter("upcoming")}
+                variant={filter === "coming-soon" ? "default" : "outline"}
+                onClick={() => setFilter("coming-soon")}
               >
                 Coming Soon
               </Button>
