@@ -13,7 +13,7 @@ import { movies, promotions, cinemas } from "@/data/movies";
 
 const Index = () => {
   const nowShowingMovies = movies.filter(movie => movie.releaseStatus === "now-showing");
-  const upcomingMovies = movies.filter(movie => movie.releaseStatus === "upcoming");
+  const upcomingMovies = movies.filter(movie => movie.releaseStatus === "coming-soon");
   const featuredMovies = movies.slice(0, 3);
 
   return (

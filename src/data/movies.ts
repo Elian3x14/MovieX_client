@@ -20,7 +20,7 @@ export interface Movie {
   cast: string[];
   releaseStatus: "now-showing" | "coming-soon";
   reviews?: Review[];
-  trailerUrl?: string; // Added trailer URL field
+  trailerUrl?: string;
 }
 
 export interface Showtime {
@@ -30,6 +30,31 @@ export interface Showtime {
   time: string;
   cinema: string;
   hall: string;
+  price: number;
+}
+
+export interface Cinema {
+  id: string;
+  name: string;
+  location: string;
+  halls: number;
+  image?: string;
+}
+
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  validUntil: string;
+}
+
+export interface Seat {
+  id: string;
+  row: string;
+  number: number;
+  status: "available" | "reserved" | "selected" | "unavailable";
+  type: "standard" | "vip" | "couple";
   price: number;
 }
 
@@ -266,4 +291,116 @@ export const showtimes: Showtime[] = [
     hall: "Hall 4",
     price: 80000,
   },
+];
+
+export const cinemas: Cinema[] = [
+  {
+    id: "cinema1",
+    name: "CGV Cinema",
+    location: "123 Main Street, Downtown",
+    halls: 7,
+    image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id: "cinema2",
+    name: "Lotte Cinema",
+    location: "456 Park Avenue, Uptown",
+    halls: 5,
+    image: "https://images.unsplash.com/photo-1596445836561-991bcd39a86d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id: "cinema3",
+    name: "BHD Star Cineplex",
+    location: "789 Ocean Boulevard, Seaside",
+    halls: 6,
+    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id: "cinema4",
+    name: "Galaxy Cinema",
+    location: "101 Highland Road, Hillside",
+    halls: 4,
+    image: "https://images.unsplash.com/photo-1615986201152-7686a4867f30?q=80&w=2025&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  }
+];
+
+export const promotions: Promotion[] = [
+  {
+    id: "promo1",
+    title: "Buy 1 Get 1 Free",
+    description: "Purchase one ticket and get another one for free on all movies every Monday.",
+    image: "https://images.unsplash.com/photo-1597002973885-8c90683fa6e0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    validUntil: "2024-12-31"
+  },
+  {
+    id: "promo2",
+    title: "Student Discount",
+    description: "20% off for students with valid ID. Available everyday.",
+    image: "https://images.unsplash.com/photo-1606112219348-204d7d8b94ee?q=80&w=2874&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    validUntil: "2024-12-31"
+  },
+  {
+    id: "promo3",
+    title: "Family Package",
+    description: "Special pricing for family of four including popcorn and drinks.",
+    image: "https://images.unsplash.com/photo-1586899028174-e7098604235b?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    validUntil: "2024-12-31"
+  }
+];
+
+export const seats: Seat[] = [
+  // Row A (VIP)
+  ...Array(10).fill(0).map((_, i) => ({
+    id: `A${i+1}`,
+    row: "A",
+    number: i+1,
+    status: "available",
+    type: "vip",
+    price: 150000
+  })),
+  // Row B (VIP)
+  ...Array(10).fill(0).map((_, i) => ({
+    id: `B${i+1}`,
+    row: "B",
+    number: i+1,
+    status: "available",
+    type: "vip",
+    price: 150000
+  })),
+  // Row C (Couple)
+  ...Array(5).fill(0).map((_, i) => ({
+    id: `C${i+1}`,
+    row: "C",
+    number: i+1,
+    status: i === 2 ? "unavailable" : "available",
+    type: "couple",
+    price: 250000
+  })),
+  // Row D (Standard)
+  ...Array(10).fill(0).map((_, i) => ({
+    id: `D${i+1}`,
+    row: "D",
+    number: i+1,
+    status: i === 5 || i === 6 ? "reserved" : "available",
+    type: "standard",
+    price: 100000
+  })),
+  // Row E (Standard)
+  ...Array(10).fill(0).map((_, i) => ({
+    id: `E${i+1}`,
+    row: "E",
+    number: i+1,
+    status: "available",
+    type: "standard",
+    price: 100000
+  })),
+  // Row F (Standard)
+  ...Array(10).fill(0).map((_, i) => ({
+    id: `F${i+1}`,
+    row: "F",
+    number: i+1,
+    status: i === 0 || i === 1 ? "reserved" : "available",
+    type: "standard",
+    price: 100000
+  })),
 ];
