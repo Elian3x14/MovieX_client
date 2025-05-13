@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { Movie } from "@/data/movies";
 import { Link } from "react-router-dom";
+import TrailerModal from "./TrailerModal";
 
 interface HeroSliderProps {
   movies: Movie[];
@@ -11,6 +12,7 @@ interface HeroSliderProps {
 
 const HeroSlider = ({ movies }: HeroSliderProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % movies.length);
@@ -25,6 +27,16 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
 
   return (
     <div className="relative h-[50vh] md:h-[70vh] overflow-hidden">
+      {/* Trailer Modal */}
+      {currentMovie?.trailerUrl && (
+        <TrailerModal
+          isOpen={isTrailerOpen}
+          onClose={() => setIsTrailerOpen(false)}
+          title={currentMovie.title}
+          trailerUrl={currentMovie.trailerUrl}
+        />
+      )}
+
       {/* Background Image */}
       {movies.map((movie, index) => (
         <div
@@ -76,7 +88,12 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
               <Link to={`/movie/${currentMovie.id}`}>
                 <Button size="lg">Book Tickets</Button>
               </Link>
-              <Button size="lg" variant="outline" className="flex items-center gap-2">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={() => setIsTrailerOpen(true)}
+              >
                 <Play size={16} className="fill-current" />
                 Watch Trailer
               </Button>

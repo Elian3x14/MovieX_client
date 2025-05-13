@@ -1,8 +1,10 @@
+
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ReviewSection from "@/components/ReviewSection";
+import TrailerModal from "@/components/TrailerModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,6 +31,7 @@ const MovieDetail = () => {
   const [selectedCinema, setSelectedCinema] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const { toast } = useToast();
 
   if (!movie) {
@@ -96,11 +99,33 @@ const MovieDetail = () => {
     setLocalReviews((prev) => [...prev, newReview]);
   };
 
+  const handleOpenTrailer = () => {
+    if (movie.trailerUrl) {
+      setIsTrailerOpen(true);
+    } else {
+      toast({
+        title: "Trailer Unavailable",
+        description: "The trailer for this movie is not available at the moment.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
       <Header />
 
       <main className="flex-1">
+        {/* Trailer Modal */}
+        {movie.trailerUrl && (
+          <TrailerModal
+            isOpen={isTrailerOpen}
+            onClose={() => setIsTrailerOpen(false)}
+            title={movie.title}
+            trailerUrl={movie.trailerUrl}
+          />
+        )}
+
         {/* Hero Banner */}
         <div
           className="h-[50vh] md:h-[60vh] bg-cover bg-center relative"
@@ -144,7 +169,12 @@ const MovieDetail = () => {
                   ) : (
                     <Button size="lg" variant="outline">Coming Soon</Button>
                   )}
-                  <Button variant="outline" size="lg" className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="flex items-center gap-2"
+                    onClick={handleOpenTrailer}
+                  >
                     <Play size={16} className="fill-current" />
                     Trailer
                   </Button>

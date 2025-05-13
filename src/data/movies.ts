@@ -1,29 +1,29 @@
-export interface Movie {
-  id: string;
-  title: string;
-  poster: string;
-  backdrop: string;
-  rating: number;
-  year: number;
-  duration: number; // in minutes
-  genre: string[];
-  description: string;
-  director: string;
-  cast: string[];
-  releaseStatus: "now-showing" | "upcoming";
-  reviews?: Review[];
-}
-
 export interface Review {
   id: string;
-  userId: string;
-  userName: string;
+  author: string;
   rating: number;
   comment: string;
   date: string;
 }
 
-export interface ShowTime {
+export interface Movie {
+  id: string;
+  title: string;
+  description: string;
+  poster: string;
+  backdrop: string;
+  genre: string[];
+  rating: number;
+  duration: number;
+  year: number;
+  director: string;
+  cast: string[];
+  releaseStatus: "now-showing" | "coming-soon";
+  reviews?: Review[];
+  trailerUrl?: string; // Added trailer URL field
+}
+
+export interface Showtime {
   id: string;
   movieId: string;
   date: string;
@@ -33,341 +33,237 @@ export interface ShowTime {
   price: number;
 }
 
-export interface Seat {
-  id: string;
-  row: string;
-  number: number;
-  type: "standard" | "premium" | "vip";
-  status: "available" | "reserved" | "selected" | "unavailable";
-}
-
 export const movies: Movie[] = [
   {
-    id: "1",
-    title: "Avengers: Endgame",
-    poster: "https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=500",
-    backdrop: "https://images.unsplash.com/photo-1569701813229-33284b643e3c?q=80&w=1200",
-    rating: 8.4,
-    year: 2019,
-    duration: 181,
-    genre: ["Action", "Adventure", "Drama"],
-    description:
-      "After the devastating events of Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos' actions and restore balance to the universe.",
-    director: "Anthony Russo, Joe Russo",
-    cast: ["Robert Downey Jr.", "Chris Evans", "Mark Ruffalo"],
+    id: "movie1",
+    title: "Dune: Part Two",
+    description: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the universe, he must prevent a terrible future only he can foresee.",
+    poster: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZHVuZXxlbnwwfHwwfHx8MA%3D%3D",
+    backdrop: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZHVuZXxlbnwwfHwwfHx8MA%3D%3D",
+    genre: ["Science Fiction", "Adventure", "Drama"],
+    rating: 8.7,
+    duration: 166,
+    year: 2024,
+    director: "Denis Villeneuve",
+    cast: ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson", "Josh Brolin"],
     releaseStatus: "now-showing",
     reviews: [
       {
         id: "r1",
-        userId: "u1",
-        userName: "John Doe",
-        rating: 5,
-        comment: "This film was the perfect conclusion to the Infinity Saga. The emotional moments were incredibly powerful, and the action was spectacular. Robert Downey Jr.'s performance was outstanding!",
-        date: "2024-01-15T10:30:00Z"
+        author: "SciFi_Fan",
+        rating: 9,
+        comment: "Absolutely breathtaking visuals and storytelling. Denis Villeneuve has crafted a masterpiece.",
+        date: "2024-03-12T14:22:00Z"
       },
       {
         id: "r2",
-        userId: "u2",
-        userName: "Jane Smith",
-        rating: 4,
-        comment: "Loved most of it, though some parts felt a little rushed. The final battle was absolutely worth the wait and years of build-up!",
-        date: "2024-02-20T14:45:00Z"
+        author: "MovieBuff42",
+        rating: 8,
+        comment: "The scale of this film is incredible. Great performances all around, especially from Chalamet and Zendaya.",
+        date: "2024-03-15T09:16:00Z"
       }
-    ]
+    ],
+    trailerUrl: "https://www.youtube.com/watch?v=Way9Dexny3w"
   },
   {
-    id: "2",
-    title: "Joker",
-    poster: "https://images.unsplash.com/photo-1559583109-3e7968136c99?q=80&w=500",
-    backdrop: "https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?q=80&w=1200",
+    id: "movie2",
+    title: "The Batman",
+    description: "When a sadistic serial killer begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.",
+    poster: "https://plus.unsplash.com/premium_photo-1661764393655-c8e58c6f0ada?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmF0bWFufGVufDB8fDB8fHww",
+    backdrop: "https://plus.unsplash.com/premium_photo-1661764393655-c8e58c6f0ada?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmF0bWFufGVufDB8fDB8fHww",
+    genre: ["Action", "Crime", "Drama"],
     rating: 8.5,
-    year: 2019,
-    duration: 122,
-    genre: ["Crime", "Drama", "Thriller"],
-    description:
-      "In Gotham City, mentally troubled comedian Arthur Fleck is disregarded and mistreated by society. He then embarks on a downward spiral of revolution and bloody crime. This path brings him face-to-face with his alter-ego: the Joker.",
-    director: "Todd Phillips",
-    cast: ["Joaquin Phoenix", "Robert De Niro", "Zazie Beetz"],
+    duration: 176,
+    year: 2022,
+    director: "Matt Reeves",
+    cast: ["Robert Pattinson", "Zoë Kravitz", "Paul Dano", "Jeffrey Wright"],
     releaseStatus: "now-showing",
     reviews: [
       {
         id: "r3",
-        userId: "u3",
-        userName: "Robert Johnson",
-        rating: 5,
-        comment: "Joaquin Phoenix's performance is nothing short of mesmerizing. A disturbing but thought-provoking take on the character.",
-        date: "2024-03-10T09:15:00Z"
+        author: "DCFanatic",
+        rating: 9,
+        comment: "The best Batman movie since The Dark Knight. Pattinson brings a unique intensity to the role.",
+        date: "2024-02-20T11:40:00Z"
       }
-    ]
+    ],
+    trailerUrl: "https://www.youtube.com/watch?v=mqqft2x_Aa4"
   },
   {
-    id: "3",
-    title: "Parasite",
-    poster: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500",
-    backdrop: "https://images.unsplash.com/photo-1568111561354-74e08bc9ee2f?q=80&w=1200",
-    rating: 8.6,
-    year: 2019,
-    duration: 132,
-    genre: ["Comedy", "Drama", "Thriller"],
-    description:
-      "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
-    director: "Bong Joon Ho",
-    cast: ["Kang-ho Song", "Sun-kyun Lee", "Yeo-jeong Jo"],
-    releaseStatus: "now-showing",
-    reviews: []
+    id: "movie3",
+    title: "Gladiator II",
+    description: "The sequel to the 2000 epic historical film, following the story of Lucius, the son of Maximus's lover Lucilla. Set years after the events of the first film, Lucius must navigate a changed Roman Empire.",
+    poster: "https://images.unsplash.com/photo-1541795795328-f073b763494e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z2xhZGlhdG9yfGVufDB8fDB8fHww",
+    backdrop: "https://images.unsplash.com/photo-1541795795328-f073b763494e?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z2xhZGlhdG9yfGVufDB8fDB8fHww",
+    genre: ["Action", "Drama", "History"],
+    rating: 8.2,
+    duration: 154,
+    year: 2024,
+    director: "Ridley Scott",
+    cast: ["Paul Mescal", "Denzel Washington", "Pedro Pascal", "Connie Nielsen"],
+    releaseStatus: "coming-soon",
+    trailerUrl: "https://www.youtube.com/watch?v=Hdgdu9t80DM"
   },
   {
-    id: "4",
-    title: "The Tomorrow War",
-    poster: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=500",
-    backdrop: "https://images.unsplash.com/photo-1503428593586-e225b39bddfe?q=80&w=1200",
-    rating: 6.6,
-    year: 2021,
-    duration: 138,
+    id: "movie4",
+    title: "Furiosa: A Mad Max Saga",
+    description: "As the world fell, young Furiosa is snatched from the Green Place of Many Mothers and falls into the hands of a great Biker Horde led by the Warlord Dementus. ",
+    poster: "https://m.media-amazon.com/images/M/MV5BN2E5ZDQ4NjQtZGUxMi00MzE0LWJkOGQtN2Q3MGJlNzE1YjlmXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BN2E5ZDQ4NjQtZGUxMi00MzE0LWJkOGQtN2Q3MGJlNzE1YjlmXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
     genre: ["Action", "Adventure", "Sci-Fi"],
-    description:
-      "A family man is drafted to fight in a future war where the fate of humanity relies on his ability to confront the past.",
-    director: "Chris McKay",
-    cast: ["Chris Pratt", "Yvonne Strahovski", "J.K. Simmons"],
+    rating: 7.9,
+    duration: 148,
+    year: 2024,
+    director: "George Miller",
+    cast: ["Anya Taylor-Joy", "Chris Hemsworth", "Tom Burke"],
     releaseStatus: "now-showing",
-    reviews: []
+    trailerUrl: "https://www.youtube.com/watch?v=XdKzUbAiswE"
   },
   {
-    id: "5",
-    title: "Dune",
-    poster: "https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?q=80&w=500",
-    backdrop: "https://images.unsplash.com/photo-1547957930-88f311f40bde?q=80&w=1200",
-    rating: 8.0,
-    year: 2021,
-    duration: 155,
-    genre: ["Action", "Adventure", "Drama"],
-    description:
-      "Feature adaptation of Frank Herbert's science fiction novel, about the son of a noble family entrusted with the protection of the most valuable asset and most vital element in the galaxy.",
-    director: "Denis Villeneuve",
-    cast: ["Timothée Chalamet", "Rebecca Ferguson", "Zendaya"],
-    releaseStatus: "upcoming",
-    reviews: []
+    id: "movie5",
+    title: "Inside Out 2",
+    description: "Follow Riley as she enters adolescence, encountering new Emotions.",
+    poster: "https://m.media-amazon.com/images/M/MV5BNDUzMDRkNjQtYmQ5Ny00NWExLTg4NDgtY2U5MmNiMDQ2MzkyXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BNDUzMDRkNjQtYmQ5Ny00NWExLTg4NDgtY2U5MmNiMDQ2MzkyXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    genre: ["Animation", "Adventure", "Comedy"],
+    rating: 7.6,
+    duration: 96,
+    year: 2024,
+    director: "Kelsey Mann",
+    cast: ["Amy Poehler", "Phyllis Smith", "Lewis Black"],
+    releaseStatus: "now-showing",
+    trailerUrl: "https://www.youtube.com/watch?v=4JU-ezx7K8w"
   },
   {
-    id: "6",
-    title: "No Time to Die",
-    poster: "https://images.unsplash.com/photo-1642456074142-92f75cb89ad4?q=80&w=500",
-    backdrop: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200",
-    rating: 7.3,
-    year: 2021,
-    duration: 163,
-    genre: ["Action", "Adventure", "Thriller"],
-    description:
-      "James Bond has left active service. His peace is short-lived when Felix Leiter, an old friend from the CIA, turns up asking for help, leading Bond onto the trail of a mysterious villain armed with dangerous new technology.",
-    director: "Cary Joji Fukunaga",
-    cast: ["Daniel Craig", "Ana de Armas", "Rami Malek"],
-    releaseStatus: "upcoming",
-    reviews: []
+    id: "movie6",
+    title: "Alien: Romulus",
+    description: "A group of young people on a distant world find themselves in a confrontation with the most terrifying life form in the universe.",
+    poster: "https://m.media-amazon.com/images/M/MV5BZjQ3NjQ5M2QtN2VlNy00MmQ1LWFkNDktMmQ5ZmM2ZDQ0MWM4XkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BZjQ3NjQ5M2QtN2VlNy00MmQ1LWFkNDktMmQ5ZmM2ZDQ0MWM4XkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    genre: ["Horror", "Sci-Fi", "Thriller"],
+    rating: 6.8,
+    duration: 0,
+    year: 2024,
+    director: "Fede Álvarez",
+    cast: ["Cailee Spaeny", "Isabela Merced", "David Jonsson"],
+    releaseStatus: "coming-soon",
+    trailerUrl: "https://www.youtube.com/watch?v=g5NNkyFt8I8"
   },
+  {
+    id: "movie7",
+    title: "The Garfield Movie",
+    description: "Garfield, the world-famous, Monday-hating, lasagna-loving indoor cat, is about to have a wild outdoor adventure!",
+    poster: "https://m.media-amazon.com/images/M/MV5BMjlmMWQ4ODQtZjQ4Ny00NjQ1LWIzMGQtMzQzMmE1NzMxNmNhXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BMjlmMWQ4ODQtZjQ4Ny00NjQ1LWIzMGQtMzQzMmE1NzMxNmNhXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    genre: ["Animation", "Adventure", "Comedy"],
+    rating: 6.3,
+    duration: 101,
+    year: 2024,
+    director: "Mark Dindal",
+    cast: ["Chris Pratt", "Samuel L. Jackson", "Hannah Waddingham"],
+    releaseStatus: "now-showing",
+    trailerUrl: "https://www.youtube.com/watch?v=fDaXbRkGT3g"
+  },
+  {
+    id: "movie8",
+    title: "Kingdom of the Planet of the Apes",
+    description: "Many years after the reign of Caesar, a young ape goes on a journey that will lead him to question everything he's been taught about the past and make choices that will define a future for apes and humans alike.",
+    poster: "https://m.media-amazon.com/images/M/MV5BNzQ0NzQzMDkxMV5BMl5BanBnXkEal@@._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BNzQ0NzQzMDkxMV5BMl5BanBnXkEal@@._V1_FMjpg_UX1000_.jpg",
+    genre: ["Action", "Adventure", "Sci-Fi"],
+    rating: 6.7,
+    duration: 145,
+    year: 2024,
+    director: "Wes Ball",
+    cast: ["Owen Teague", "Freya Allan", "Kevin Durand"],
+    releaseStatus: "now-showing",
+    trailerUrl: "https://www.youtube.com/watch?v=CXYzLd4gfOk"
+  },
+  {
+    id: "movie9",
+    title: "Deadpool & Wolverine",
+    description: "Deadpool and Wolverine team up to defeat a common enemy.",
+    poster: "https://m.media-amazon.com/images/M/MV5BNjJlM2JjMjMtZDE4My00Y2MwLTg2ZjEtZDJlNzEzMmQ3MmY3XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BNjJlM2JjMjMtZDE4My00Y2MwLTg2ZjEtZDJlNzEzMmQ3MmY3XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg",
+    genre: ["Action", "Comedy", "Sci-Fi"],
+    rating: 0,
+    duration: 127,
+    year: 2024,
+    director: "Shawn Levy",
+    cast: ["Ryan Reynolds", "Hugh Jackman", "Emma Corrin"],
+    releaseStatus: "coming-soon",
+    trailerUrl: "https://www.youtube.com/watch?v=UMD-HmnP3cA"
+  },
+  {
+    id: "movie10",
+    title: "Venom: The Last Dance",
+    description: "Plot unknown.",
+    poster: "https://m.media-amazon.com/images/M/MV5BYzQ0NmQ5MWMtNjQ4Mi00YjhiLThjYjUtODQ3M2Q4MWMwNzQxXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop: "https://m.media-amazon.com/images/M/MV5BYzQ0NmQ5MWMtNjQ4Mi00YjhiLThjYjUtODQ3M2Q4MWMwNzQxXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    genre: ["Action", "Sci-Fi", "Thriller"],
+    rating: 0,
+    duration: 0,
+    year: 2024,
+    director: "Kelly Marcel",
+    cast: ["Tom Hardy", "Chiwetel Ejiofor", "Juno Temple"],
+    releaseStatus: "coming-soon",
+    trailerUrl: "https://www.youtube.com/watch?v=go4HSzHkuSk"
+  }
 ];
 
-export const showtimes: ShowTime[] = [
+export const showtimes: Showtime[] = [
   {
-    id: "st1",
-    movieId: "1",
-    date: "2025-05-12",
+    id: "showtime1",
+    movieId: "movie1",
+    date: "2024-07-10",
+    time: "14:00",
+    cinema: "CGV Cinema",
+    hall: "Hall 1",
+    price: 90000,
+  },
+  {
+    id: "showtime2",
+    movieId: "movie1",
+    date: "2024-07-10",
+    time: "18:30",
+    cinema: "CGV Cinema",
+    hall: "Hall 1",
+    price: 90000,
+  },
+  {
+    id: "showtime3",
+    movieId: "movie1",
+    date: "2024-07-11",
     time: "10:00",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 1",
-    price: 120000,
-  },
-  {
-    id: "st2",
-    movieId: "1",
-    date: "2025-05-12",
-    time: "13:30",
-    cinema: "CinemaPlus Central",
+    cinema: "Lotte Cinema",
     hall: "Hall 2",
-    price: 120000,
+    price: 85000,
   },
   {
-    id: "st3",
-    movieId: "1",
-    date: "2025-05-12",
-    time: "16:45",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 1",
-    price: 150000,
-  },
-  {
-    id: "st4",
-    movieId: "1",
-    date: "2025-05-12",
+    id: "showtime4",
+    movieId: "movie2",
+    date: "2024-07-15",
     time: "20:00",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 3 (IMAX)",
-    price: 180000,
+    cinema: "BHD Star Cineplex",
+    hall: "Hall 3",
+    price: 95000,
   },
   {
-    id: "st5",
-    movieId: "1",
-    date: "2025-05-13",
-    time: "11:15",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 2",
-    price: 120000,
+    id: "showtime5",
+    movieId: "movie2",
+    date: "2024-07-15",
+    time: "16:00",
+    cinema: "BHD Star Cineplex",
+    hall: "Hall 3",
+    price: 95000,
   },
   {
-    id: "st6",
-    movieId: "1",
-    date: "2025-05-13",
-    time: "14:30",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 1",
-    price: 120000,
-  },
-  {
-    id: "st7",
-    movieId: "2",
-    date: "2025-05-12",
-    time: "09:30",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 4",
-    price: 120000,
-  },
-  {
-    id: "st8",
-    movieId: "2",
-    date: "2025-05-12",
-    time: "12:45",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 5",
-    price: 120000,
-  },
-  {
-    id: "st9",
-    movieId: "2",
-    date: "2025-05-12",
-    time: "18:15",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 4",
-    price: 150000,
-  },
-  {
-    id: "st10",
-    movieId: "3",
-    date: "2025-05-12",
-    time: "11:00",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 6",
-    price: 120000,
-  },
-  {
-    id: "st11",
-    movieId: "3",
-    date: "2025-05-12",
+    id: "showtime6",
+    movieId: "movie3",
+    date: "2024-07-12",
     time: "15:30",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 6",
-    price: 120000,
-  },
-  {
-    id: "st12",
-    movieId: "3",
-    date: "2025-05-12",
-    time: "19:45",
-    cinema: "CinemaPlus Central",
-    hall: "Hall 6",
-    price: 150000,
+    cinema: "Galaxy Cinema",
+    hall: "Hall 4",
+    price: 80000,
   },
 ];
-
-export const generateSeats = (): Seat[] => {
-  const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-  const seatsPerRow = 12;
-  const seats: Seat[] = [];
-  
-  rows.forEach((row) => {
-    for (let i = 1; i <= seatsPerRow; i++) {
-      // Set some seats as reserved to demonstrate the UI
-      const isReserved = Math.random() < 0.2;
-      const isPremium = row > "F";
-      const isVIP = row > "H" && i > 3 && i < 10;
-      
-      seats.push({
-        id: `${row}${i}`,
-        row,
-        number: i,
-        type: isVIP ? "vip" : isPremium ? "premium" : "standard",
-        status: isReserved ? "reserved" : "available",
-      });
-    }
-  });
-  
-  return seats;
-};
-
-export const seats = generateSeats();
-
-export interface Cinema {
-  id: string;
-  name: string;
-  location: string;
-  halls: number;
-}
-
-export const cinemas: Cinema[] = [
-  {
-    id: "c1",
-    name: "CinemaPlus Central",
-    location: "123 Main Street, Downtown",
-    halls: 6,
-  },
-  {
-    id: "c2",
-    name: "CinemaPlus Westside",
-    location: "456 Plaza Avenue, West District",
-    halls: 8,
-  },
-  {
-    id: "c3",
-    name: "CinemaPlus Eastgate",
-    location: "789 Boulevard Road, East Mall",
-    halls: 5,
-  },
-];
-
-export interface Promotion {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  validUntil: string;
-}
-
-export const promotions: Promotion[] = [
-  {
-    id: "p1",
-    title: "Student Discount",
-    description: "50% off for students on weekdays",
-    image: "https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?q=80&w=500",
-    validUntil: "2025-06-30",
-  },
-  {
-    id: "p2",
-    title: "Family Package",
-    description: "Buy 3 tickets, get 1 free",
-    image: "https://images.unsplash.com/photo-1472457897821-70d3819a0e24?q=80&w=500",
-    validUntil: "2025-07-15",
-  },
-  {
-    id: "p3",
-    title: "Member Monday",
-    description: "Special pricing for members every Monday",
-    image: "https://images.unsplash.com/photo-1586899028174-e7098604235b?q=80&w=500",
-    validUntil: "2025-08-31",
-  },
-];
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  bookings?: string[];
-}
