@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -16,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import AuthProviderButtons from "@/components/AuthProviderButtons";
-import { Film } from "lucide-react";
 import { RegisterFormInputs, registerSchema } from "@/schemas/registerSchema";
 import axiosInstance from "@/lib/axios";
 import Brand from "@/components/Brand";
@@ -49,11 +49,11 @@ const Register = () => {
       // Hiển thị thông báo thành công
       toast({
         title: "Registration Successful",
-        description: "Your account has been created successfully.",
+        description: "Please check your email to verify your account.",
       });
 
-      // Chuyển hướng tới trang chủ
-      navigate("/");
+      // Chuyển hướng tới trang xác thực email
+      navigate(`/register/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch (error: any) {
       // Kiểm tra lỗi từ API và hiển thị thông báo phù hợp
       const errorMessage =
