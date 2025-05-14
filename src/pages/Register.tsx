@@ -1,5 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,38 +14,65 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
-import { Film } from "lucide-react";
 import AuthProviderButtons from "@/components/AuthProviderButtons";
+import { Film } from "lucide-react";
+import { RegisterFormInputs, registerSchema } from "@/schemas/registerSchema";
+import axiosInstance from "@/lib/axios";
+import Brand from "@/components/Brand";
 
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormInputs>({
+    resolver: zodResolver(registerSchema),
+  });
 
-    // In a real app, this would validate and create the user
-    toast({
-      title: "Registration Successful",
-      description: "Your account has been created successfully.",
-    });
+  const onSubmit = async (data: RegisterFormInputs) => {
+    try {
+      const payload = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        phone_number: data.phone,
+        email: data.email,
+        password: data.password,
+      };
 
-    navigate("/");
+      // Gửi request tới API đăng ký
+      const response = await axiosInstance.post("register/", payload);
+
+      // Hiển thị thông báo thành công
+      toast({
+        title: "Registration Successful",
+        description: "Your account has been created successfully.",
+      });
+
+      // Chuyển hướng tới trang chủ
+      navigate("/");
+    } catch (error: any) {
+      // Kiểm tra lỗi từ API và hiển thị thông báo phù hợp
+      const errorMessage =
+        error.response?.data?.detail ||
+        "Something went wrong. Please try again.";
+
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cinema-background py-12 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 font-bold text-2xl text-cinema-primary"
-          >
-            <Film size={32} />
-            <span>CinemaPlus</span>
-          </Link>
+          <Brand />
         </div>
 
         <Card className="bg-card border-none shadow-xl">
@@ -53,25 +83,35 @@ const Register = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
                   <Input
                     id="firstName"
                     placeholder="John"
-                    required
                     className="bg-background"
+                    {...register("firstName")}
                   />
+                  {errors.firstName && (
+                    <p className="text-red-500 text-sm">
+                      {errors.firstName.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input
                     id="lastName"
                     placeholder="Doe"
-                    required
                     className="bg-background"
+                    {...register("lastName")}
                   />
+                  {errors.lastName && (
+                    <p className="text-red-500 text-sm">
+                      {errors.lastName.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -81,9 +121,12 @@ const Register = () => {
                   id="email"
                   type="email"
                   placeholder="john.doe@example.com"
-                  required
                   className="bg-background"
+                  {...register("email")}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -93,7 +136,11 @@ const Register = () => {
                   type="tel"
                   placeholder="+1234567890"
                   className="bg-background"
+                  {...register("phone")}
                 />
+                {errors.phone && (
+                  <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -102,9 +149,14 @@ const Register = () => {
                   id="password"
                   type="password"
                   placeholder="••••••••"
-                  required
                   className="bg-background"
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -113,9 +165,14 @@ const Register = () => {
                   id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
-                  required
                   className="bg-background"
+                  {...register("confirmPassword")}
                 />
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-sm">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
 
               <Button type="submit" className="w-full">
