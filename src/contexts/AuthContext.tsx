@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       // Gửi request đến API login
-      const response = await axiosInstance.post("/api/login", {
+      const response = await axiosInstance.post("/login/", {
         email,
         password,
       });
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("refreshToken", refreshToken);
 
       // (Tùy chọn) Gọi API lấy thông tin người dùng
-      const userResponse = await axiosInstance.get("/me", {
+      const userResponse = await axiosInstance.get("/me/", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
