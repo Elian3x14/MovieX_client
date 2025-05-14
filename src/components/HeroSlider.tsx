@@ -28,12 +28,12 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
   return (
     <div className="relative h-[50vh] md:h-[70vh] overflow-hidden">
       {/* Trailer Modal */}
-      {currentMovie?.trailerUrl && (
+      {currentMovie?.trailer_url && (
         <TrailerModal
           isOpen={isTrailerOpen}
           onClose={() => setIsTrailerOpen(false)}
           title={currentMovie.title}
-          trailerUrl={currentMovie.trailerUrl}
+          trailerUrl={currentMovie.trailer_url}
         />
       )}
 

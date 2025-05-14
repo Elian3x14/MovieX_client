@@ -23,22 +23,43 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Thêm interceptor cho response để xử lý lỗi
+// Interceptor để xử lý lỗi 401 và tự refresh token
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response) {
-      // Xử lý lỗi từ API (status code không phải 2xx)
-      console.error('API Error:', error.response.data.message || error.response.statusText);
-    } else if (error.request) {
-      // Xử lý lỗi không nhận được phản hồi từ server
-      console.error('No response received:', error.request);
-    } else {
-      // Xử lý lỗi khác
-      console.error('Error:', error.message);
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Nếu là lỗi 401 và chưa từng retry
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (refreshToken) {
+        try {
+          const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}token/refresh/`, {
+            refresh: refreshToken,
+          });
+
+          const newAccessToken = res.data.access;
+          localStorage.setItem('access', newAccessToken);
+
+          // Gắn token mới vào request gốc
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return axiosInstance(originalRequest); // gửi lại request
+        } catch (refreshError) {
+          // Refresh token hết hạn → logout
+          localStorage.removeItem('access');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/login'; // chuyển về trang login
+          return Promise.reject(refreshError);
+        }
+      }
     }
+
     return Promise.reject(error);
   }
 );

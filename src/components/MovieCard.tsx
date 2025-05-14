@@ -16,7 +16,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
     <Card className="cinema-card overflow-hidden flex flex-col h-full bg-card border-none shadow-lg">
       <div className="aspect-[2/3] relative overflow-hidden group">
         <img
-          src={movie.poster}
+          src={movie.poster_url}
           alt={movie.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -27,7 +27,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
             </Badge>
             <div className="flex items-center gap-2 mt-2">
               <Star className="fill-cinema-secondary text-cinema-secondary" size={16} />
-              <span>{movie.rating.toFixed(1)}</span>
+              <span>{movie.rating}</span>
             </div>
           </div>
         </div>
@@ -41,16 +41,16 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           <span>{movie.year}</span>
         </div>
         <div className="mt-2 flex flex-wrap gap-1">
-          {movie.genre.slice(0, 2).map((genre, index) => (
+          {/* {movie.genre.slice(0, 2).map((genre, index) => (
             <Badge key={index} variant="outline" className="bg-muted text-xs">
               {genre}
             </Badge>
-          ))}
-          {movie.genre.length > 2 && (
+          ))} */}
+          {/* {movie.genre.length > 2 && (
             <Badge variant="outline" className="bg-muted text-xs">
               +{movie.genre.length - 2}
             </Badge>
-          )}
+          )} */}
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">

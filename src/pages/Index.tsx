@@ -5,22 +5,37 @@ import CinemaCard from "@/components/CinemaCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { movies, promotions, cinemas } from "@/data/movies";
+import { promotions, cinemas, Movie } from "@/data/movies";
+import { useEffect, useState } from "react";
+import axiosInstance from "@/lib/axios";
 
 const Index = () => {
-  const nowShowingMovies = movies.filter(
-    (movie) => movie.releaseStatus === "now-showing"
-  );
-  const upcomingMovies = movies.filter(
-    (movie) => movie.releaseStatus === "coming-soon"
-  );
+  const [movies, setMovies] = useState<Movie[]>([]);
+
+  const fetchMovies = async () => {
+    const response = await axiosInstance.get("/movies/");
+    setMovies(response.data);
+  };
+  useEffect(() => {
+    fetchMovies();
+  }, []);
+
+  // const nowShowingMovies = movies.filter(
+  //   (movie) => movie.releaseStatus === "now-showing"
+  // );
+  // const upcomingMovies = movies.filter(
+  //   (movie) => movie.releaseStatus === "coming-soon"
+  // );
+  const nowShowingMovies = movies;
+  const upcomingMovies = movies;
+
   const featuredMovies = movies.slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
       <main className="flex-1">
         {/* Hero Slider */}
-        <HeroSlider movies={featuredMovies} />
+        {/* <HeroSlider movies={featuredMovies} /> */}
 
         {/* Movie Section */}
         <section className="py-12 container">

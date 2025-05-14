@@ -100,7 +100,7 @@ const MovieDetail = () => {
   };
 
   const handleOpenTrailer = () => {
-    if (movie.trailerUrl) {
+    if (movie.trailer_url) {
       setIsTrailerOpen(true);
     } else {
       toast({
@@ -117,12 +117,12 @@ const MovieDetail = () => {
 
       <main className="flex-1">
         {/* Trailer Modal */}
-        {movie.trailerUrl && (
+        {movie.trailer_url && (
           <TrailerModal
             isOpen={isTrailerOpen}
             onClose={() => setIsTrailerOpen(false)}
             title={movie.title}
-            trailerUrl={movie.trailerUrl}
+            trailerUrl={movie.trailer_url}
           />
         )}
 
@@ -139,7 +139,7 @@ const MovieDetail = () => {
             <div className="flex flex-col md:flex-row gap-8">
               <div className="hidden md:block w-64 h-96 overflow-hidden rounded-lg shadow-2xl">
                 <img
-                  src={movie.poster}
+                  src={movie.poster_url}
                   alt={movie.title}
                   className="w-full h-full object-cover"
                 />
@@ -188,7 +188,7 @@ const MovieDetail = () => {
         <div className="md:hidden container -mt-20 mb-6">
           <div className="w-32 h-48 overflow-hidden rounded-lg shadow-2xl mx-auto">
             <img
-              src={movie.poster}
+              src={movie.poster_url}
               alt={movie.title}
               className="w-full h-full object-cover"
             />
