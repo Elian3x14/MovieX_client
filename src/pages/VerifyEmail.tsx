@@ -1,6 +1,6 @@
 
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,33 +16,88 @@ import Brand from "@/components/Brand";
 
 const VerifyEmail = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const [verificationStatus, setVerificationStatus] = React.useState<
+  const [verificationStatus, setVerificationStatus] = useState<
     "pending" | "success" | "error"
   >("pending");
-  const [isResending, setIsResending] = React.useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
-  // Lấy email từ query params hoặc state khi chuyển hướng
+  // Get email from query params or state when redirecting
   const email = new URLSearchParams(location.search).get("email") || "";
+  const token = new URLSearchParams(location.search).get("token") || "";
 
-  // Xử lý việc gửi lại email
+  useEffect(() => {
+    // If token is present in URL, verify the email
+    if (token) {
+      verifyEmail();
+    }
+  }, [token]);
+
+  // Handle automatic redirect after successful verification
+  useEffect(() => {
+    let timer: number;
+    
+    if (verificationStatus === "success" && countdown > 0) {
+      timer = window.setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (verificationStatus === "success" && countdown === 0) {
+      navigate("/login");
+    }
+    
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [verificationStatus, countdown, navigate]);
+
+  // Verify email with token
+  const verifyEmail = async () => {
+    try {
+      // Here we would normally call the API to verify the email
+      // For now, we'll simulate a successful verification
+      // await axiosInstance.post("/verify-email/", { token });
+      
+      // Simulate API call with setTimeout
+      setTimeout(() => {
+        setVerificationStatus("success");
+        toast({
+          title: "Email verified successfully",
+          description: "Your account has been activated. You can now login.",
+        });
+      }, 1500);
+    } catch (error) {
+      setVerificationStatus("error");
+      toast({
+        title: "Verification failed",
+        description: "There was a problem verifying your email. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle resending verification email
   const handleResendEmail = async () => {
     setIsResending(true);
     try {
-      // Gọi API để gửi lại email xác thực
+      // Call API to resend verification email
       // await axiosInstance.post("/resend-verification/", { email });
       
-      toast({
-        title: "Email Sent",
-        description: "A new verification email has been sent to your inbox.",
-      });
+      // Simulate API call
+      setTimeout(() => {
+        toast({
+          title: "Email Sent",
+          description: "A new verification email has been sent to your inbox.",
+        });
+        setIsResending(false);
+      }, 1500);
     } catch (error) {
       toast({
         title: "Failed to resend",
         description: "There was a problem sending the verification email. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsResending(false);
     }
   };
@@ -83,14 +138,14 @@ const VerifyEmail = () => {
               )}
               <CardTitle className="text-xl font-bold">
                 {verificationStatus === "success"
-                  ? "Email Verified"
+                  ? "Email Verified Successfully!"
                   : verificationStatus === "error"
                   ? "Verification Failed"
                   : "Verify Your Email"}
               </CardTitle>
               <CardDescription>
                 {verificationStatus === "success" ? (
-                  "Your email has been successfully verified."
+                  "Your email has been successfully verified. Your account is now active."
                 ) : verificationStatus === "error" ? (
                   "We couldn't verify your email address."
                 ) : (
@@ -105,6 +160,19 @@ const VerifyEmail = () => {
             </CardHeader>
 
             <CardContent className="text-center">
+              {verificationStatus === "success" && (
+                <div className="space-y-4">
+                  <div className="bg-green-50 p-4 rounded-md">
+                    <p className="text-sm text-green-800">
+                      Thank you for verifying your email address. You can now access all the features of our platform.
+                    </p>
+                  </div>
+                  <p className="text-sm text-cinema-muted">
+                    Redirecting to login in {countdown} seconds...
+                  </p>
+                </div>
+              )}
+
               {verificationStatus === "pending" && (
                 <div className="space-y-4">
                   <p className="text-sm text-cinema-muted">
