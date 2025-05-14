@@ -12,7 +12,7 @@ export interface Movie {
   description: string;
   poster_url: string;
   trailer_url?: string;
-  backdrop: string;
+  backdrop_url: string;
   genre: string[];
   rating: number;
   duration: number;
@@ -64,7 +64,7 @@ export const movies: Movie[] = [
     title: "Dune: Part Two",
     description: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the universe, he must prevent a terrible future only he can foresee.",
     poster_url: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZHVuZXxlbnwwfHwwfHx8MA%3D%3D",
-    backdrop: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZHVuZXxlbnwwfHwwfHx8MA%3D%3D",
+    backdrop_url: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8ZHVuZXxlbnwwfHwwfHx8MA%3D%3D",
     genre: ["Science Fiction", "Adventure", "Drama"],
     rating: 8.7,
     duration: 166,
@@ -95,7 +95,7 @@ export const movies: Movie[] = [
     title: "The Batman",
     description: "When a sadistic serial killer begins murdering key political figures in Gotham, Batman is forced to investigate the city's hidden corruption and question his family's involvement.",
     poster_url: "https://plus.unsplash.com/premium_photo-1661764393655-c8e58c6f0ada?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmF0bWFufGVufDB8fDB8fHww",
-    backdrop: "https://plus.unsplash.com/premium_photo-1661764393655-c8e58c6f0ada?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmF0bWFufGVufDB8fDB8fHww",
+    backdrop_url: "https://plus.unsplash.com/premium_photo-1661764393655-c8e58c6f0ada?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmF0bWFufGVufDB8fDB8fHww",
     genre: ["Action", "Crime", "Drama"],
     rating: 8.5,
     duration: 176,
@@ -119,7 +119,7 @@ export const movies: Movie[] = [
     title: "Gladiator II",
     description: "The sequel to the 2000 epic historical film, following the story of Lucius, the son of Maximus's lover Lucilla. Set years after the events of the first film, Lucius must navigate a changed Roman Empire.",
     poster_url: "https://images.unsplash.com/photo-1541795795328-f073b763494e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z2xhZGlhdG9yfGVufDB8fDB8fHww",
-    backdrop: "https://images.unsplash.com/photo-1541795795328-f073b763494e?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z2xhZGlhdG9yfGVufDB8fDB8fHww",
+    backdrop_url: "https://images.unsplash.com/photo-1541795795328-f073b763494e?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Z2xhZGlhdG9yfGVufDB8fDB8fHww",
     genre: ["Action", "Drama", "History"],
     rating: 8.2,
     duration: 154,
@@ -134,7 +134,7 @@ export const movies: Movie[] = [
     title: "Furiosa: A Mad Max Saga",
     description: "As the world fell, young Furiosa is snatched from the Green Place of Many Mothers and falls into the hands of a great Biker Horde led by the Warlord Dementus. ",
     poster_url: "https://m.media-amazon.com/images/M/MV5BN2E5ZDQ4NjQtZGUxMi00MzE0LWJkOGQtN2Q3MGJlNzE1YjlmXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BN2E5ZDQ4NjQtZGUxMi00MzE0LWJkOGQtN2Q3MGJlNzE1YjlmXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BN2E5ZDQ4NjQtZGUxMi00MzE0LWJkOGQtN2Q3MGJlNzE1YjlmXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
     genre: ["Action", "Adventure", "Sci-Fi"],
     rating: 7.9,
     duration: 148,
@@ -149,7 +149,7 @@ export const movies: Movie[] = [
     title: "Inside Out 2",
     description: "Follow Riley as she enters adolescence, encountering new Emotions.",
     poster_url: "https://m.media-amazon.com/images/M/MV5BNDUzMDRkNjQtYmQ5Ny00NWExLTg4NDgtY2U5MmNiMDQ2MzkyXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BNDUzMDRkNjQtYmQ5Ny00NWExLTg4NDgtY2U5MmNiMDQ2MzkyXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BNDUzMDRkNjQtYmQ5Ny00NWExLTg4NDgtY2U5MmNiMDQ2MzkyXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
     genre: ["Animation", "Adventure", "Comedy"],
     rating: 7.6,
     duration: 96,
@@ -164,7 +164,7 @@ export const movies: Movie[] = [
     title: "Alien: Romulus",
     description: "A group of young people on a distant world find themselves in a confrontation with the most terrifying life form in the universe.",
     poster_url: "https://m.media-amazon.com/images/M/MV5BZjQ3NjQ5M2QtN2VlNy00MmQ1LWFkNDktMmQ5ZmM2ZDQ0MWM4XkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BZjQ3NjQ5M2QtN2VlNy00MmQ1LWFkNDktMmQ5ZmM2ZDQ0MWM4XkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BZjQ3NjQ5M2QtN2VlNy00MmQ1LWFkNDktMmQ5ZmM2ZDQ0MWM4XkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
     genre: ["Horror", "Sci-Fi", "Thriller"],
     rating: 6.8,
     duration: 0,
@@ -179,7 +179,7 @@ export const movies: Movie[] = [
     title: "The Garfield Movie",
     description: "Garfield, the world-famous, Monday-hating, lasagna-loving indoor cat, is about to have a wild outdoor adventure!",
     poster_url: "https://m.media-amazon.com/images/M/MV5BMjlmMWQ4ODQtZjQ4Ny00NjQ1LWIzMGQtMzQzMmE1NzMxNmNhXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BMjlmMWQ4ODQtZjQ4Ny00NjQ1LWIzMGQtMzQzMmE1NzMxNmNhXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BMjlmMWQ4ODQtZjQ4Ny00NjQ1LWIzMGQtMzQzMmE1NzMxNmNhXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
     genre: ["Animation", "Adventure", "Comedy"],
     rating: 6.3,
     duration: 101,
@@ -194,7 +194,7 @@ export const movies: Movie[] = [
     title: "Kingdom of the Planet of the Apes",
     description: "Many years after the reign of Caesar, a young ape goes on a journey that will lead him to question everything he's been taught about the past and make choices that will define a future for apes and humans alike.",
     poster_url: "https://m.media-amazon.com/images/M/MV5BNzQ0NzQzMDkxMV5BMl5BanBnXkEal@@._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BNzQ0NzQzMDkxMV5BMl5BanBnXkEal@@._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BNzQ0NzQzMDkxMV5BMl5BanBnXkEal@@._V1_FMjpg_UX1000_.jpg",
     genre: ["Action", "Adventure", "Sci-Fi"],
     rating: 6.7,
     duration: 145,
@@ -209,7 +209,7 @@ export const movies: Movie[] = [
     title: "Deadpool & Wolverine",
     description: "Deadpool and Wolverine team up to defeat a common enemy.",
     poster_url: "https://m.media-amazon.com/images/M/MV5BNjJlM2JjMjMtZDE4My00Y2MwLTg2ZjEtZDJlNzEzMmQ3MmY3XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BNjJlM2JjMjMtZDE4My00Y2MwLTg2ZjEtZDJlNzEzMmQ3MmY3XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BNjJlM2JjMjMtZDE4My00Y2MwLTg2ZjEtZDJlNzEzMmQ3MmY3XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg",
     genre: ["Action", "Comedy", "Sci-Fi"],
     rating: 0,
     duration: 127,
@@ -224,7 +224,7 @@ export const movies: Movie[] = [
     title: "Venom: The Last Dance",
     description: "Plot unknown.",
     poster_url: "https://m.media-amazon.com/images/M/MV5BYzQ0NmQ5MWMtNjQ4Mi00YjhiLThjYjUtODQ3M2Q4MWMwNzQxXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
-    backdrop: "https://m.media-amazon.com/images/M/MV5BYzQ0NmQ5MWMtNjQ4Mi00YjhiLThjYjUtODQ3M2Q4MWMwNzQxXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
+    backdrop_url: "https://m.media-amazon.com/images/M/MV5BYzQ0NmQ5MWMtNjQ4Mi00YjhiLThjYjUtODQ3M2Q4MWMwNzQxXkEyXkFqcGdeQXVyMTY3ODk0OTcz._V1_FMjpg_UX1000_.jpg",
     genre: ["Action", "Sci-Fi", "Thriller"],
     rating: 0,
     duration: 0,

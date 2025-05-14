@@ -35,7 +35,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
       <main className="flex-1">
         {/* Hero Slider */}
-        {/* <HeroSlider movies={featuredMovies} /> */}
+        <HeroSlider movies={featuredMovies} />
 
         {/* Movie Section */}
         <section className="py-12 container">

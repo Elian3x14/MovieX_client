@@ -130,7 +130,7 @@ const MovieDetail = () => {
         <div
           className="h-[50vh] md:h-[60vh] bg-cover bg-center relative"
           style={{
-            backgroundImage: `url(${movie.backdrop})`,
+            backgroundImage: `url(${movie.backdrop_url})`,
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-cinema-background via-cinema-background/80 to-transparent" />

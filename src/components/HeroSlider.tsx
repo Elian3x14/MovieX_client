@@ -48,7 +48,7 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
           <div className="absolute inset-0 bg-gradient-to-t from-cinema-background via-transparent to-transparent opacity-100" />
           <div className="absolute inset-0 bg-gradient-to-r from-cinema-background to-transparent opacity-70" />
           <img
-            src={movie.backdrop}
+            src={movie.backdrop_url}
             alt={movie.title}
             className="w-full h-full object-cover object-center"
           />
@@ -63,29 +63,29 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
               className="text-3xl md:text-5xl font-bold mb-4 animate-fade-in"
               style={{ animationDelay: "0.2s" }}
             >
-              {currentMovie.title}
+              {currentMovie?.title}
             </h1>
             <div 
               className="flex items-center gap-4 mb-4 animate-fade-in"
               style={{ animationDelay: "0.3s" }}
             >
               <span className="bg-cinema-primary px-2 py-1 rounded text-sm">
-                {currentMovie.rating.toFixed(1)}
+                {/* {currentMovie?.rating.toFixed(1)} */}
               </span>
-              <span className="text-cinema-muted">{currentMovie.duration} min</span>
-              <span className="text-cinema-muted">{currentMovie.genre.join(", ")}</span>
+              <span className="text-cinema-muted">{currentMovie?.duration} min</span>
+              {/* <span className="text-cinema-muted">{currentMovie?.genre.join(", ")}</span> */}
             </div>
             <p 
               className="text-cinema-muted mb-6 line-clamp-3 animate-fade-in"
               style={{ animationDelay: "0.4s" }}
             >
-              {currentMovie.description}
+              {currentMovie?.description}
             </p>
             <div 
               className="flex gap-4 animate-fade-in"
               style={{ animationDelay: "0.5s" }}
             >
-              <Link to={`/movie/${currentMovie.id}`}>
+              <Link to={`/movie/${currentMovie?.id}`}>
                 <Button size="lg">Book Tickets</Button>
               </Link>
               <Button 
