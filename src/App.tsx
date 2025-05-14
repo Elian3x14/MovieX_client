@@ -19,6 +19,7 @@ import AdminShowtimes from "./pages/admin/Showtimes";
 import AdminUsers from "./pages/admin/Users";
 import AdminReports from "./pages/admin/Reports";
 import { AuthProvider } from "./contexts/AuthContext";
+import IndexLayout from "./components/layouts/IndexLayout";
 
 const queryClient = new QueryClient();
 
@@ -30,16 +31,19 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/movie/:id" element={<MovieDetail />} />
-            <Route
-              path="/booking/:movieId/:showtimeId"
-              element={<SeatBooking />}
-            />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* Public Routes */}
+            <Route path="/" element={<IndexLayout />}>
+              <Route index element={<Index />} />
+              <Route path="/movies" element={<Movies />} />
+              <Route path="/movie/:id" element={<MovieDetail />} />
+              <Route
+                path="/booking/:movieId/:showtimeId"
+                element={<SeatBooking />}
+              />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLayout />}>
