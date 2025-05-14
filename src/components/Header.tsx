@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Film, User, Search, Ticket } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
+import Brand from "./Brand";
 
 const Header = () => {
   const isMobile = useIsMobile();
@@ -74,13 +75,8 @@ const Header = () => {
                 className="w-[240px] bg-cinema-background border-r border-cinema-primary/20"
               >
                 <div className="py-6 flex flex-col gap-6">
-                  <Link
-                    to="/"
-                    className="flex items-center gap-2 font-bold text-xl text-cinema-primary"
-                  >
-                    <Film size={24} />
-                    <span>CinemaPlus</span>
-                  </Link>
+                  <Brand />
+
                   <div className="flex flex-col gap-4">
                     <Link
                       to="/"
@@ -124,13 +120,8 @@ const Header = () => {
               </SheetContent>
             </Sheet>
           )}
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-bold text-xl text-cinema-primary"
-          >
-            <Film size={24} />
-            <span>CinemaPlus</span>
-          </Link>
+          <Brand />
+
           {!isMobile && <NavLinks />}
         </div>
 
