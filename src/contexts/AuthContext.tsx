@@ -1,11 +1,16 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axiosInstance from '../lib/axios';
-import { useNavigate } from 'react-router-dom';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import axiosInstance from "../lib/axios";
+import { useNavigate } from "react-router-dom";
 
-// Định nghĩa kiểu dữ liệu cho người dùng
 interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
   role: string;
 }
@@ -29,8 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Lấy thông tin người dùng từ localStorage khi ứng dụng khởi chạy
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('accessToken');
+    const savedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("accessToken");
 
     if (savedUser && token) {
       setUser(JSON.parse(savedUser));
@@ -41,33 +46,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Hàm đăng nhập
   const login = async (email: string, password: string) => {
     try {
-      const response = await axiosInstance.post('/auth/login', { email, password });
+      // Gửi request đến API login
+      const response = await axiosInstance.post("/api/login", {
+        email,
+        password,
+      });
 
-      const loggedInUser = response.data.user;
-      const token = response.data.token;
+      // Lấy token từ response
+      const accessToken = response.data.access;
+      const refreshToken = response.data.refresh;
 
-      // Lưu token và thông tin người dùng vào localStorage
-      localStorage.setItem('accessToken', token);
-      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      // Lưu token vào localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
+      // (Tùy chọn) Gọi API lấy thông tin người dùng
+      const userResponse = await axiosInstance.get("/me", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const loggedInUser = userResponse.data;
+
+      // Lưu thông tin người dùng vào state và localStorage
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
       setUser(loggedInUser);
       setIsAuthenticated(true);
 
       // Điều hướng sau khi đăng nhập thành công
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Login failed:', error);
-      throw new Error('Invalid email or password');
+      console.error("Login failed:", error);
+      throw new Error("Invalid email or password");
     }
   };
 
   // Hàm đăng xuất
   const logout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
     setUser(null);
     setIsAuthenticated(false);
-    navigate('/login');
+    navigate("/login");
   };
 
   // Kiểm tra quyền của người dùng
@@ -76,7 +97,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAuthorized }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, isAuthenticated, isAuthorized }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -86,7 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
