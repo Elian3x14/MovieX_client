@@ -20,7 +20,7 @@ const VerifyEmail = () => {
   const { toast } = useToast();
   const [verificationStatus, setVerificationStatus] = useState<
     "pending" | "success" | "error"
-  >("pending");
+  >("success");
   const [isResending, setIsResending] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
