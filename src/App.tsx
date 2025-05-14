@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import AdminCinemas from "./pages/admin/Cinemas";
 import AdminShowtimes from "./pages/admin/Showtimes";
 import AdminUsers from "./pages/admin/Users";
 import AdminReports from "./pages/admin/Reports";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -28,27 +28,32 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/movie/:id" element={<MovieDetail />} />
-          <Route path="/booking/:movieId/:showtimeId" element={<SeatBooking />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="movies" element={<AdminMovies />} />
-            <Route path="cinemas" element={<AdminCinemas />} />
-            <Route path="showtimes" element={<AdminShowtimes />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="reports" element={<AdminReports />} />
-          </Route>
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/movie/:id" element={<MovieDetail />} />
+            <Route
+              path="/booking/:movieId/:showtimeId"
+              element={<SeatBooking />}
+            />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="movies" element={<AdminMovies />} />
+              <Route path="cinemas" element={<AdminCinemas />} />
+              <Route path="showtimes" element={<AdminShowtimes />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="reports" element={<AdminReports />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
