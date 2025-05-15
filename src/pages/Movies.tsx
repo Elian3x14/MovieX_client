@@ -13,9 +13,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { movies } from "@/data/movies";
+// import { movies } from "@/data/movies";
 
 const Movies = () => {
+  const movies = [];
   const [filter, setFilter] = useState<"all" | "now-showing" | "coming-soon">("all");
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");

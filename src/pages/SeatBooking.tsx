@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SeatSelection from "@/components/SeatSelection";
 import { Button } from "@/components/ui/button";
-import { movies, showtimes, seats, Seat } from "@/data/movies";
+import {  showtimes, seats, Seat } from "@/data/movies";
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Clock, Calendar, MapPin } from "lucide-react";
 
 const SeatBooking = () => {
+  const movies =[]
   const { movieId, showtimeId } = useParams<{ movieId: string; showtimeId: string }>();
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);

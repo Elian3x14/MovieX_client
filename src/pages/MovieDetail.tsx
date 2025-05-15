@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { movies, showtimes, Review } from "@/data/movies";
+import { showtimes, Review, Movie } from "@/data/movies";
 import { Star, Clock, Calendar, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import axiosInstance from "@/lib/axios";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -27,12 +27,29 @@ interface ShowTimesByDate {
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const movie = movies.find((m) => m.id === id);
+
+  const [movie, setMovie] = useState<Movie>();
+
   const [selectedCinema, setSelectedCinema] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchMovie = async () => {
+      try {
+        const response = await axiosInstance.get(`movies/${id}/`);
+        setMovie(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (id) {
+      fetchMovie();
+    }
+  }, []);
 
   if (!movie) {
     return <div className="container py-12 text-center">Movie not found.</div>;
@@ -52,11 +69,13 @@ const MovieDetail = () => {
 
   dates.forEach((date) => {
     showtimesByDate[date] = [];
-    
+
     const cinemasForDate = Array.from(
-      new Set(movieShowtimes.filter((st) => st.date === date).map((st) => st.cinema))
+      new Set(
+        movieShowtimes.filter((st) => st.date === date).map((st) => st.cinema)
+      )
     );
-    
+
     cinemasForDate.forEach((cinema) => {
       const timesForCinema = movieShowtimes
         .filter((st) => st.date === date && st.cinema === cinema)
@@ -66,7 +85,7 @@ const MovieDetail = () => {
           hall: st.hall,
           price: st.price,
         }));
-      
+
       showtimesByDate[date].push({
         cinema,
         times: timesForCinema,
@@ -95,7 +114,7 @@ const MovieDetail = () => {
       id: `local-${Date.now()}`,
       date: new Date().toISOString(),
     };
-    
+
     setLocalReviews((prev) => [...prev, newReview]);
   };
 
@@ -105,7 +124,8 @@ const MovieDetail = () => {
     } else {
       toast({
         title: "Trailer Unavailable",
-        description: "The trailer for this movie is not available at the moment.",
+        description:
+          "The trailer for this movie is not available at the moment.",
         variant: "destructive",
       });
     }
@@ -113,8 +133,6 @@ const MovieDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
-      <Header />
-
       <main className="flex-1">
         {/* Trailer Modal */}
         {movie.trailer_url && (
@@ -146,32 +164,46 @@ const MovieDetail = () => {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <Badge variant="outline" className="bg-cinema-primary border-none">
-                    {movie.releaseStatus === "now-showing" ? "Now Showing" : "Coming Soon"}
+                  <Badge
+                    variant="outline"
+                    className="bg-cinema-primary border-none"
+                  >
+                    {movie.releaseStatus === "now-showing"
+                      ? "Now Showing"
+                      : "Coming Soon"}
                   </Badge>
                   <div className="flex items-center gap-1">
-                    <Star className="fill-cinema-secondary text-cinema-secondary" size={18} />
-                    <span className="font-medium">{movie.rating.toFixed(1)}/10</span>
+                    <Star
+                      className="fill-cinema-secondary text-cinema-secondary"
+                      size={18}
+                    />
+                    <span className="font-medium">{movie.rating}/10</span>
                   </div>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-3">{movie.title}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mb-3">
+                  {movie.title}
+                </h1>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-sm text-cinema-muted">
                   <div className="flex items-center gap-1">
                     <Clock size={16} />
                     <span>{movie.duration} min</span>
                   </div>
                   <div>{movie.year}</div>
-                  <div>{movie.genres.join(", ")}</div>
+                  <div>{movie.genres.map(item => item.name + ",")}</div>
                 </div>
                 <div className="flex gap-4 mt-6">
                   {movie.releaseStatus === "now-showing" ? (
-                    <Button size="lg" className="min-w-[150px]">Buy Tickets</Button>
+                    <Button size="lg" className="min-w-[150px]">
+                      Buy Tickets
+                    </Button>
                   ) : (
-                    <Button size="lg" variant="outline">Coming Soon</Button>
+                    <Button size="lg" variant="outline">
+                      Coming Soon
+                    </Button>
                   )}
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
+                  <Button
+                    variant="outline"
+                    size="lg"
                     className="flex items-center gap-2"
                     onClick={handleOpenTrailer}
                   >
@@ -200,7 +232,10 @@ const MovieDetail = () => {
           <Tabs defaultValue="about" className="w-full">
             <TabsList className="w-full flex justify-start mb-6 bg-muted">
               <TabsTrigger value="about">About</TabsTrigger>
-              <TabsTrigger value="showtimes" disabled={movie.releaseStatus !== "now-showing"}>
+              <TabsTrigger
+                value="showtimes"
+                disabled={movie.releaseStatus !== "now-showing"}
+              >
                 Showtimes
               </TabsTrigger>
               <TabsTrigger value="reviews">Reviews</TabsTrigger>
@@ -210,7 +245,9 @@ const MovieDetail = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-2">
                   <h2 className="text-xl font-semibold mb-4">Synopsis</h2>
-                  <p className="text-cinema-muted mb-6 leading-relaxed">{movie.description}</p>
+                  <p className="text-cinema-muted mb-6 leading-relaxed">
+                    {movie.description}
+                  </p>
 
                   <h2 className="text-xl font-semibold mb-4">Cast & Crew</h2>
                   <div className="mb-4">
@@ -219,7 +256,9 @@ const MovieDetail = () => {
                   </div>
                   <div>
                     <h3 className="font-medium mb-2">Cast</h3>
-                    <p className="text-cinema-muted">{movie.actors.join(", ")}</p>
+                    <p className="text-cinema-muted">
+                      {movie.actors.map(item => item.name + ",")}
+                    </p>
                   </div>
                 </div>
                 <div>
@@ -229,7 +268,7 @@ const MovieDetail = () => {
                       <dl className="space-y-3">
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Genre:</dt>
-                          <dd>{movie.genres.join(", ")}</dd>
+                          <dd>{movie.genres.map(item => item.name + "," )}</dd>
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Release Year:</dt>
@@ -242,8 +281,11 @@ const MovieDetail = () => {
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Rating:</dt>
                           <dd className="flex items-center gap-1">
-                            <Star className="fill-cinema-secondary text-cinema-secondary" size={16} />
-                            {movie.rating.toFixed(1)}
+                            <Star
+                              className="fill-cinema-secondary text-cinema-secondary"
+                              size={16}
+                            />
+                            {movie.rating}
                           </dd>
                         </div>
                       </dl>
@@ -268,9 +310,7 @@ const MovieDetail = () => {
                       }`}
                     >
                       <Calendar size={18} className="mb-1" />
-                      <span className="font-medium">
-                        {formatDate(date)}
-                      </span>
+                      <span className="font-medium">{formatDate(date)}</span>
                     </button>
                   ))}
                 </div>
@@ -279,14 +319,20 @@ const MovieDetail = () => {
               <div className="space-y-6">
                 {activeDate &&
                   showtimesByDate[activeDate].map((cinemaData, index) => (
-                    <Card key={index} className="bg-card border-none overflow-hidden">
+                    <Card
+                      key={index}
+                      className="bg-card border-none overflow-hidden"
+                    >
                       <CardContent className="p-6">
                         <h3 className="text-lg font-semibold mb-4">
                           {cinemaData.cinema}
                         </h3>
                         <div className="flex flex-wrap gap-3">
                           {cinemaData.times.map((time) => (
-                            <Link key={time.id} to={`/booking/${movie.id}/${time.id}`}>
+                            <Link
+                              key={time.id}
+                              to={`/booking/${movie.id}/${time.id}`}
+                            >
                               <Button
                                 variant="outline"
                                 className="flex flex-col min-w-[110px] h-auto p-3"
@@ -309,8 +355,8 @@ const MovieDetail = () => {
             </TabsContent>
 
             <TabsContent value="reviews">
-              <ReviewSection 
-                movieId={movie.id} 
+              <ReviewSection
+                movieId={movie.id}
                 reviews={allReviews}
                 onAddReview={handleAddReview}
               />
@@ -318,8 +364,6 @@ const MovieDetail = () => {
           </Tabs>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 };
