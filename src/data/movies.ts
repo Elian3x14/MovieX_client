@@ -29,7 +29,8 @@ export interface Movie {
   year: number;
   director: string;
   actors: Actor[];
-  releaseStatus: "now-showing" | "coming-soon";
+  release_status: "now-showing" | "coming-soon";
+  release_date?: Date;
   reviews?: Review[];
 }
 
@@ -37,13 +38,12 @@ export interface Showtime {
   id: string;
   movieId: string;
   movie?: Movie;
-  date: string;
-  time: string;
   cinema: string;
   hall: string;
+
   price: number;
-  // start_time: Date
-  // end_time: Date;
+  start_time: Date
+  end_time: Date;
 }
 
 export interface Cinema {
@@ -250,60 +250,7 @@ export interface Seat {
 // ];
 
 export const showtimes: Showtime[] = [
-  {
-    id: "showtime1",
-    movieId: "movie1",
-    date: "2024-07-10",
-    time: "14:00",
-    cinema: "CGV Cinema",
-    hall: "Hall 1",
-    price: 90000,
-  },
-  {
-    id: "showtime2",
-    movieId: "movie1",
-    date: "2024-07-10",
-    time: "18:30",
-    cinema: "CGV Cinema",
-    hall: "Hall 1",
-    price: 90000,
-  },
-  {
-    id: "showtime3",
-    movieId: "movie1",
-    date: "2024-07-11",
-    time: "10:00",
-    cinema: "Lotte Cinema",
-    hall: "Hall 2",
-    price: 85000,
-  },
-  {
-    id: "showtime4",
-    movieId: "movie2",
-    date: "2024-07-15",
-    time: "20:00",
-    cinema: "BHD Star Cineplex",
-    hall: "Hall 3",
-    price: 95000,
-  },
-  {
-    id: "showtime5",
-    movieId: "movie2",
-    date: "2024-07-15",
-    time: "16:00",
-    cinema: "BHD Star Cineplex",
-    hall: "Hall 3",
-    price: 95000,
-  },
-  {
-    id: "showtime6",
-    movieId: "movie3",
-    date: "2024-07-12",
-    time: "15:30",
-    cinema: "Galaxy Cinema",
-    hall: "Hall 4",
-    price: 80000,
-  },
+  
 ];
 
 export const cinemas: Cinema[] = [

@@ -23,7 +23,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
           <div className="p-4 text-white">
             <Badge variant="outline" className="bg-cinema-primary border-none mb-2">
-              {movie.releaseStatus === "now-showing" ? "Now Showing" : "Coming Soon"}
+              {movie.release_status === "now-showing" ? "Now Showing" : "Coming Soon"}
             </Badge>
             <div className="flex items-center gap-2 mt-2">
               <Star className="fill-cinema-secondary text-cinema-secondary" size={16} />
@@ -55,8 +55,8 @@ const MovieCard = ({ movie }: MovieCardProps) => {
       </CardContent>
       <CardFooter className="p-4 pt-0">
         <Link to={`/movie/${movie.id}`} className="w-full">
-          <Button className="w-full" variant={movie.releaseStatus === "now-showing" ? "default" : "secondary"}>
-            {movie.releaseStatus === "now-showing" ? "Book Now" : "Details"}
+          <Button className="w-full" variant={movie.release_status === "now-showing" ? "default" : "secondary"}>
+            {movie.release_status === "now-showing" ? "Book Now" : "Details"}
           </Button>
         </Link>
       </CardFooter>

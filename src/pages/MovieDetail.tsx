@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { showtimes, Review, Movie } from "@/data/movies";
+import { Review, Movie, Showtime } from "@/data/movies";
 import { Star, Clock, Calendar, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axios";
@@ -31,9 +31,11 @@ const MovieDetail = () => {
   const [movie, setMovie] = useState<Movie>();
 
   const [selectedCinema, setSelectedCinema] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
+  const [movieShowtimes, setMovieShowtimes] = useState<Showtime[]>([]);
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -41,7 +43,6 @@ const MovieDetail = () => {
       try {
         const response = await axiosInstance.get(`movies/${id}/`);
         setMovie(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -51,61 +52,45 @@ const MovieDetail = () => {
     }
   }, []);
 
-  if (!movie) {
-    return <div className="container py-12 text-center">Movie not found.</div>;
-  }
+  useEffect(() => {
+    const fetchShowtimes = async () => {
+      try {
+        const response = await axiosInstance.get(`movies/${id}/showtimes/`);
+        setMovieShowtimes(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (id) {
+      fetchShowtimes();
+    }
+  }, []);
 
-  // Get showtime data for this movie
-  const movieShowtimes = showtimes.filter((st) => st.movieId === movie.id);
+  const dates = movieShowtimes.map((st) => new Date(st.start_time));
+  const uniqueDateStrings = Array.from(
+    new Set(dates.map((date) => date.toISOString().split("T")[0]))
+  );
 
-  // Group showtimes by date
-  const dates = Array.from(new Set(movieShowtimes.map((st) => st.date))).sort();
+  console.log(uniqueDateStrings);
 
-  // If no date is selected, select the first one
-  const activeDate = selectedDate || dates[0];
+  function formatDaysLeft(date: string | Date): string {
+    const today = new Date();
+    const target = new Date(date);
+    today.setHours(0, 0, 0, 0);
+    target.setHours(0, 0, 0, 0);
 
-  // Process showtimes by date and cinema
-  const showtimesByDate: ShowTimesByDate = {};
-
-  dates.forEach((date) => {
-    showtimesByDate[date] = [];
-
-    const cinemasForDate = Array.from(
-      new Set(
-        movieShowtimes.filter((st) => st.date === date).map((st) => st.cinema)
-      )
+    const diffDays = Math.ceil(
+      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    cinemasForDate.forEach((cinema) => {
-      const timesForCinema = movieShowtimes
-        .filter((st) => st.date === date && st.cinema === cinema)
-        .map((st) => ({
-          id: st.id,
-          time: st.time,
-          hall: st.hall,
-          price: st.price,
-        }));
-
-      showtimesByDate[date].push({
-        cinema,
-        times: timesForCinema,
-      });
-    });
-  });
-
-  // Format the release date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
+    if (diffDays === 0) return "Hôm nay";
+    if (diffDays === 1) return "Ngày mai";
+    if (diffDays > 1) return `Còn ${diffDays} ngày nữa`;
+    return "Đã qua";
+  }
   // Combine server reviews with local reviews
-  const allReviews = [...(movie.reviews || []), ...localReviews];
+  const allReviews = [...(movie?.reviews || []), ...localReviews];
 
   // Handle adding a new review
   const handleAddReview = (review: Omit<Review, "id" | "date">) => {
@@ -130,6 +115,10 @@ const MovieDetail = () => {
       });
     }
   };
+
+  if (!movie) {
+    return <div className="container py-12 text-center">Movie not found.</div>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
@@ -168,7 +157,7 @@ const MovieDetail = () => {
                     variant="outline"
                     className="bg-cinema-primary border-none"
                   >
-                    {movie.releaseStatus === "now-showing"
+                    {movie.release_status === "now-showing"
                       ? "Now Showing"
                       : "Coming Soon"}
                   </Badge>
@@ -183,16 +172,22 @@ const MovieDetail = () => {
                 <h1 className="text-3xl md:text-4xl font-bold mb-3">
                   {movie.title}
                 </h1>
+
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-sm text-cinema-muted">
                   <div className="flex items-center gap-1">
                     <Clock size={16} />
                     <span>{movie.duration} min</span>
                   </div>
                   <div>{movie.year}</div>
-                  <div>{movie.genres.map(item => item.name + ",")}</div>
+                  <div>{movie.genres.map((item) => item.name + ",")}</div>
                 </div>
-                <div className="flex gap-4 mt-6">
-                  {movie.releaseStatus === "now-showing" ? (
+
+                <p className="text-cinema-muted mb-6 leading-relaxed">
+                  {movie.description}
+                </p>
+
+                <div className="flex gap-4 mt-auto">
+                  {movie.release_status === "now-showing" ? (
                     <Button size="lg" className="min-w-[150px]">
                       Buy Tickets
                     </Button>
@@ -234,7 +229,7 @@ const MovieDetail = () => {
               <TabsTrigger value="about">About</TabsTrigger>
               <TabsTrigger
                 value="showtimes"
-                disabled={movie.releaseStatus !== "now-showing"}
+                disabled={movie.release_status !== "now-showing"}
               >
                 Showtimes
               </TabsTrigger>
@@ -257,7 +252,7 @@ const MovieDetail = () => {
                   <div>
                     <h3 className="font-medium mb-2">Cast</h3>
                     <p className="text-cinema-muted">
-                      {movie.actors.map(item => item.name + ",")}
+                      {movie.actors.map((item) => item.name + ",")}
                     </p>
                   </div>
                 </div>
@@ -268,7 +263,7 @@ const MovieDetail = () => {
                       <dl className="space-y-3">
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Genre:</dt>
-                          <dd>{movie.genres.map(item => item.name + "," )}</dd>
+                          <dd>{movie.genres.map((item) => item.name + ",")}</dd>
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Release Year:</dt>
@@ -299,25 +294,36 @@ const MovieDetail = () => {
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
                 <div className="flex overflow-x-auto gap-3 pb-2">
-                  {dates.map((date) => (
+                  {uniqueDateStrings.map((date) => (
                     <button
-                      key={date}
-                      onClick={() => setSelectedDate(date)}
+                      key={date.toString()}
+                      // onClick={() => setSelectedDate(date)}
                       className={`flex flex-col items-center min-w-[100px] p-3 rounded-lg border ${
-                        activeDate === date
-                          ? "border-cinema-primary bg-cinema-primary/10"
-                          : "border-muted bg-card"
+                        "" // activeDate === date
+                        //   ? "border-cinema-primary bg-cinema-primary/10"
+                        //   : "border-muted bg-card"
                       }`}
                     >
                       <Calendar size={18} className="mb-1" />
-                      <span className="font-medium">{formatDate(date)}</span>
+                      <span className="font-medium">
+                        {/* render date theo định dạng dd/mm/yy */}
+                        {new Date(date).toLocaleDateString("vi-VN", {
+                          weekday: "long",
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "2-digit",
+                        })}
+                      </span>
+                      <span className="text-xs text-cinema-muted mt-1">
+                        {formatDaysLeft(date)}
+                      </span>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-6">
-                {activeDate &&
+                {/* {activeDate &&
                   showtimesByDate[activeDate].map((cinemaData, index) => (
                     <Card
                       key={index}
@@ -350,7 +356,7 @@ const MovieDetail = () => {
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  ))} */}
               </div>
             </TabsContent>
 
