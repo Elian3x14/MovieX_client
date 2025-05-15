@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { Movie } from "@/data/movies";
 import { Link } from "react-router-dom";
 import TrailerModal from "./TrailerModal";
+import { IoStar } from "react-icons/io5";
 
 interface HeroSliderProps {
   movies: Movie[];
@@ -65,32 +65,36 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
             >
               {currentMovie?.title}
             </h1>
-            <div 
+            <div
               className="flex items-center gap-4 mb-4 animate-fade-in"
               style={{ animationDelay: "0.3s" }}
             >
-              <span className="bg-cinema-primary px-2 py-1 rounded text-sm">
-                {/* {currentMovie?.rating.toFixed(1)} */}
+              <div className="flex items-center gap-1 bg-cinema-primary px-2 py-1 rounded text-sm text-cinema-text font-semibold">
+                <span>{currentMovie?.rating}</span>
+                <IoStar className="size-3.5"/>
+              </div>
+
+              <span className="text-cinema-muted">
+                {currentMovie?.duration} min
               </span>
-              <span className="text-cinema-muted">{currentMovie?.duration} min</span>
               {/* <span className="text-cinema-muted">{currentMovie?.genre.join(", ")}</span> */}
             </div>
-            <p 
+            <p
               className="text-cinema-muted mb-6 line-clamp-3 animate-fade-in"
               style={{ animationDelay: "0.4s" }}
             >
               {currentMovie?.description}
             </p>
-            <div 
+            <div
               className="flex gap-4 animate-fade-in"
               style={{ animationDelay: "0.5s" }}
             >
               <Link to={`/movie/${currentMovie?.id}`}>
                 <Button size="lg">Book Tickets</Button>
               </Link>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => setIsTrailerOpen(true)}
               >
