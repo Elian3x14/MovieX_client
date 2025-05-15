@@ -13,6 +13,7 @@ interface User {
   username: string;
   email: string;
   role: string;
+  avatar?: string; // Added avatar property as optional
 }
 
 interface AuthContextType {
