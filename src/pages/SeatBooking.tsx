@@ -121,7 +121,7 @@ const SeatBooking = () => {
                     <div>
                       <h3 className="font-medium mb-1">{movie.title}</h3>
                       <p className="text-sm text-cinema-muted">
-                        {movie.duration} min • {movie.genre.join(", ")}
+                        {movie.duration} min • {movie.genres.join(", ")}
                       </p>
                     </div>
                     

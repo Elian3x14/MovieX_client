@@ -19,7 +19,7 @@ const CinemaCard = ({ cinema }: CinemaCardProps) => {
             <h3 className="text-lg font-semibold mb-2">{cinema.name}</h3>
             <div className="flex items-start gap-2 text-cinema-muted mb-3">
               <MapPin size={16} className="mt-1" />
-              <p>{cinema.location}</p>
+              <p>{cinema.address}</p>
             </div>
           </div>
           <Badge variant="outline" className="bg-muted">

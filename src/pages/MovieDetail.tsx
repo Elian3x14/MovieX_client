@@ -161,7 +161,7 @@ const MovieDetail = () => {
                     <span>{movie.duration} min</span>
                   </div>
                   <div>{movie.year}</div>
-                  <div>{movie.genre.join(", ")}</div>
+                  <div>{movie.genres.join(", ")}</div>
                 </div>
                 <div className="flex gap-4 mt-6">
                   {movie.releaseStatus === "now-showing" ? (
@@ -219,7 +219,7 @@ const MovieDetail = () => {
                   </div>
                   <div>
                     <h3 className="font-medium mb-2">Cast</h3>
-                    <p className="text-cinema-muted">{movie.cast.join(", ")}</p>
+                    <p className="text-cinema-muted">{movie.actors.join(", ")}</p>
                   </div>
                 </div>
                 <div>
@@ -229,7 +229,7 @@ const MovieDetail = () => {
                       <dl className="space-y-3">
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Genre:</dt>
-                          <dd>{movie.genre.join(", ")}</dd>
+                          <dd>{movie.genres.join(", ")}</dd>
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-cinema-muted">Release Year:</dt>

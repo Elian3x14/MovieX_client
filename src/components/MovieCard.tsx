@@ -41,16 +41,16 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           <span>{movie.year}</span>
         </div>
         <div className="mt-2 flex flex-wrap gap-1">
-          {/* {movie.genre.slice(0, 2).map((genre, index) => (
+          {movie.genres.slice(0, 2).map((genre, index) => (
             <Badge key={index} variant="outline" className="bg-muted text-xs">
-              {genre}
+              {genre.name}
             </Badge>
-          ))} */}
-          {/* {movie.genre.length > 2 && (
+          ))}
+          {movie.genres.length > 2 && (
             <Badge variant="outline" className="bg-muted text-xs">
-              +{movie.genre.length - 2}
+              +{movie.genres.length - 2}
             </Badge>
-          )} */}
+          )}
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">

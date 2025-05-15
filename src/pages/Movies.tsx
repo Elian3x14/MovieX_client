@@ -21,7 +21,7 @@ const Movies = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Get all unique genres
-  const allGenres = Array.from(new Set(movies.flatMap((movie) => movie.genre)));
+  const allGenres = Array.from(new Set(movies.flatMap((movie) => movie.genres)));
 
   // Filter movies based on criteria
   const filteredMovies = movies.filter((movie) => {
@@ -33,7 +33,7 @@ const Movies = () => {
 
     // Filter by genre
     const genre =
-      genreFilter === "all" || movie.genre.includes(genreFilter);
+      genreFilter === "all" || movie.genres.includes(genreFilter);
     
     // Filter by search query
     const search = searchQuery === "" || 
