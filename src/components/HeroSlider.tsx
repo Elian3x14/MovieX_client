@@ -1,16 +1,16 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
-import { Button } from '@/components/ui/button';
-import { Play } from 'lucide-react';
-import { Movie } from '@/data/movies';
-import { Link } from 'react-router-dom';
-import TrailerModal from './TrailerModal';
-import { IoStar } from 'react-icons/io5';
-import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Play } from "lucide-react";
+import { Movie } from "@/data/movies";
+import { Link } from "react-router-dom";
+import TrailerModal from "./TrailerModal";
+import { IoStar } from "react-icons/io5";
+import { useState } from "react";
 
 interface HeroSliderProps {
   movies: Movie[];
@@ -19,6 +19,7 @@ interface HeroSliderProps {
 const HeroSlider = ({ movies }: HeroSliderProps) => {
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [swiperInstance, setSwiperInstance] = useState<any>(null);
 
   return (
     <div className="relative h-[50vh] md:h-[70vh] overflow-hidden">
@@ -26,7 +27,10 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
       {movies[activeIndex]?.trailer_url && (
         <TrailerModal
           isOpen={isTrailerOpen}
-          onClose={() => setIsTrailerOpen(false)}
+          onClose={() => {
+            setIsTrailerOpen(false);
+            swiperInstance?.autoplay?.start(); // Bật lại autoplay khi đóng modal
+          }}
           title={movies[activeIndex].title}
           trailerUrl={movies[activeIndex].trailer_url}
         />
@@ -38,6 +42,7 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
         effect="fade"
         pagination={{ clickable: true }}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+        onSwiper={(swiper) => setSwiperInstance(swiper)}
         loop
         className="h-full"
       >
@@ -82,7 +87,10 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
                         size="lg"
                         variant="outline"
                         className="flex items-center gap-2"
-                        onClick={() => setIsTrailerOpen(true)}
+                        onClick={() => {
+                          setIsTrailerOpen(true);
+                          swiperInstance?.autoplay?.stop(); // Dừng autoplay
+                        }}
                       >
                         <Play size={16} className="fill-current" />
                         Watch Trailer

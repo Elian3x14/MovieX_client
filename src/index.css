@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,9 +33,6 @@
     --ring: 359 94% 48%;
 
     --radius: 0.5rem;
-    
-    /* swipe.js */
-    /* --swiper-pagination-bullet-inactive-color: --primary-foreground; */
   }
 }
 
@@ -48,11 +44,8 @@
   body {
     @apply bg-cinema-background text-cinema-text;
   }
-  
+
   .cinema-card {
     @apply bg-card rounded-md overflow-hidden transition-all hover:shadow-lg hover:shadow-cinema-primary/20;
-  }
-  .swiper-pagination-bullet {
-    @apply !bg-cinema-primary/80;
   }
 }
