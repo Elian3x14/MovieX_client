@@ -21,6 +21,7 @@ const SeatSelection = ({
   seats,
   onSeatsSelected,
 }: SeatSelectionProps) => {
+  console.log("Seats:");
   // Get unique seat types
   const seatTypesMap = new Map();
 

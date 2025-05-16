@@ -11,14 +11,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Clock, Calendar, MapPin } from "lucide-react";
+import { Clock, Calendar, MapPin, Timer } from "lucide-react";
 import axiosInstance from "@/lib/axios";
+import { TimerContainer } from "@/components/SeatBooking/TimerContainer";
+import { formatDateString } from "@/lib/formatDateString";
+import { formatDate } from "@/lib/formatDate";
+import { formatTimeAMPM } from "@/lib/formatTimeAMPM";
 
 const SeatBooking = () => {
   const { movieId, showtimeId } = useParams<{
     movieId: string;
     showtimeId: string;
   }>();
+
+  console.log("Movie ID:", movieId);
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [timer, setTimer] = useState(300); // 5-minute timer in seconds
@@ -125,16 +131,7 @@ const SeatBooking = () => {
                 Please select the seats you wish to book for this movie.
               </p>
             </div>
-            <div className="bg-card rounded-md p-2 flex items-center gap-2">
-              <span className="text-cinema-muted">Session expires in:</span>
-              <span
-                className={`font-mono font-medium ${
-                  timer < 60 ? "text-cinema-primary" : ""
-                }`}
-              >
-                {formatTime(timer)}
-              </span>
-            </div>
+            <TimerContainer />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -163,7 +160,8 @@ const SeatBooking = () => {
                     <div>
                       <h3 className="font-medium mb-1">{movie.title}</h3>
                       <p className="text-sm text-cinema-muted">
-                        {movie.duration} min • {movie.genres.join(", ")}
+                        {movie.duration} min •{" "}
+                        {movie.genres.map((g) => g.name).join(", ")}
                       </p>
                     </div>
 
@@ -175,7 +173,7 @@ const SeatBooking = () => {
                         <div>
                           <p className="text-sm font-medium">Date</p>
                           <p className="text-sm text-cinema-muted">
-                            {showtime.start_time.toString()}
+                            {formatDate(showtime.start_time)}
                           </p>
                         </div>
                       </div>
@@ -185,7 +183,7 @@ const SeatBooking = () => {
                         <div>
                           <p className="text-sm font-medium">Time</p>
                           <p className="text-sm text-cinema-muted">
-                            {showtime.start_time.toString()}
+                            {formatTimeAMPM(showtime.start_time)}
                           </p>
                         </div>
                       </div>
