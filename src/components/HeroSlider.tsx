@@ -6,7 +6,7 @@ import "swiper/css/effect-fade";
 
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-import { Movie } from "@/data/movies";
+import { Movie } from "@/data/type";
 import { Link } from "react-router-dom";
 import TrailerModal from "./TrailerModal";
 import { IoStar } from "react-icons/io5";

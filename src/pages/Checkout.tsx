@@ -26,7 +26,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Movie, Seat } from "@/data/movies";
+import { Movie, Seat } from "@/data/type";
 
 // Define form schema using zod
 const cardFormSchema = z.object({

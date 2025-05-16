@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Cinema } from "@/data/movies";
+import { Cinema } from "@/data/type";
 
 interface CinemaCardProps {
   cinema: Cinema;

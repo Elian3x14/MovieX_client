@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Promotion } from "@/data/movies";
+import { Promotion } from "@/data/type";
 
 interface PromotionCardProps {
   promotion: Promotion;

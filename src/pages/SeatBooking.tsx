@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SeatSelection from "@/components/SeatSelection";
 import { Button } from "@/components/ui/button";
-import { Seat, Movie, Showtime } from "@/data/movies";
+import { Seat, Movie, Showtime } from "@/data/type";
 import {
   Card,
   CardContent,

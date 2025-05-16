@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Seat, SeatType, Showtime, showtimes } from "@/data/movies";
+import { Seat, SeatType, Showtime, showtimes } from "@/data/type";
 import formatCurrency from "@/lib/formatCurrency";
 
 interface SeatSelectionProps {

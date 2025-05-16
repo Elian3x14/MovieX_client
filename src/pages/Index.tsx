@@ -5,7 +5,7 @@ import CinemaCard from "@/components/CinemaCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { promotions, cinemas, Movie } from "@/data/movies";
+import { promotions, cinemas, Movie } from "@/data/type";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
 

@@ -1,7 +1,8 @@
-
 import React, { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { fetchMovies } from "@/features/movie/movieSlice";
+
 import MovieCard from "@/components/MovieCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,28 +17,39 @@ import { Search } from "lucide-react";
 // import { movies } from "@/data/movies";
 
 const Movies = () => {
-  const movies = [];
-  const [filter, setFilter] = useState<"all" | "now-showing" | "coming-soon">("all");
+  const [filter, setFilter] = useState<"all" | "now-showing" | "coming-soon">(
+    "all"
+  );
   const [genreFilter, setGenreFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const dispatch = useAppDispatch();
+  const { movies, loading, error } = useAppSelector((state) => state.movie);
+
+  useEffect(() => {
+    dispatch(fetchMovies());
+  }, [dispatch]);
 
   // Get all unique genres
-  const allGenres = Array.from(new Set(movies.flatMap((movie) => movie.genres)));
+  const allGenres = Array.from(
+    new Set(movies.flatMap((movie) => movie.genres))
+  );
 
   // Filter movies based on criteria
   const filteredMovies = movies.filter((movie) => {
     // Filter by release status
     const statusFilter =
       filter === "all" ||
-      (filter === "now-showing" && movie.releaseStatus === "now-showing") ||
-      (filter === "coming-soon" && movie.releaseStatus === "coming-soon");
+      (filter === "now-showing" && movie.release_status === "now-showing") ||
+      (filter === "coming-soon" && movie.release_status === "coming-soon");
 
     // Filter by genre
     const genre =
-      genreFilter === "all" || movie.genres.includes(genreFilter);
-    
+      genreFilter === "all" ||
+      movie.genres.map((g) => g.name).includes(genreFilter);
+
     // Filter by search query
-    const search = searchQuery === "" || 
+    const search =
+      searchQuery === "" ||
       movie.title.toLowerCase().includes(searchQuery.toLowerCase());
 
     return statusFilter && genre && search;
@@ -45,14 +57,14 @@ const Movies = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
-
       <main className="flex-1">
         <div className="bg-black/50 py-12">
           <div className="container">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Movies</h1>
             <p className="text-cinema-muted max-w-2xl">
-              Browse our selection of the latest movies now showing and coming soon to our theaters.
-              Book tickets online for the best viewing experience.
+              Browse our selection of the latest movies now showing and coming
+              soon to our theaters. Book tickets online for the best viewing
+              experience.
             </p>
           </div>
         </div>
@@ -68,7 +80,7 @@ const Movies = () => {
                 className="pl-10 w-full bg-card"
               />
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={filter === "all" ? "default" : "outline"}
@@ -98,8 +110,8 @@ const Movies = () => {
                 <SelectContent>
                   <SelectItem value="all">All Genres</SelectItem>
                   {allGenres.map((genre) => (
-                    <SelectItem key={genre} value={genre}>
-                      {genre}
+                    <SelectItem key={genre.name} value={genre.name}>
+                      {genre.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -117,13 +129,13 @@ const Movies = () => {
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No movies found</h3>
               <p className="text-cinema-muted">
-                Try changing your filter selections or search term to see more results.
+                Try changing your filter selections or search term to see more
+                results.
               </p>
             </div>
           )}
         </section>
       </main>
-
     </div>
   );
 };

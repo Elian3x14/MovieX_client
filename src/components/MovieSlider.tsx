@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Movie } from "@/data/movies";
+import { Movie } from "@/data/type";
 import MovieCard from "./MovieCard";
 
 interface MovieSliderProps {

@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Star, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Review as MovieReview } from "@/data/movies";
+import { Review as MovieReview } from "@/data/type";
 
 interface ReviewSectionProps {
   movieId: string;
