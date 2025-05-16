@@ -46,7 +46,6 @@ export interface Showtime {
   movie?: Movie;
   room?: Room;
   cinema: string;
-  hall: string;
   price: number;
   start_time: Date;
   end_time: Date;
@@ -68,17 +67,18 @@ export interface Promotion {
   validUntil: string;
 }
 
+export interface SeatType {
+  id: number;
+  name: string;
+  extra_price: number;
+} 
+
 export interface Seat {
   id: string;
   seat_row: string;
   seat_col: number;
   status: "available" | "reserved" | "selected" | "unavailable";
-  seat_type: {
-    id: number;
-    name: string;
-    extra_price: number;
-  }
-  price: number;
+  seat_type: SeatType;
 }
 
 // export const movies: Movie[] = [

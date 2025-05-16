@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Seat } from "@/data/movies";
+import { Seat, SeatType, Showtime, showtimes } from "@/data/movies";
 import formatCurrency from "@/lib/formatCurrency";
 
 interface SeatSelectionProps {
+  showtime: Showtime;
   seats: Seat[];
   onSeatsSelected: (seats: Seat[]) => void;
 }
@@ -15,7 +16,11 @@ const seatStatuses = [
   { color: "bg-gray-500 cursor-not-allowed", label: "Reserved" },
 ];
 
-const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
+const SeatSelection = ({
+  showtime,
+  seats,
+  onSeatsSelected,
+}: SeatSelectionProps) => {
   // Get unique seat types
   const seatTypesMap = new Map();
 
@@ -26,15 +31,15 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
     }
   });
 
-  const seatTypes = Array.from(seatTypesMap.values()).sort(
+  const seatTypes : SeatType[] = Array.from(seatTypesMap.values()).sort(
     (a, b) => a.extra_price - b.extra_price
   );
 
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
   const toggleSeat = (seat: Seat) => {
-    if (seat.status === "reserved" ) return;
-    if (seat.status === "unavailable" ) return;
+    if (seat.status === "reserved") return;
+    if (seat.status === "unavailable") return;
 
     if (selectedSeats.some((s) => s.id === seat.id)) {
       setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
@@ -122,11 +127,11 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
 
       {/* SeatType in this room */}
       <div className="flex flex-wrap justify-center gap-2 mb-6">
-        {seatTypes.map((type, index) => (
+        {seatTypes.map((seatType, index) => (
           <div key={index} className="border p-2 px-4 rounded text-center">
-            <div className="text-sm font-medium"> {type.name}</div>
+            <div className="text-sm font-medium"> {seatType.name}</div>
             <div className="text-xs text-primary">
-              {formatCurrency(type.extra_price)}
+              {formatCurrency(seatType.extra_price + Number(showtime.price))}
             </div>
           </div>
         ))}
@@ -146,7 +151,9 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
         >
           Confirm ({selectedSeats.length})
           {selectedSeats.length > 0 &&
-            ` - ${(selectedSeats.length * 120000).toLocaleString()} VND`}
+            ` - ${(
+              selectedSeats.length * showtime.price
+            ).toLocaleString()} VND`}
         </Button>
       </div>
     </div>

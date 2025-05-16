@@ -109,7 +109,8 @@ const SeatBooking = () => {
   }
 
   const totalPrice = selectedSeats.reduce(
-    (total, seat) => total + Number(showtime.price) + Number(seat.seat_type.extra_price),
+    (total, seat) =>
+      total + Number(showtime.price) + Number(seat.seat_type.extra_price),
     0
   );
 
@@ -144,6 +145,7 @@ const SeatBooking = () => {
                 </CardHeader>
                 <CardContent className="p-4">
                   <SeatSelection
+                    showtime={showtime}
                     seats={seats}
                     onSeatsSelected={handleSeatsSelected}
                   />
@@ -196,7 +198,7 @@ const SeatBooking = () => {
                             {showtime.cinema}
                           </p>
                           <p className="text-sm text-cinema-muted">
-                            {showtime.hall}
+                            {showtime.room?.name}
                           </p>
                         </div>
                       </div>
