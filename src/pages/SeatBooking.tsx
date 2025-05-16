@@ -108,7 +108,10 @@ const SeatBooking = () => {
     );
   }
 
-  const totalPrice = selectedSeats.length * showtime.price;
+  const totalPrice = selectedSeats.reduce(
+    (total, seat) => total + Number(showtime.price) + Number(seat.seat_type.extra_price),
+    0
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
@@ -220,7 +223,7 @@ const SeatBooking = () => {
                       </div>
                       <div className="flex justify-between font-medium">
                         <p>Total:</p>
-                        <p>{totalPrice.toLocaleString()} VND</p>
+                        <p>{Number(totalPrice).toLocaleString()} VND</p>
                       </div>
                     </div>
                   </div>
