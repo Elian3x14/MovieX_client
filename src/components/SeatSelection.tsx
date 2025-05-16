@@ -25,11 +25,11 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
     onSeatsSelected(selectedSeats);
   };
   
-  const rows = Array.from(new Set(seats.map(seat => seat.row))).sort();
+  const rows = Array.from(new Set(seats.map(seat => seat.seat_row))).sort();
   
   const getSeatsByRow = (row: string) => {
     return seats.map(seat => {
-      if (seat.row === row) {
+      if (seat.seat_row === row) {
         if (selectedSeats.some(s => s.id === seat.id)) {
           return { ...seat, status: "selected" };
         }
@@ -43,8 +43,8 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
     if (seat.status === "reserved") return "bg-gray-500 cursor-not-allowed opacity-50";
     if (seat.status === "selected") return "bg-cinema-primary";
     
-    if (seat.type === "vip") return "bg-cinema-secondary text-black";
-    if (seat.type === "premium") return "bg-accent";
+    if (seat.seat_type.name === "vip") return "bg-cinema-secondary text-black";
+    if (seat.seat_type.name === "premium") return "bg-accent";
     return "bg-muted";
   };
   
@@ -66,7 +66,7 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
                   disabled={seat.status === "reserved" || seat.status === "unavailable"}
                   onClick={() => toggleSeat(seat)}
                 >
-                  {seat.number}
+                  {seat.seat_col}
                 </button>
               ))}
             </div>
@@ -100,7 +100,7 @@ const SeatSelection = ({ seats, onSeatsSelected }: SeatSelectionProps) => {
       <div className="mt-4 text-center">
         <p className="mb-4">
           Selected seats: {selectedSeats.length > 0 
-            ? selectedSeats.map(s => `${s.row}${s.number}`).join(", ") 
+            ? selectedSeats.map(s => `${s.seat_row}${s.seat_col}`).join(", ") 
             : "None"}
         </p>
         <Button 

@@ -70,10 +70,14 @@ export interface Promotion {
 
 export interface Seat {
   id: string;
-  row: string;
-  number: number;
+  seat_row: string;
+  seat_col: number;
   status: "available" | "reserved" | "selected" | "unavailable";
-  type: "standard" | "vip" | "premium" | "couple";
+  seat_type: {
+    id: number;
+    name: string;
+    extra_price: number;
+  }
   price: number;
 }
 
@@ -314,59 +318,3 @@ export const promotions: Promotion[] = [
   }
 ];
 
-export const seats: Seat[] = [
-  // Row A (VIP)
-  ...Array(10).fill(0).map((_, i) => ({
-    id: `A${i+1}`,
-    row: "A",
-    number: i+1,
-    status: "available" as "available",
-    type: "vip" as "vip",
-    price: 150000
-  })),
-  // Row B (VIP)
-  ...Array(10).fill(0).map((_, i) => ({
-    id: `B${i+1}`,
-    row: "B",
-    number: i+1,
-    status: "available" as "available",
-    type: "vip" as "vip",
-    price: 150000
-  })),
-  // Row C (Couple)
-  ...Array(5).fill(0).map((_, i) => ({
-    id: `C${i+1}`,
-    row: "C",
-    number: i+1,
-    status: i === 2 ? "unavailable" as "unavailable" : "available" as "available",
-    type: "couple" as "couple",
-    price: 250000
-  })),
-  // Row D (Standard)
-  ...Array(10).fill(0).map((_, i) => ({
-    id: `D${i+1}`,
-    row: "D",
-    number: i+1,
-    status: i === 5 || i === 6 ? "reserved" as "reserved" : "available" as "available",
-    type: "standard" as "standard",
-    price: 100000
-  })),
-  // Row E (Standard)
-  ...Array(10).fill(0).map((_, i) => ({
-    id: `E${i+1}`,
-    row: "E",
-    number: i+1,
-    status: "available" as "available",
-    type: "standard" as "standard",
-    price: 100000
-  })),
-  // Row F (Standard)
-  ...Array(10).fill(0).map((_, i) => ({
-    id: `F${i+1}`,
-    row: "F",
-    number: i+1,
-    status: i === 0 || i === 1 ? "reserved" as "reserved" : "available" as "available",
-    type: "standard" as "standard",
-    price: 100000
-  })),
-];

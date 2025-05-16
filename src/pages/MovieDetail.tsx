@@ -12,7 +12,7 @@ import { Review, Movie, Showtime } from "@/data/movies";
 import { Star, Clock, Calendar, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axios";
-import formatCurrency from "@/lib/formatPriceVND";
+import formatCurrency from "@/lib/formatCurrency";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -73,7 +73,7 @@ const MovieDetail = () => {
         new Date(item.start_time).toISOString().slice(0, 10)
       ) // YYYY-MM-DD
     ),
-  ];
+  ].sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
   const showtimesByDate: ShowTimesByDate = {};
 
   showtimes.forEach((showtime) => {
@@ -122,7 +122,7 @@ const MovieDetail = () => {
     if (diffDays > 1) return `Còn ${diffDays} ngày nữa`;
     return "Đã qua";
   }
-  // Combine server reviews with local reviews
+
   const allReviews = [...(movie?.reviews || []), ...localReviews];
 
   // Handle adding a new review
@@ -338,8 +338,7 @@ const MovieDetail = () => {
                       }`}
                     >
                       <Calendar size={18} className="mb-1" />
-                      <span className="font-medium">
-                        {/* render date theo định dạng dd/mm/yy */}
+                      <span className="font-medium text-sm">
                         {new Date(date).toLocaleDateString("vi-VN", {
                           weekday: "long",
                           day: "2-digit",
@@ -378,25 +377,21 @@ const MovieDetail = () => {
 
                             <div className="text-cinema-muted text-xs">
                               <span className="text-cinema-secondary">50</span>
-                              <span> ghế còn trống</span>
+                              <span> available seats left</span>
                             </div>
-                            
+
                             <div className="text-cinema-primary font-semibold ">
                               Only from {formatCurrency(show.price)}
                             </div>
                             <Button
+                              asChild
                               variant="outline"
                               className="mt-2 w-full"
                               size="sm"
-                              onClick={() => {
-                                // Handle ticket booking logic here
-                                toast({
-                                  title: "Ticket Booking",
-                                  description: `You have selected ${show.hall} at ${show.time}.`,
-                                });
-                              }}
                             >
-                              Book Now
+                              <Link to={`/booking/${movie.id}/${show.id}`}>
+                                Book Now
+                              </Link>
                             </Button>
                           </div>
                         ))}

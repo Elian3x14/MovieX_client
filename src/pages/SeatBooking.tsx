@@ -1,11 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import SeatSelection from "@/components/SeatSelection";
 import { Button } from "@/components/ui/button";
-import {  showtimes, seats, Seat } from "@/data/movies";
+import { Seat, Movie, Showtime } from "@/data/movies";
 import {
   Card,
   CardContent,
@@ -15,16 +12,57 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Clock, Calendar, MapPin } from "lucide-react";
+import axiosInstance from "@/lib/axios";
 
 const SeatBooking = () => {
-  const movies =[]
-  const { movieId, showtimeId } = useParams<{ movieId: string; showtimeId: string }>();
+  const { movieId, showtimeId } = useParams<{
+    movieId: string;
+    showtimeId: string;
+  }>();
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [timer, setTimer] = useState(300); // 5-minute timer in seconds
 
-  const movie = movies.find((m) => m.id === movieId);
-  const showtime = showtimes.find((s) => s.id === showtimeId);
+  const [showtime, setShowtime] = useState<Showtime>();
+  const [movie, setMovie] = useState<Movie>();
+  const [seats, setSeats] = useState<Seat[]>([]);
+
+  useEffect(() => {
+    const fetchShowtime = async () => {
+      try {
+        const response = await axiosInstance.get(`showtimes/${showtimeId}/`);
+        const showtimeData = response.data;
+        setShowtime(showtimeData);
+        setMovie(showtimeData.movie);
+        console.log("Fetched showtime data:", showtimeData);
+      } catch (error) {
+        console.error("Error fetching showtime data:", error);
+      }
+    };
+
+    if (movieId && showtimeId) {
+      fetchShowtime();
+    }
+  }, [movieId, showtimeId]);
+
+  useEffect(() => {
+    const fetchSeats = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `showtimes/${showtimeId}/seats/`
+        );
+        const seatsData = response.data;
+        setSeats(seatsData);
+        console.log("Fetched seats data:", seatsData);
+      } catch (error) {
+        console.error("Error fetching seats data:", error);
+      }
+    };
+
+    if (showtimeId) {
+      fetchSeats();
+    }
+  }, [showtimeId]);
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -63,26 +101,17 @@ const SeatBooking = () => {
   };
 
   if (!movie || !showtime) {
-    return <div className="container py-12 text-center">Invalid booking information.</div>;
+    return (
+      <div className="container py-12 text-center">
+        Invalid booking information.
+      </div>
+    );
   }
-
-  // Format the date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
 
   const totalPrice = selectedSeats.length * showtime.price;
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
-      <Header />
-
       <main className="flex-1 py-8 container">
         <div className="max-w-5xl mx-auto">
           <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -94,7 +123,11 @@ const SeatBooking = () => {
             </div>
             <div className="bg-card rounded-md p-2 flex items-center gap-2">
               <span className="text-cinema-muted">Session expires in:</span>
-              <span className={`font-mono font-medium ${timer < 60 ? "text-cinema-primary" : ""}`}>
+              <span
+                className={`font-mono font-medium ${
+                  timer < 60 ? "text-cinema-primary" : ""
+                }`}
+              >
                 {formatTime(timer)}
               </span>
             </div>
@@ -107,7 +140,10 @@ const SeatBooking = () => {
                   <CardTitle className="text-lg">Seating Plan</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <SeatSelection seats={seats} onSeatsSelected={handleSeatsSelected} />
+                  <SeatSelection
+                    seats={seats}
+                    onSeatsSelected={handleSeatsSelected}
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -125,50 +161,62 @@ const SeatBooking = () => {
                         {movie.duration} min • {movie.genres.join(", ")}
                       </p>
                     </div>
-                    
+
                     <Separator className="bg-muted" />
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-start gap-2">
                         <Calendar size={16} className="mt-1" />
                         <div>
                           <p className="text-sm font-medium">Date</p>
-                          <p className="text-sm text-cinema-muted">{formatDate(showtime.date)}</p>
+                          <p className="text-sm text-cinema-muted">
+                            {showtime.start_time.toString()}
+                          </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start gap-2">
                         <Clock size={16} className="mt-1" />
                         <div>
                           <p className="text-sm font-medium">Time</p>
-                          <p className="text-sm text-cinema-muted">{showtime.time}</p>
+                          <p className="text-sm text-cinema-muted">
+                            {showtime.start_time.toString()}
+                          </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-start gap-2">
                         <MapPin size={16} className="mt-1" />
                         <div>
                           <p className="text-sm font-medium">Cinema</p>
-                          <p className="text-sm text-cinema-muted">{showtime.cinema}</p>
-                          <p className="text-sm text-cinema-muted">{showtime.hall}</p>
+                          <p className="text-sm text-cinema-muted">
+                            {showtime.cinema}
+                          </p>
+                          <p className="text-sm text-cinema-muted">
+                            {showtime.hall}
+                          </p>
                         </div>
                       </div>
                     </div>
-                    
+
                     <Separator className="bg-muted" />
-                    
+
                     <div>
                       <div className="flex justify-between mb-1">
                         <p className="text-sm">Selected Seats:</p>
                         <p className="text-sm">
                           {selectedSeats.length > 0
-                            ? selectedSeats.map((s) => `${s.row}${s.number}`).join(", ")
+                            ? selectedSeats
+                                .map((s) => `${s.seat_row}${s.seat_col}`)
+                                .join(", ")
                             : "None"}
                         </p>
                       </div>
                       <div className="flex justify-between mb-2">
                         <p className="text-sm">Price per Ticket:</p>
-                        <p className="text-sm">{showtime.price.toLocaleString()} VND</p>
+                        <p className="text-sm">
+                          {showtime.price.toLocaleString()} VND
+                        </p>
                       </div>
                       <div className="flex justify-between font-medium">
                         <p>Total:</p>
@@ -191,8 +239,6 @@ const SeatBooking = () => {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };
