@@ -45,7 +45,6 @@ const Movies = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
-      <Header />
 
       <main className="flex-1">
         <div className="bg-black/50 py-12">
@@ -125,7 +124,6 @@ const Movies = () => {
         </section>
       </main>
 
-      <Footer />
     </div>
   );
 };
