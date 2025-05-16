@@ -13,6 +13,10 @@ import { Star, Clock, Calendar, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axios";
 import formatCurrency from "@/lib/formatCurrency";
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/app/store";
+import { useSelector } from "react-redux";
+import { fetchMovieById } from "@/features/movie/movieSlice";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -28,9 +32,11 @@ interface ShowTimesByDate {
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
-
-  const [movie, setMovie] = useState<Movie>();
-
+  const dispatch = useDispatch<AppDispatch>();
+  const movie = useSelector((state: RootState) =>
+    id ? state.movie.movies[id] : undefined
+  );
+  const loading = useSelector((state: RootState) => state.movie.loading);
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [showtimes, setMovieShowtimes] = useState<Showtime[]>([]);
@@ -39,18 +45,10 @@ const MovieDetail = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchMovie = async () => {
-      try {
-        const response = await axiosInstance.get(`movies/${id}/`);
-        setMovie(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (id) {
-      fetchMovie();
+    if (id && !movie) {
+      dispatch(fetchMovieById(id));
     }
-  }, []);
+  }, [id, movie, dispatch]);
 
   useEffect(() => {
     const fetchShowtimes = async () => {

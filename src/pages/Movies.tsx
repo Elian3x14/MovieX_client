@@ -31,11 +31,11 @@ const Movies = () => {
 
   // Get all unique genres
   const allGenres = Array.from(
-    new Set(movies.flatMap((movie) => movie.genres))
+    new Set(Object.values(movies).flatMap((movie) => movie.genres))
   );
 
   // Filter movies based on criteria
-  const filteredMovies = movies.filter((movie) => {
+  const filteredMovies = Object.values(movies).filter((movie) => {
     // Filter by release status
     const statusFilter =
       filter === "all" ||

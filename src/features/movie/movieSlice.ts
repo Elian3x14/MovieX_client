@@ -4,11 +4,18 @@ import { Movie } from '@/data/type';
 import axiosInstance from '@/lib/axios';
 
 interface MovieState {
-  movies: Movie[];
+  movies: Record<string, Movie>;
   loading: boolean;
   error: string | null;
 }
 
+const initialState: MovieState = {
+  movies: {},      // Đổi từ array sang object để truy cập theo id nhanh hơn
+  loading: false,
+  error: null,
+};
+
+// Lấy tất cả movies
 export const fetchMovies = createAsyncThunk<Movie[]>(
   'movie/fetchMovies',
   async (_, thunkAPI) => {
@@ -21,11 +28,18 @@ export const fetchMovies = createAsyncThunk<Movie[]>(
   }
 );
 
-const initialState: MovieState = {
-  movies: [],
-  loading: false,
-  error: null,
-};
+// Lấy movie theo ID
+export const fetchMovieById = createAsyncThunk<Movie, string>(
+  'movie/fetchMovieById',
+  async (id, thunkAPI) => {
+    try {
+      const res = await axiosInstance.get<Movie>(`movies/${id}/`);
+      return res.data;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message || 'Không tìm thấy phim');
+    }
+  }
+);
 
 const movieSlice = createSlice({
   name: 'movie',
@@ -33,17 +47,36 @@ const movieSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // FETCH ALL MOVIES
       .addCase(fetchMovies.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchMovies.fulfilled, (state, action: PayloadAction<Movie[]>) => {
         state.loading = false;
-        state.movies = action.payload;
+        state.movies = {};
+        action.payload.forEach(movie => {
+          state.movies[movie.id] = movie;
+        });
       })
       .addCase(fetchMovies.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || 'Đã xảy ra lỗi';
+      })
+
+      // FETCH MOVIE BY ID
+      .addCase(fetchMovieById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMovieById.fulfilled, (state, action: PayloadAction<Movie>) => {
+        const movie = action.payload;
+        state.movies[movie.id] = movie;
+        state.loading = false;
+      })
+      .addCase(fetchMovieById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Không tìm thấy phim';
       });
   },
 });
