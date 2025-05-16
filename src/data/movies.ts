@@ -34,15 +34,21 @@ export interface Movie {
   reviews?: Review[];
 }
 
+export interface Room {
+  id: number;
+  cinema?: Cinema;
+  name: string;
+  total_seats: number;
+}
+
 export interface Showtime {
   id: string;
-  movieId: string;
   movie?: Movie;
+  room?: Room;
   cinema: string;
   hall: string;
-
   price: number;
-  start_time: Date
+  start_time: Date;
   end_time: Date;
 }
 

@@ -12,6 +12,7 @@ import { Review, Movie, Showtime } from "@/data/movies";
 import { Star, Clock, Calendar, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import axiosInstance from "@/lib/axios";
+import formatCurrency from "@/lib/formatPriceVND";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -30,11 +31,10 @@ const MovieDetail = () => {
 
   const [movie, setMovie] = useState<Movie>();
 
-  const [selectedCinema, setSelectedCinema] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
-  const [movieShowtimes, setMovieShowtimes] = useState<Showtime[]>([]);
+  const [showtimes, setMovieShowtimes] = useState<Showtime[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -67,12 +67,45 @@ const MovieDetail = () => {
     }
   }, []);
 
-  const dates = movieShowtimes.map((st) => new Date(st.start_time));
-  const uniqueDateStrings = Array.from(
-    new Set(dates.map((date) => date.toISOString().split("T")[0]))
-  );
+  const uniqueDates = [
+    ...new Set(
+      showtimes.map((item) =>
+        new Date(item.start_time).toISOString().slice(0, 10)
+      ) // YYYY-MM-DD
+    ),
+  ];
+  const showtimesByDate: ShowTimesByDate = {};
 
-  console.log(uniqueDateStrings);
+  showtimes.forEach((showtime) => {
+    const date = new Date(showtime.start_time).toISOString().slice(0, 10);
+
+    if (!showtimesByDate[date]) {
+      showtimesByDate[date] = [];
+    }
+
+    const existingCinema = showtimesByDate[date].find(
+      (group) => group.cinema === showtime.room.cinema.name
+    );
+
+    const showtimeInfo = {
+      id: showtime.id,
+      time: new Date(showtime.start_time).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      hall: showtime.room.name,
+      price: showtime.price,
+    };
+
+    if (existingCinema) {
+      existingCinema.times.push(showtimeInfo);
+    } else {
+      showtimesByDate[date].push({
+        cinema: showtime.room.cinema.name,
+        times: [showtimeInfo],
+      });
+    }
+  });
 
   function formatDaysLeft(date: string | Date): string {
     const today = new Date();
@@ -294,14 +327,14 @@ const MovieDetail = () => {
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
                 <div className="flex overflow-x-auto gap-3 pb-2">
-                  {uniqueDateStrings.map((date) => (
+                  {uniqueDates.map((date) => (
                     <button
-                      key={date.toString()}
-                      // onClick={() => setSelectedDate(date)}
+                      key={date}
+                      onClick={() => setSelectedDate(date)}
                       className={`flex flex-col items-center min-w-[100px] p-3 rounded-lg border ${
-                        "" // activeDate === date
-                        //   ? "border-cinema-primary bg-cinema-primary/10"
-                        //   : "border-muted bg-card"
+                        selectedDate === date
+                          ? "border-cinema-primary bg-cinema-primary/10"
+                          : "border-muted bg-card"
                       }`}
                     >
                       <Calendar size={18} className="mb-1" />
@@ -322,42 +355,62 @@ const MovieDetail = () => {
                 </div>
               </div>
 
-              <div className="space-y-6">
-                {/* {activeDate &&
-                  showtimesByDate[activeDate].map((cinemaData, index) => (
-                    <Card
-                      key={index}
-                      className="bg-card border-none overflow-hidden"
-                    >
-                      <CardContent className="p-6">
-                        <h3 className="text-lg font-semibold mb-4">
-                          {cinemaData.cinema}
-                        </h3>
-                        <div className="flex flex-wrap gap-3">
-                          {cinemaData.times.map((time) => (
-                            <Link
-                              key={time.id}
-                              to={`/booking/${movie.id}/${time.id}`}
+              {selectedDate && showtimesByDate[selectedDate] ? (
+                <div className="space-y-6 mt-6">
+                  {showtimesByDate[selectedDate].map((group, index) => (
+                    <div key={index}>
+                      <h3 className="font-semibold text-lg mb-2">
+                        {group.cinema}
+                      </h3>
+
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                        {group.times.map((show) => (
+                          <div
+                            key={show.id}
+                            className="border rounded-lg px-4 py-2 text-sm shadow-sm hover:bg-muted cursor-pointer"
+                          >
+                            <div className="font-medium flex justify-between">
+                              <span>{show.hall}</span>
+                            </div>
+                            <div className="text-cinema-muted">
+                              Start at {show.time}
+                            </div>
+
+                            <div className="text-cinema-muted text-xs">
+                              <span className="text-cinema-secondary">50</span>
+                              <span> ghế còn trống</span>
+                            </div>
+                            
+                            <div className="text-cinema-primary font-semibold ">
+                              Only from {formatCurrency(show.price)}
+                            </div>
+                            <Button
+                              variant="outline"
+                              className="mt-2 w-full"
+                              size="sm"
+                              onClick={() => {
+                                // Handle ticket booking logic here
+                                toast({
+                                  title: "Ticket Booking",
+                                  description: `You have selected ${show.hall} at ${show.time}.`,
+                                });
+                              }}
                             >
-                              <Button
-                                variant="outline"
-                                className="flex flex-col min-w-[110px] h-auto p-3"
-                              >
-                                <span className="font-medium">{time.time}</span>
-                                <span className="text-xs text-cinema-muted mt-1">
-                                  {time.hall}
-                                </span>
-                                <span className="text-xs text-cinema-muted mt-1">
-                                  {time.price.toLocaleString()} VND
-                                </span>
-                              </Button>
-                            </Link>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))} */}
-              </div>
+                              Book Now
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground mt-4">
+                  {selectedDate
+                    ? "Không có suất chiếu cho ngày này."
+                    : "Vui lòng chọn ngày."}
+                </p>
+              )}
             </TabsContent>
 
             <TabsContent value="reviews">
