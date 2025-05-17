@@ -1,10 +1,19 @@
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+  avatar?: string; // Added avatar property as optional
+}
 export interface Review {
-  id: string;
-  author: string;
+  id: number;
+  author: User
   rating: number;
   comment: string;
-  date: string;
+  date: Date;
+  movie?: Movie;
 }
+
 
 export interface Genre {
   id: number;
@@ -71,7 +80,7 @@ export interface SeatType {
   id: number;
   name: string;
   extra_price: number;
-} 
+}
 
 export interface Seat {
   id: string;
@@ -260,7 +269,7 @@ export interface Seat {
 // ];
 
 export const showtimes: Showtime[] = [
-  
+
 ];
 
 export const cinemas: Cinema[] = [

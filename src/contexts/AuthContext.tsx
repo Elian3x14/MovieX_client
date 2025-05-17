@@ -7,14 +7,7 @@ import React, {
 } from "react";
 import axiosInstance from "../lib/axios";
 import { useNavigate } from "react-router-dom";
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  avatar?: string; // Added avatar property as optional
-}
+import { User } from "@/data/type";
 
 interface AuthContextType {
   user: User | null;

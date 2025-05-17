@@ -8,10 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Review, Movie, Showtime } from "@/data/type";
 import { Star, Clock, Calendar, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import axiosInstance from "@/lib/axios";
 import formatCurrency from "@/lib/formatCurrency";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
@@ -43,7 +41,6 @@ const MovieDetail = () => {
     id ? state.movie.movies[id] : undefined
   );
   const loading = useSelector((state: RootState) => state.movie.loading);
-  const [localReviews, setLocalReviews] = useState<Review[]>([]);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -104,20 +101,6 @@ const MovieDetail = () => {
       });
     }
   });
-
-
-  const allReviews = [...(movie?.reviews || []), ...localReviews];
-
-  // Handle adding a new review
-  const handleAddReview = (review: Omit<Review, "id" | "date">) => {
-    const newReview: Review = {
-      ...review,
-      id: `local-${Date.now()}`,
-      date: new Date().toISOString(),
-    };
-
-    setLocalReviews((prev) => [...prev, newReview]);
-  };
 
   const handleOpenTrailer = () => {
     if (movie.trailer_url) {
@@ -392,11 +375,7 @@ const MovieDetail = () => {
             </TabsContent>
 
             <TabsContent value="reviews">
-              <ReviewSection
-                movieId={movie.id}
-                reviews={allReviews}
-                onAddReview={handleAddReview}
-              />
+              <ReviewSection />
             </TabsContent>
           </Tabs>
         </section>
