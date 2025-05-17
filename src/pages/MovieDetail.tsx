@@ -17,6 +17,12 @@ import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
 import { useSelector } from "react-redux";
 import { fetchMovieById } from "@/features/movie/movieSlice";
+import {
+  fetchShowtimes,
+  selectShowtimeLoading,
+  selectShowtimesByMovieId,
+} from "@/features/showtime/showtimeSlice";
+import formatDaysLeft from "@/lib/formatDaysLeft";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -39,9 +45,18 @@ const MovieDetail = () => {
   const loading = useSelector((state: RootState) => state.movie.loading);
   const [localReviews, setLocalReviews] = useState<Review[]>([]);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
-  const [showtimes, setMovieShowtimes] = useState<Showtime[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
+  const showtimes = useSelector((state: RootState) =>
+    selectShowtimesByMovieId(state, id!)
+  );
+  const showtimeLoading = useSelector(selectShowtimeLoading);
+
+  useEffect(() => {
+    if (id && showtimes.length === 0) {
+      dispatch(fetchShowtimes(id));
+    }
+  }, [id, dispatch]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -49,21 +64,6 @@ const MovieDetail = () => {
       dispatch(fetchMovieById(id));
     }
   }, [id, movie, dispatch]);
-
-  useEffect(() => {
-    const fetchShowtimes = async () => {
-      try {
-        const response = await axiosInstance.get(`movies/${id}/showtimes/`);
-        setMovieShowtimes(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    if (id) {
-      fetchShowtimes();
-    }
-  }, []);
 
   const uniqueDates = [
     ...new Set(
@@ -105,21 +105,6 @@ const MovieDetail = () => {
     }
   });
 
-  function formatDaysLeft(date: string | Date): string {
-    const today = new Date();
-    const target = new Date(date);
-    today.setHours(0, 0, 0, 0);
-    target.setHours(0, 0, 0, 0);
-
-    const diffDays = Math.ceil(
-      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diffDays === 0) return "Hôm nay";
-    if (diffDays === 1) return "Ngày mai";
-    if (diffDays > 1) return `Còn ${diffDays} ngày nữa`;
-    return "Đã qua";
-  }
 
   const allReviews = [...(movie?.reviews || []), ...localReviews];
 
