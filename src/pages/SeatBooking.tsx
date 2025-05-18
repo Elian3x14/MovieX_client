@@ -14,24 +14,31 @@ import { Separator } from "@/components/ui/separator";
 import { Clock, Calendar, MapPin, Timer } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { TimerContainer } from "@/components/SeatBooking/TimerContainer";
-import { formatDateString } from "@/lib/formatDateString";
 import { formatDate } from "@/lib/formatDate";
 import { formatTimeAMPM } from "@/lib/formatTimeAMPM";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import {
+  clearSelectedSeats,
+  fetchSeats,
+  setSelectedSeats,
+} from "@/features/seat/seatSlice";
 
 const SeatBooking = () => {
+  const navigate = useNavigate();
+
   const { movieId, showtimeId } = useParams<{
     movieId: string;
     showtimeId: string;
   }>();
-
-  console.log("Movie ID:", movieId);
-  const navigate = useNavigate();
-  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
-  const [timer, setTimer] = useState(300); // 5-minute timer in seconds
+  
+  const dispatch = useDispatch();
+  const seats = useSelector((state: RootState) => state.seat.seats);
+  const selectedSeats = useSelector((state: RootState) => state.seat.selectedSeats);
 
   const [showtime, setShowtime] = useState<Showtime>();
   const [movie, setMovie] = useState<Movie>();
-  const [seats, setSeats] = useState<Seat[]>([]);
 
   useEffect(() => {
     const fetchShowtime = async () => {
@@ -52,48 +59,18 @@ const SeatBooking = () => {
   }, [movieId, showtimeId]);
 
   useEffect(() => {
-    const fetchSeats = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `showtimes/${showtimeId}/seats/`
-        );
-        const seatsData = response.data;
-        setSeats(seatsData);
-        console.log("Fetched seats data:", seatsData);
-      } catch (error) {
-        console.error("Error fetching seats data:", error);
-      }
-    };
-
     if (showtimeId) {
-      fetchSeats();
+      dispatch(fetchSeats(showtimeId));
     }
-  }, [showtimeId]);
+  }, [dispatch, showtimeId]);
 
   useEffect(() => {
-    const countdown = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer <= 1) {
-          clearInterval(countdown);
-          // Redirect or show timeout message
-          return 0;
-        }
-        return prevTimer - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(countdown);
+    return () => {
+      dispatch(clearSelectedSeats());
+    };
   }, []);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? "0" + secs : secs}`;
-  };
-
-  const handleSeatsSelected = (seats: Seat[]) => {
-    setSelectedSeats(seats);
-  };
+  const handleSeatsSelected = (seats: Seat[]) => {};
 
   const handleCheckout = () => {
     // In a real app, you would save this state and navigate to checkout

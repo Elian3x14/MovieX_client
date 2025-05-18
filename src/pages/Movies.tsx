@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-// import { movies } from "@/data/movies";
 
 const Movies = () => {
   const [filter, setFilter] = useState<"all" | "now-showing" | "coming-soon">(
