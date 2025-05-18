@@ -40,7 +40,6 @@ const SeatBooking = () => {
   const [booking, setBooking] = useState<Booking>();
 
   const dispatch = useDispatch();
-  const seats = useSelector((state: RootState) => state.seat.seats);
   const selectedSeats = useSelector(
     (state: RootState) => state.seat.selectedSeats
   );
@@ -140,11 +139,7 @@ const SeatBooking = () => {
                   <CardTitle className="text-lg">Seating Plan</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <SeatSelection
-                    bookingId={booking?.id}
-                    showtime={showtime}
-                    seats={seats}
-                  />
+                  <SeatSelection bookingId={booking?.id} showtime={showtime} />
                 </CardContent>
               </Card>
             </div>

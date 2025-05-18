@@ -83,7 +83,7 @@ export interface SeatType {
 }
 
 export interface Seat {
-  id: string;
+  id: number;
   seat_row: string;
   seat_col: number;
   status: "available" | "reserved" | "selected" | "unavailable";

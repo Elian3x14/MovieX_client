@@ -4,11 +4,17 @@ import { Seat, SeatType, Showtime } from "@/data/type";
 import formatCurrency from "@/lib/formatCurrency";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import {
+  setSelectedSeats,
+  updateSeatsStatusByIds,
+} from "@/features/seat/seatSlice";
 
 interface SeatSelectionProps {
   bookingId: number;
   showtime: Showtime;
-  seats: Seat[];
 }
 
 const seatStatuses = [
@@ -18,8 +24,46 @@ const seatStatuses = [
   { color: "bg-gray-500 cursor-not-allowed", label: "Reserved" },
 ];
 
-const SeatSelection = ({ bookingId, showtime, seats }: SeatSelectionProps) => {
-  console.log("Seats:");
+const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
+  useEffect(() => {
+    // TODO: sửa lại cho tốt hơn
+    const ws = new WebSocket(`ws://127.0.0.1:8000/ws/booking/${showtime.id}/`);
+    ws.onopen = () => {
+      console.log("WebSocket connection established");
+      ws.send(JSON.stringify({ type: "join", bookingId }));
+    };
+
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "join", bookingId }));
+      console.log("✅ Message sent");
+    } else {
+      console.warn("❌ WebSocket not open. Current state:", ws.readyState);
+    }
+    
+
+    ws.onmessage = (event) => {
+      console.log("WebSocket message received:", event.data);
+      // Xử lý dữ liệu từ server
+      const data = JSON.parse(event.data);
+      if (data.type === "seat_update") {
+        // Cập nhật trạng thái ghế bị người khác giữ hoặc đặt
+        const updatedSeatIds = data.seats;
+        dispatch(updateSeatsStatusByIds(data.seats));
+        toast.warning("Một số ghế bạn chọn đã bị người khác đặt!");
+      }
+    };
+
+    ws.onerror = (err) => console.error("WebSocket error", err);
+    return () => {
+      ws.close();
+    };
+  }, [showtime.id]);
+
+  const dispatch = useDispatch();
+  const seats = useSelector((state: RootState) => state.seat.seats);
+  const selectedSeats = useSelector(
+    (state: RootState) => state.seat.selectedSeats
+  );
   // Get unique seat types
   const seatTypesMap = new Map();
 
@@ -34,8 +78,6 @@ const SeatSelection = ({ bookingId, showtime, seats }: SeatSelectionProps) => {
     (a, b) => a.extra_price - b.extra_price
   );
 
-  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
-
   const toggleSeat = (seat: Seat) => {
     if (!bookingId) {
       toast.error("Đã có lỗi xảy ra, session chưa được khởi tạo!");
@@ -44,15 +86,18 @@ const SeatSelection = ({ bookingId, showtime, seats }: SeatSelectionProps) => {
 
     if (seat.status === "reserved" || seat.status === "unavailable") return;
 
-    setSelectedSeats((prevSelected) => {
-      const isSelected = prevSelected.some((s) => s.id === seat.id);
-      const updated = isSelected
-        ? prevSelected.filter((s) => s.id !== seat.id)
-        : [...prevSelected, { ...seat, status: "selected" as const }];
+    let updatedSelectedSeats;
+    const isSelected = selectedSeats.some((s) => s.id === seat.id);
+    if (isSelected) {
+      updatedSelectedSeats = selectedSeats.filter((s) => s.id !== seat.id);
+    } else {
+      updatedSelectedSeats = [
+        ...selectedSeats,
+        { ...seat, status: "selected" as const },
+      ];
+    }
 
-      console.log("toggleSeat> Updated selected seats:", updated);
-      return updated;
-    });
+    dispatch(setSelectedSeats(updatedSelectedSeats));
   };
 
   const setBookingSeat = async () => {

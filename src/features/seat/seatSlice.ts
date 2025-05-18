@@ -40,6 +40,19 @@ const seatSlice = createSlice({
     clearSelectedSeats(state) {
       state.selectedSeats = [];
     },
+
+    updateSeatsStatusByIds(state, action: PayloadAction<number[]>) {
+      const seatIdsToUpdate = action.payload;
+      state.seats = state.seats.map(seat => {
+        if (seatIdsToUpdate.includes(seat.id)) {
+          // Cập nhật trạng thái seat theo yêu cầu, ví dụ "reserved"
+          return { ...seat, status: "reserved" };
+        }
+        return seat;
+      });
+    },
+
+
   },
   extraReducers: (builder) => {
     builder
@@ -60,5 +73,5 @@ const seatSlice = createSlice({
   },
 });
 
-export const { setSelectedSeats, clearSelectedSeats } = seatSlice.actions;
+export const { setSelectedSeats, clearSelectedSeats, updateSeatsStatusByIds } = seatSlice.actions;
 export default seatSlice.reducer;
