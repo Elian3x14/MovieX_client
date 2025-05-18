@@ -21,6 +21,7 @@ import {
 } from "@/features/showtime/showtimeSlice";
 import formatDaysLeft from "@/lib/formatDaysLeft";
 import ReviewSection from "@/components/MovieDetail/ReviewSection";
+import ShowtimeSection from "@/components/MovieDetail/ShowtimeSection";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -290,88 +291,12 @@ const MovieDetail = () => {
             </TabsContent>
 
             <TabsContent value="showtimes">
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-4">Select a Date</h2>
-                <div className="flex overflow-x-auto gap-3 pb-2">
-                  {uniqueDates.map((date) => (
-                    <button
-                      key={date}
-                      onClick={() => setSelectedDate(date)}
-                      className={`flex flex-col items-center min-w-[100px] p-3 rounded-lg border ${
-                        selectedDate === date
-                          ? "border-cinema-primary bg-cinema-primary/10"
-                          : "border-muted bg-card"
-                      }`}
-                    >
-                      <Calendar size={18} className="mb-1" />
-                      <span className="font-medium text-sm">
-                        {new Date(date).toLocaleDateString("vi-VN", {
-                          weekday: "long",
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "2-digit",
-                        })}
-                      </span>
-                      <span className="text-xs text-cinema-muted mt-1">
-                        {formatDaysLeft(date)}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {selectedDate && showtimesByDate[selectedDate] ? (
-                <div className="space-y-6 mt-6">
-                  {showtimesByDate[selectedDate].map((group, index) => (
-                    <div key={index}>
-                      <h3 className="font-semibold text-lg mb-2">
-                        {group.cinema}
-                      </h3>
-
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                        {group.times.map((show) => (
-                          <div
-                            key={show.id}
-                            className="border rounded-lg px-4 py-2 text-sm shadow-sm hover:bg-muted cursor-pointer"
-                          >
-                            <div className="font-medium flex justify-between">
-                              <span>{show.hall}</span>
-                            </div>
-                            <div className="text-cinema-muted">
-                              Start at {show.time}
-                            </div>
-
-                            <div className="text-cinema-muted text-xs">
-                              <span className="text-cinema-secondary">50</span>
-                              <span> available seats left</span>
-                            </div>
-
-                            <div className="text-cinema-primary font-semibold ">
-                              Only from {formatCurrency(show.price)}
-                            </div>
-                            <Button
-                              asChild
-                              variant="outline"
-                              className="mt-2 w-full"
-                              size="sm"
-                            >
-                              <Link to={`/booking/${movie.id}/${show.id}`}>
-                                Book Now
-                              </Link>
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground mt-4">
-                  {selectedDate
-                    ? "Không có suất chiếu cho ngày này."
-                    : "Vui lòng chọn ngày."}
-                </p>
-              )}
+              <ShowtimeSection
+                selectedDate={selectedDate}
+                setSelectedDate={(date) => setSelectedDate(date)}
+                uniqueDates={uniqueDates}
+                showtimesByDate={showtimesByDate}
+              />
             </TabsContent>
 
             <TabsContent value="reviews">
