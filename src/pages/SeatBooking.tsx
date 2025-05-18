@@ -26,6 +26,7 @@ import {
 } from "@/features/seat/seatSlice";
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SeatBooking = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const SeatBooking = () => {
     showtimeId: string;
   }>();
 
+  const { user } = useAuth();
   const [booking, setBooking] = useState<Booking>();
 
   const dispatch = useDispatch();
@@ -66,8 +68,15 @@ const SeatBooking = () => {
   }, []);
 
   useEffect(() => {
+    if (!user) {
+      toast.error("You need to login to book a seat");
+      navigate("/login");
+    }
+  }, [user]);
+
+  useEffect(() => {
     const createBooking = async () => {
-      if (!movieId || !showtimeId) return;
+      if (!movieId || !showtimeId || !user) return;
       try {
         const payload = {
           showtime: showtimeId,
@@ -83,7 +92,8 @@ const SeatBooking = () => {
       }
     };
     createBooking();
-  }, [movieId, showtimeId]);
+  }, [movieId, showtimeId, user]);
+
   const handleSeatsSelected = (seats: Seat[]) => {};
 
   const handleCheckout = () => {
