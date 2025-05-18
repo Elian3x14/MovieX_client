@@ -9,8 +9,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { z } from "zod";
-
 
 const ReviewForm: React.FC = () => {
   const { id: movieId } = useParams<{ id: string }>();

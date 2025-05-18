@@ -8,12 +8,13 @@ import formatDaysLeft from "@/lib/formatDaysLeft";
 import ReviewForm from "./MovieDetail/ReviewSection/ReviewForm";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import formatTimeSince from "@/lib/formatTimeSince";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 const PAGE_SIZE = 3;
 
 const ReviewSection = () => {
   const { id: movieId } = useParams<{ id: string }>();
-  const { user } = useAuth();
 
   const { toast } = useToast();
   const [reviews, setReviews] = useState<MovieReview[]>([]);
@@ -60,40 +61,51 @@ const ReviewSection = () => {
           <h3 className="text-xl font-semibold">User Reviews</h3>
           <div className="space-y-4">
             {reviews.map((review) => (
+              // Review card
               <div
                 key={review.id}
                 className="flex space-x-2 bg-card p-4 rounded-lg shadow"
               >
                 {/*  */}
-                <div className="grow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-cinema-text">
-                          @{review.author.username}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDaysLeft(review.date)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="fill-cinema-secondary text-cinema-secondary size-4" />
-                        <span className="text-sm text-muted-foreground">
-                          {review.rating.toFixed(1)}
-                        </span>
+                <div className="grow flex gap-2">
+                  <Avatar>
+                    <AvatarImage src={review.author.avatar} alt="@shadcn" />
+                    <AvatarFallback>
+                      {review.author.username.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col grow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-cinema-text">
+                            @{review.author.username}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatTimeSince(review.date)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Star className="fill-cinema-secondary text-cinema-secondary size-4" />
+                          <span className="text-sm text-muted-foreground">
+                            {review.rating.toFixed(1)}
+                          </span>
+                        </div>
                       </div>
                     </div>
+                    <p className="mt-2 text-cinema-text text-sm">
+                      {review.comment}
+                    </p>
                   </div>
-                  <p className="mt-2 text-cinema-text">{review.comment}</p>
                 </div>
                 {/*  */}
                 <div className="flex flex-col items-center gap-2">
-                  <Button size="icon" variant="outline">
-                    <ThumbsUp className="" />
-                  </Button>
-                  <Button size="icon" variant="outline">
-                    <ThumbsDown className="" />
-                  </Button>
+                  <button className="border p-2 rounded">
+                    <ThumbsUp className="size-4" />
+                  </button>
+                  <button className="border p-2 rounded">
+                    <ThumbsDown className="size-4" />
+                  </button>
                 </div>
               </div>
             ))}
