@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ReviewSection from "@/components/ReviewSection";
 import TrailerModal from "@/components/TrailerModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +20,7 @@ import {
   selectShowtimesByMovieId,
 } from "@/features/showtime/showtimeSlice";
 import formatDaysLeft from "@/lib/formatDaysLeft";
+import ReviewSection from "@/components/MovieDetail/ReviewSection";
 
 interface ShowTimesByDate {
   [key: string]: {

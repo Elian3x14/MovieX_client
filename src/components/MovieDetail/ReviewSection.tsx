@@ -4,12 +4,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Review as MovieReview } from "@/data/type";
 import { useParams } from "react-router-dom";
 import axiosInstance from "@/lib/axios";
-import formatDaysLeft from "@/lib/formatDaysLeft";
-import ReviewForm from "./MovieDetail/ReviewSection/ReviewForm";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
 import formatTimeSince from "@/lib/formatTimeSince";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import ReviewForm from "./ReviewSection/ReviewForm";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { fetchReviewsByMovieId } from "@/features/review/reviewSlice";
 
 const PAGE_SIZE = 3;
 
@@ -17,33 +17,21 @@ const ReviewSection = () => {
   const { id: movieId } = useParams<{ id: string }>();
 
   const { toast } = useToast();
-  const [reviews, setReviews] = useState<MovieReview[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  const fetchReviews = async (page = 1) => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get(
-        `/movies/${movieId}/reviews/?page=${page}&page_size=${PAGE_SIZE}`
-      );
-      setReviews(response.data.results);
-      setTotalPages(Math.ceil(response.data.count / PAGE_SIZE));
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-      toast({
-        title: "Error fetching reviews",
-        description: "Could not load reviews. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dispatch = useAppDispatch();
+  const reviews = useAppSelector(
+    (state) => state.review.reviews[movieId] || []
+  );
+  const totalPages = useAppSelector(
+    (state) => state.review.totalPages[movieId] || 1
+  );
+  const loading = useAppSelector((state) => state.review.loading);
+  const error = useAppSelector((state) => state.review.error);
 
   useEffect(() => {
-    fetchReviews(currentPage);
+    if (movieId) {
+      dispatch(fetchReviewsByMovieId({ movieId, page: currentPage }));
+    }
   }, [movieId, currentPage]);
 
   const handlePrevious = () => {
