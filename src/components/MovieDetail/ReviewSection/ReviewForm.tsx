@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
+import { fetchReviewsByMovieId, submitReview } from "@/features/review/reviewSlice";
 import axiosInstance from "@/lib/axios";
 import { ReviewFormData, reviewSchema } from "@/schemas/reviewSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -15,8 +17,9 @@ const ReviewForm: React.FC = () => {
   const [rating, setRating] = useState<number>(0);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
-  const { user } = useAuth(); 
+  const { user } = useAuth();
 
   const {
     register,
@@ -31,28 +34,16 @@ const ReviewForm: React.FC = () => {
   });
 
   const onSubmit = async (data: ReviewFormData) => {
-    if (!user) {
-      toast.error("You must be logged in to submit a review.");
-      return;
-    }
-
-    setLoading(true);
     try {
-      const payload = {
-        ...data,
-        movie: movieId,
-        rating,
-      };
-      await axiosInstance.post("/reviews/", payload);
+      await dispatch(
+        submitReview({ movieId: movieId!, rating, comment: data.comment })
+      );
+      dispatch(fetchReviewsByMovieId({ movieId: movieId!, page: 1 })); // Refresh review list
       reset();
       setRating(0);
-      setHoveredStar(null);
-      toast.success("Review submitted successfully!");
+      toast.success("Review submitted!");
     } catch (error) {
-      console.error("Error submitting review:", error);
-      toast.error("Failed to submit review. Try again later.");
-    } finally {
-      setLoading(false);
+      toast.error("Failed to submit review");
     }
   };
 

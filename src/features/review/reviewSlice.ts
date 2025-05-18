@@ -46,6 +46,18 @@ export const fetchReviewsByMovieId = createAsyncThunk<
   }
 });
 
+// Submit Review
+export const submitReview = createAsyncThunk(
+  "reviews/submitReview",
+  async (payload: { movieId: string; rating: number; comment: string }) => {
+    await axiosInstance.post("/reviews/", {
+      movie: payload.movieId,
+      rating: payload.rating,
+      comment: payload.comment,
+    });
+  }
+);
+
 const reviewSlice = createSlice({
   name: 'review',
   initialState,
