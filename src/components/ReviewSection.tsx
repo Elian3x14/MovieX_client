@@ -7,12 +7,14 @@ import axiosInstance from "@/lib/axios";
 import formatDaysLeft from "@/lib/formatDaysLeft";
 import ReviewForm from "./MovieDetail/ReviewSection/ReviewForm";
 import { Button } from "@/components/ui/button";
-import { FcLike } from "react-icons/fc";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PAGE_SIZE = 3;
 
 const ReviewSection = () => {
   const { id: movieId } = useParams<{ id: string }>();
+  const { user } = useAuth();
+
   const { toast } = useToast();
   const [reviews, setReviews] = useState<MovieReview[]>([]);
   const [currentPage, setCurrentPage] = useState(1);

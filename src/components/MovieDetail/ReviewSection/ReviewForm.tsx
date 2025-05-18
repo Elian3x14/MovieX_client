@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParams } from "react-router-dom";
+import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
 
 const reviewSchema = z.object({
   comment: z.string().min(1, "Review cannot be empty"),
@@ -41,22 +43,14 @@ const ReviewForm: React.FC = () => {
     try {
       const payload = {
         ...data,
+        movie: movieId,
         rating,
-        movieId,
       };
-
-      // Gửi dữ liệu đến server, không cần user_id
-      await fetch("/api/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
+      const response = await axiosInstance.post("/reviews/", payload);
       reset();
       setRating(0);
+      setHoveredStar(null);
+      toast.success("Review submitted successfully!");
     } catch (error) {
       console.error("Error submitting review:", error);
     } finally {
