@@ -80,8 +80,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("refreshToken");
+    // Xóa thông tin người dùng trong state
     setUser(null);
     setIsAuthenticated(false);
+    // xóa token khỏi axiosInstance
+    delete axiosInstance.defaults.headers.common["Authorization"];
+    // Điều hướng về trang đăng nhập
     navigate("/login");
   };
 

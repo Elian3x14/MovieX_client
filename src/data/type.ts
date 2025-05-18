@@ -90,6 +90,21 @@ export interface Seat {
   seat_type: SeatType;
 }
 
+export interface Booking {
+  id: number;
+  user: number;
+  status: "pending" | "paid" | "expired" | "cancelled";
+  seats: BookedSeat[];
+  expired_at: Date;
+}
+
+export interface BookedSeat {
+  id: number;
+  booking: Booking;
+  seat: Seat;
+}
+
+
 // export const movies: Movie[] = [
 //   {
 //     id: "movie1",

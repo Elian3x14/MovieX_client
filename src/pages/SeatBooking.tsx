@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SeatSelection from "@/components/SeatSelection";
 import { Button } from "@/components/ui/button";
-import { Seat, Movie, Showtime } from "@/data/type";
+import { Seat, Movie, Showtime, Booking } from "@/data/type";
 import {
   Card,
   CardContent,
@@ -25,6 +25,7 @@ import {
   setSelectedSeats,
 } from "@/features/seat/seatSlice";
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
+import { toast } from "sonner";
 
 const SeatBooking = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const SeatBooking = () => {
     movieId: string;
     showtimeId: string;
   }>();
+
+  const [booking, setBooking] = useState<Booking>();
 
   const dispatch = useDispatch();
   const seats = useSelector((state: RootState) => state.seat.seats);
@@ -43,8 +46,6 @@ const SeatBooking = () => {
   const showtime = useSelector(
     (state: RootState) => state.showtime.selectedShowtime
   );
-
-  console.log("showtime", showtime);
 
   useEffect(() => {
     if (movieId && showtimeId) {
@@ -64,6 +65,25 @@ const SeatBooking = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const createBooking = async () => {
+      if (!movieId || !showtimeId) return;
+      try {
+        const payload = {
+          showtime: showtimeId,
+        };
+        const response = await axiosInstance.post(`/bookings/`, payload);
+        console.log("response.data", response.data);
+        setBooking(response.data);
+        toast.info("Session start! You have 5 minutes to confirm your booking");
+      } catch (error) {
+        toast.error("Error creating booking");
+        navigate("/");
+        console.error("Error creating booking:", error);
+      }
+    };
+    createBooking();
+  }, [movieId, showtimeId]);
   const handleSeatsSelected = (seats: Seat[]) => {};
 
   const handleCheckout = () => {
