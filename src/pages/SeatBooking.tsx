@@ -24,6 +24,7 @@ import {
   fetchSeats,
   setSelectedSeats,
 } from "@/features/seat/seatSlice";
+import { fetchShowtime } from "@/features/showtime/showtimeSlice";
 
 const SeatBooking = () => {
   const navigate = useNavigate();
@@ -32,31 +33,24 @@ const SeatBooking = () => {
     movieId: string;
     showtimeId: string;
   }>();
-  
+
   const dispatch = useDispatch();
   const seats = useSelector((state: RootState) => state.seat.seats);
-  const selectedSeats = useSelector((state: RootState) => state.seat.selectedSeats);
+  const selectedSeats = useSelector(
+    (state: RootState) => state.seat.selectedSeats
+  );
 
-  const [showtime, setShowtime] = useState<Showtime>();
-  const [movie, setMovie] = useState<Movie>();
+  const showtime = useSelector(
+    (state: RootState) => state.showtime.selectedShowtime
+  );
+
+  console.log("showtime", showtime);
 
   useEffect(() => {
-    const fetchShowtime = async () => {
-      try {
-        const response = await axiosInstance.get(`showtimes/${showtimeId}/`);
-        const showtimeData = response.data;
-        setShowtime(showtimeData);
-        setMovie(showtimeData.movie);
-        console.log("Fetched showtime data:", showtimeData);
-      } catch (error) {
-        console.error("Error fetching showtime data:", error);
-      }
-    };
-
     if (movieId && showtimeId) {
-      fetchShowtime();
+      dispatch(fetchShowtime(showtimeId));
     }
-  }, [movieId, showtimeId]);
+  }, [dispatch, movieId, showtimeId]);
 
   useEffect(() => {
     if (showtimeId) {
@@ -76,14 +70,14 @@ const SeatBooking = () => {
     // In a real app, you would save this state and navigate to checkout
     navigate("/checkout", {
       state: {
-        movie,
+        movie: showtime.movie,
         showtime,
         seats: selectedSeats,
       },
     });
   };
 
-  if (!movie || !showtime) {
+  if (!showtime) {
     return (
       <div className="container py-12 text-center">
         Invalid booking information.
@@ -135,10 +129,12 @@ const SeatBooking = () => {
                 <CardContent className="p-4">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium mb-1">{movie.title}</h3>
+                      <h3 className="font-medium mb-1">
+                        {showtime.movie.title}
+                      </h3>
                       <p className="text-sm text-cinema-muted">
-                        {movie.duration} min •{" "}
-                        {movie.genres.map((g) => g.name).join(", ")}
+                        {showtime.movie.duration} min •{" "}
+                        {showtime.movie.genres.map((g) => g.name).join(", ")}
                       </p>
                     </div>
 
