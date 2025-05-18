@@ -82,7 +82,7 @@ const SeatBooking = () => {
           showtime: showtimeId,
         };
         const response = await axiosInstance.post(`/bookings/`, payload);
-        console.log("response.data", response.data);
+        console.log("setBooking>response.data", response.data);
         setBooking(response.data);
         toast.info("Session start! You have 5 minutes to confirm your booking");
       } catch (error) {
@@ -93,8 +93,6 @@ const SeatBooking = () => {
     };
     createBooking();
   }, [movieId, showtimeId, user]);
-
-  const handleSeatsSelected = (seats: Seat[]) => {};
 
   const handleCheckout = () => {
     // In a real app, you would save this state and navigate to checkout
@@ -143,9 +141,9 @@ const SeatBooking = () => {
                 </CardHeader>
                 <CardContent className="p-4">
                   <SeatSelection
+                    bookingId={booking?.id}
                     showtime={showtime}
                     seats={seats}
-                    onSeatsSelected={handleSeatsSelected}
                   />
                 </CardContent>
               </Card>

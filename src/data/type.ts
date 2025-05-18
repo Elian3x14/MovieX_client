@@ -119,22 +119,7 @@ export interface BookedSeat {
 //     director: "Denis Villeneuve",
 //     actors: ["Timothée Chalamet", "Zendaya", "Rebecca Ferguson", "Josh Brolin"],
 //     releaseStatus: "now-showing",
-//     reviews: [
-//       {
-//         id: "r1",
-//         author: "SciFi_Fan",
-//         rating: 9,
-//         comment: "Absolutely breathtaking visuals and storytelling. Denis Villeneuve has crafted a masterpiece.",
-//         date: "2024-03-12T14:22:00Z"
-//       },
-//       {
-//         id: "r2",
-//         author: "MovieBuff42",
-//         rating: 8,
-//         comment: "The scale of this film is incredible. Great performances all around, especially from Chalamet and Zendaya.",
-//         date: "2024-03-15T09:16:00Z"
-//       }
-//     ],
+//     
 //     trailer_url: "https://www.youtube.com/watch?v=Way9Dexny3w"
 //   },
 //   {
@@ -282,10 +267,6 @@ export interface BookedSeat {
 //     trailer_url: "https://www.youtube.com/watch?v=go4HSzHkuSk"
 //   }
 // ];
-
-export const showtimes: Showtime[] = [
-
-];
 
 export const cinemas: Cinema[] = [
   {

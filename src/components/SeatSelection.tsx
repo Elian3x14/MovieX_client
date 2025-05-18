@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Seat, SeatType, Showtime, showtimes } from "@/data/type";
+import { Seat, SeatType, Showtime } from "@/data/type";
 import formatCurrency from "@/lib/formatCurrency";
+import { toast } from "sonner";
+import axiosInstance from "@/lib/axios";
 
 interface SeatSelectionProps {
+  bookingId: number;
   showtime: Showtime;
   seats: Seat[];
-  onSeatsSelected: (seats: Seat[]) => void;
 }
 
 const seatStatuses = [
@@ -16,11 +18,7 @@ const seatStatuses = [
   { color: "bg-gray-500 cursor-not-allowed", label: "Reserved" },
 ];
 
-const SeatSelection = ({
-  showtime,
-  seats,
-  onSeatsSelected,
-}: SeatSelectionProps) => {
+const SeatSelection = ({ bookingId, showtime, seats }: SeatSelectionProps) => {
   console.log("Seats:");
   // Get unique seat types
   const seatTypesMap = new Map();
@@ -32,25 +30,58 @@ const SeatSelection = ({
     }
   });
 
-  const seatTypes : SeatType[] = Array.from(seatTypesMap.values()).sort(
+  const seatTypes: SeatType[] = Array.from(seatTypesMap.values()).sort(
     (a, b) => a.extra_price - b.extra_price
   );
 
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
   const toggleSeat = (seat: Seat) => {
-    if (seat.status === "reserved") return;
-    if (seat.status === "unavailable") return;
+    if (!bookingId) {
+      toast.error("Đã có lỗi xảy ra, session chưa được khởi tạo!");
+      return;
+    }
 
-    if (selectedSeats.some((s) => s.id === seat.id)) {
-      setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
-    } else {
-      setSelectedSeats([...selectedSeats, { ...seat, status: "selected" }]);
+    if (seat.status === "reserved" || seat.status === "unavailable") return;
+
+    setSelectedSeats((prevSelected) => {
+      const isSelected = prevSelected.some((s) => s.id === seat.id);
+      const updated = isSelected
+        ? prevSelected.filter((s) => s.id !== seat.id)
+        : [...prevSelected, { ...seat, status: "selected" as const }];
+
+      console.log("toggleSeat> Updated selected seats:", updated);
+      return updated;
+    });
+  };
+
+  const setBookingSeat = async () => {
+    try {
+      const seatIds = selectedSeats.map((seat) => seat.id); // lấy danh sách id ghế đã chọn
+
+      const response = await axiosInstance.post(
+        `bookings/${bookingId}/set-seats/`,
+        {
+          seat_ids: seatIds,
+        }
+      );
+
+      toast.success("Đặt chỗ thành công!");
+      console.log("Booking response:", response.data);
+    } catch (error: any) {
+      console.error("Error setting booking seat:", error);
+      toast.error("Đặt chỗ thất bại!");
     }
   };
 
+  useEffect(() => {
+    if (selectedSeats.length > 0) {
+      setBookingSeat();
+    }
+  }, [selectedSeats]);
+
   const handleConfirm = () => {
-    onSeatsSelected(selectedSeats);
+    // onSeatsSelected(selectedSeats);
   };
 
   const rows = Array.from(new Set(seats.map((seat) => seat.seat_row))).sort();
@@ -106,7 +137,9 @@ const SeatSelection = ({
                   disabled={
                     seat.status === "reserved" || seat.status === "unavailable"
                   }
-                  onClick={() => toggleSeat(seat)}
+                  onClick={() => {
+                    toggleSeat(seat);
+                  }}
                 >
                   {seat.seat_type.name.charAt(0).toUpperCase()}
                 </button>
