@@ -69,7 +69,7 @@ const ShowtimeSection: React.FC<ShowtimeSectionProps> = ({
                 {group.times.map((time) => (
                   <Button key={time.id} asChild variant="secondary">
                     <Link to={`/booking/${movieId}/${time.id}`}>
-                    {time.time} - {time.hall} ({formatCurrency(time.price)}) - 
+                    {time.time} - {time.hall} ({formatCurrency(time.price)})
                     </Link>
                   </Button>
                 ))}
