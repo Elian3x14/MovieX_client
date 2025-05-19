@@ -36,7 +36,7 @@ const SeatBooking = () => {
     showtimeId: string;
   }>();
 
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const [booking, setBooking] = useState<Booking>();
 
   const dispatch = useDispatch();
@@ -67,11 +67,12 @@ const SeatBooking = () => {
   }, []);
 
   useEffect(() => {
+    if (isLoading) return; // đợi load xong đã
     if (!user) {
       toast.error("You need to login to book a seat");
       navigate("/login");
     }
-  }, [user]);
+  }, [user, isLoading]);
 
   useEffect(() => {
     const createBooking = async () => {
@@ -81,7 +82,6 @@ const SeatBooking = () => {
           showtime: showtimeId,
         };
         const response = await axiosInstance.post(`/bookings/`, payload);
-        console.log("setBooking>response.data", response.data);
         setBooking(response.data);
         toast.info("Session start! You have 5 minutes to confirm your booking");
       } catch (error) {

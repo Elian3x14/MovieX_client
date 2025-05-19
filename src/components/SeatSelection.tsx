@@ -12,10 +12,7 @@ import {
   updateSeatsStatusByIds,
 } from "@/features/seat/seatSlice";
 
-interface SeatSelectionProps {
-  bookingId: number;
-  showtime: Showtime;
-}
+const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 
 const seatStatuses = [
   { color: "bg-cinema-primary", label: "Selected" },
@@ -24,32 +21,31 @@ const seatStatuses = [
   { color: "bg-gray-500 cursor-not-allowed", label: "Reserved" },
 ];
 
+interface SeatSelectionProps {
+  bookingId: number;
+  showtime: Showtime;
+}
+
 const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
   useEffect(() => {
-    // TODO: sửa lại cho tốt hơn
-    const ws = new WebSocket(`ws://127.0.0.1:8000/ws/booking/${showtime.id}/`);
+    const ws = new WebSocket(`${WS_BASE_URL}booking/${showtime.id}/`);
     ws.onopen = () => {
       console.log("WebSocket connection established");
       ws.send(JSON.stringify({ type: "join", bookingId }));
     };
 
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "join", bookingId }));
-      console.log("✅ Message sent");
-    } else {
-      console.warn("❌ WebSocket not open. Current state:", ws.readyState);
-    }
-    
-
     ws.onmessage = (event) => {
-      console.log("WebSocket message received:", event.data);
-      // Xử lý dữ liệu từ server
       const data = JSON.parse(event.data);
-      if (data.type === "seat_update") {
-        // Cập nhật trạng thái ghế bị người khác giữ hoặc đặt
-        const updatedSeatIds = data.seats;
-        dispatch(updateSeatsStatusByIds(data.seats));
-        toast.warning("Một số ghế bạn chọn đã bị người khác đặt!");
+      console.log("WebSocket message received:", data);
+      // Xử lý dữ liệu từ server
+      if (data.type === "seat_added") {
+        dispatch(
+          updateSeatsStatusByIds({ ids: [data.seat_id], status: "reserved" })
+        );
+      } else if (data.type === "seat_removed") {
+        dispatch(
+          updateSeatsStatusByIds({ ids: [data.seat_id], status: "available" })
+        );
       }
     };
 
@@ -78,7 +74,7 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
     (a, b) => a.extra_price - b.extra_price
   );
 
-  const toggleSeat = (seat: Seat) => {
+  const toggleSeat = async (seat: Seat) => {
     if (!bookingId) {
       toast.error("Đã có lỗi xảy ra, session chưa được khởi tạo!");
       return;
@@ -86,44 +82,33 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
 
     if (seat.status === "reserved" || seat.status === "unavailable") return;
 
-    let updatedSelectedSeats;
     const isSelected = selectedSeats.some((s) => s.id === seat.id);
-    if (isSelected) {
-      updatedSelectedSeats = selectedSeats.filter((s) => s.id !== seat.id);
-    } else {
-      updatedSelectedSeats = [
-        ...selectedSeats,
-        { ...seat, status: "selected" as const },
-      ];
-    }
-
-    dispatch(setSelectedSeats(updatedSelectedSeats));
-  };
-
-  const setBookingSeat = async () => {
     try {
-      const seatIds = selectedSeats.map((seat) => seat.id); // lấy danh sách id ghế đã chọn
+      if (isSelected) {
+        // Gọi API xoá ghế
+        await axiosInstance.delete(
+          `/bookings/${bookingId}/remove-seat/${seat.id}/`
+        );
 
-      const response = await axiosInstance.post(
-        `bookings/${bookingId}/set-seats/`,
-        {
-          seat_ids: seatIds,
-        }
-      );
+        const updatedSelectedSeats = selectedSeats.filter(
+          (s) => s.id !== seat.id
+        );
+        dispatch(setSelectedSeats(updatedSelectedSeats));
+      } else {
+        // Gọi API thêm ghế
+        await axiosInstance.post(`/bookings/${bookingId}/add-seat/${seat.id}/`);
 
-      toast.success("Đặt chỗ thành công!");
-      console.log("Booking response:", response.data);
+        const updatedSelectedSeats = [
+          ...selectedSeats,
+          { ...seat, status: "selected" as const },
+        ];
+        dispatch(setSelectedSeats(updatedSelectedSeats));
+      }
     } catch (error: any) {
-      console.error("Error setting booking seat:", error);
-      toast.error("Đặt chỗ thất bại!");
+      console.error("Seat API error", error);
+      toast.error(error.response?.data?.error || "Không thể cập nhật ghế.");
     }
   };
-
-  useEffect(() => {
-    if (selectedSeats.length > 0) {
-      setBookingSeat();
-    }
-  }, [selectedSeats]);
 
   const handleConfirm = () => {
     // onSeatsSelected(selectedSeats);

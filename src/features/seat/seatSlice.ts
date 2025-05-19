@@ -41,16 +41,12 @@ const seatSlice = createSlice({
       state.selectedSeats = [];
     },
 
-    updateSeatsStatusByIds(state, action: PayloadAction<number[]>) {
-      const seatIdsToUpdate = action.payload;
-      state.seats = state.seats.map(seat => {
-        if (seatIdsToUpdate.includes(seat.id)) {
-          // Cập nhật trạng thái seat theo yêu cầu, ví dụ "reserved"
-          return { ...seat, status: "reserved" };
-        }
-        return seat;
-      });
-    },
+    updateSeatsStatusByIds(state, action: PayloadAction<{ ids: number[]; status: "available" | "reserved" | "selected" | "unavailable" }>) {
+      const { ids, status } = action.payload;
+      state.seats = state.seats.map(seat =>
+        ids.includes(seat.id) ? { ...seat, status } : seat
+      );
+    }
 
 
   },
