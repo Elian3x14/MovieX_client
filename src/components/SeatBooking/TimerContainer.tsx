@@ -18,8 +18,14 @@ const TimerDisplay = memo(({ timer }: { timer: number }) => {
   );
 });
 
-export const TimerContainer = () => {
-  const [timer, setTimer] = useState(300);
+export const TimerContainer = ({
+  initialSeconds,
+}: {
+  initialSeconds: number;
+}) => {
+
+  console.log("TimerContainer rendered with initialSeconds:", initialSeconds);
+  const [timer, setTimer] = useState(initialSeconds);
 
   useEffect(() => {
     const countdown = setInterval(() => {

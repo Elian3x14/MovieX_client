@@ -27,6 +27,7 @@ import {
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { calculateRemainingSeconds } from "@/lib/calculateRemainingSeconds";
 
 const SeatBooking = () => {
   const navigate = useNavigate();
@@ -83,6 +84,8 @@ const SeatBooking = () => {
         };
         const response = await axiosInstance.post(`/bookings/`, payload);
         setBooking(response.data);
+
+        console.log("Booking created:", response.data);
         toast.info("Session start! You have 5 minutes to confirm your booking");
       } catch (error) {
         toast.error("Error creating booking");
@@ -129,7 +132,11 @@ const SeatBooking = () => {
                 Please select the seats you wish to book for this movie.
               </p>
             </div>
-            <TimerContainer />
+            {booking && (
+              <TimerContainer
+                initialSeconds={calculateRemainingSeconds(booking.expired_at)}
+              />
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
