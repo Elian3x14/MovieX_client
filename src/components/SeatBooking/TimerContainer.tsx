@@ -24,7 +24,6 @@ export const TimerContainer = ({
   initialSeconds: number;
 }) => {
 
-  console.log("TimerContainer rendered with initialSeconds:", initialSeconds);
   const [timer, setTimer] = useState(initialSeconds);
 
   useEffect(() => {
