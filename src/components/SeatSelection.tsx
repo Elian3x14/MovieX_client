@@ -11,6 +11,7 @@ import {
   setSelectedSeats,
   updateSeatsStatusByIds,
 } from "@/features/seat/seatSlice";
+import { useAuth } from "@/contexts/AuthContext";
 
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 
@@ -27,6 +28,7 @@ interface SeatSelectionProps {
 }
 
 const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
+  const { user } = useAuth();
   useEffect(() => {
     const ws = new WebSocket(`${WS_BASE_URL}booking/${showtime.id}/`);
     ws.onopen = () => {
@@ -37,7 +39,10 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       console.log("WebSocket message received:", data);
-      // Xử lý dữ liệu từ server
+
+      // Nếu message là do chính mình gửi, bỏ qua
+      if (data.sender_id && data.sender_id === user.id) return;
+
       if (data.type === "seat_added") {
         dispatch(
           updateSeatsStatusByIds({ ids: [data.seat_id], status: "reserved" })
