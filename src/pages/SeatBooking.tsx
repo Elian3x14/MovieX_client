@@ -22,7 +22,6 @@ import { RootState } from "@/app/store";
 import {
   clearSelectedSeats,
   fetchSeats,
-  setSelectedSeats,
 } from "@/features/seat/seatSlice";
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
 import { toast } from "sonner";
@@ -97,14 +96,25 @@ const SeatBooking = () => {
   }, [movieId, showtimeId, user]);
 
   const handleCheckout = () => {
-    // In a real app, you would save this state and navigate to checkout
-    navigate("/checkout", {
-      state: {
-        movie: showtime.movie,
-        showtime,
-        seats: selectedSeats,
-      },
-    });
+    if (!booking) {
+      toast.error("Booking session not found. Please try again.");
+      navigate("/");
+      return
+    }
+
+    if (booking?.expired_at && new Date() > new Date(booking.expired_at)) {
+      toast.error("Your booking session has expired. Please try again.");
+      navigate("/");
+      return;
+    }
+
+    if (selectedSeats.length === 0) {
+      toast.error("Please select at least one seat to continue.");
+      return;
+    }
+
+
+    navigate(`/checkout/${booking.id}`);
   };
 
   if (!showtime) {

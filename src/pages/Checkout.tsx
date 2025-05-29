@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,24 +20,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Movie, Seat } from "@/data/type";
-
-// Define form schema using zod
-const cardFormSchema = z.object({
-  cardNumber: z.string().min(16, "Card number must be at least 16 digits"),
-  expiry: z.string().min(4, "Expiry date must be in MM/YY format"),
-  cvv: z.string().min(3, "CVV must be at least 3 digits"),
-  name: z.string().min(2, "Name must be at least 2 characters"),
-});
+import { Booking, Movie, Seat } from "@/data/type";
+import { cardFormSchema } from "@/schemas/cardFormSchema";
+import { toast } from "sonner";
+import axiosInstance from "@/lib/axios";
+import { formatDate } from "@/lib/formatDate";
+import { formatTimeAMPM } from "@/lib/formatTimeAMPM";
+import formatCurrency from "@/lib/formatCurrency";
 
 const Checkout = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [paymentMethod, setPaymentMethod] = useState("card");
 
   // Initialize react-hook-form
@@ -53,25 +45,46 @@ const Checkout = () => {
     },
   });
 
+  const [booking, setBooking] = useState<Booking>();
+  const [seats, setSeats] = useState<Seat[]>([]);
 
-  // Get booking details from state
-  const { movie, showtime, seats } :
-  {
-    movie: Movie;
-    showtime: {
-      date: string;
-      time: string;
-      cinema: string;
-      hall: string;
-      price: number;
-    };
-    seats: Seat[];
-  } = location.state || {};
 
-  console.log("Movie:", movie);
-  console.log("Showtime:", showtime);
-  console.log("Seats:", seats);
-  if (!movie || !showtime || !seats || seats.length === 0) {
+  const fetchBookingDetails = async () => {
+    try {
+      const response = await axiosInstance.get(`users/bookings/pending/`);
+      const booking = response.data;
+      setBooking(booking);
+    } catch (error) {
+      console.error("Error fetching booking details:", error);
+      toast.error("Failed to fetch booking details.");
+      navigate("/");
+    }
+  }
+
+  const fetchSeatsByBookingId = async (bookingId: number) => {
+    try {
+      const response = await axiosInstance.get(`booking-seats/${bookingId}/seats/`);
+      setSeats(response.data);
+    } catch (error) {
+      console.error("Error fetching seats:", error);
+      toast.error("Failed to fetch seats.");
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    fetchBookingDetails();
+  }, []);
+
+  useEffect(() => {
+    if (booking && booking.id) {
+      fetchSeatsByBookingId(booking.id);
+    }
+  }, [booking]);
+
+
+
+  if (!booking) {
     return (
       <div className="container py-12 text-center">
         Invalid booking information.
@@ -79,40 +92,18 @@ const Checkout = () => {
     );
   }
 
-  const totalAmount = seats.length * showtime.price;
 
   const handleCompletePayment = (values: any) => {
     // In a real app, you would process the payment here
-    toast({
-      title: "Payment Successful!",
-      description: `You have successfully booked ${seats.length} ticket(s) for ${movie.title}.`,
+    toast.success("Payment successful!", {
+      description: `Your booking for ${booking.showtime!.movie.title} on ${booking.showtime!.start_time} at ${booking.showtime!.end_time} has been confirmed.`,
     });
 
     // Navigate to confirmation page or home
-    navigate("/confirmation", {
-      state: {
-        movie,
-        showtime,
-        seats,
-        bookingId: `BK${Math.random()
-          .toString(36)
-          .substring(2, 10)
-          .toUpperCase()}`,
-        paymentMethod,
-      },
-    });
+    navigate("/confirmation");
   };
 
-  // Format the date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
@@ -136,11 +127,10 @@ const Checkout = () => {
                     className="space-y-4"
                   >
                     <div
-                      className={`flex items-center space-x-3 p-3 rounded-md border ${
-                        paymentMethod === "card"
-                          ? "border-cinema-primary bg-cinema-primary/10"
-                          : "border-muted"
-                      }`}
+                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === "card"
+                        ? "border-cinema-primary bg-cinema-primary/10"
+                        : "border-muted"
+                        }`}
                     >
                       <RadioGroupItem value="card" id="card" />
                       <label
@@ -174,11 +164,10 @@ const Checkout = () => {
                     </div>
 
                     <div
-                      className={`flex items-center space-x-3 p-3 rounded-md border ${
-                        paymentMethod === "ewallet"
-                          ? "border-cinema-primary bg-cinema-primary/10"
-                          : "border-muted"
-                      }`}
+                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === "ewallet"
+                        ? "border-cinema-primary bg-cinema-primary/10"
+                        : "border-muted"
+                        }`}
                     >
                       <RadioGroupItem value="ewallet" id="ewallet" />
                       <label
@@ -208,11 +197,10 @@ const Checkout = () => {
                     </div>
 
                     <div
-                      className={`flex items-center space-x-3 p-3 rounded-md border ${
-                        paymentMethod === "banking"
-                          ? "border-cinema-primary bg-cinema-primary/10"
-                          : "border-muted"
-                      }`}
+                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === "banking"
+                        ? "border-cinema-primary bg-cinema-primary/10"
+                        : "border-muted"
+                        }`}
                     >
                       <RadioGroupItem value="banking" id="banking" />
                       <label
@@ -404,12 +392,12 @@ const Checkout = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h3 className="font-medium">{movie.title}</h3>
+                    <h3 className="font-medium">{booking.showtime.movie.title}</h3>
                     <p className="text-sm text-cinema-muted">
-                      {showtime.cinema} - {showtime.hall}
+                      {booking.showtime.cinema} - {booking.showtime.room?.name}
                     </p>
                     <p className="text-sm text-cinema-muted">
-                      {formatDate(showtime.date)} • {showtime.time}
+                      {formatDate(booking.showtime.start_time)} • {formatTimeAMPM(booking.showtime.start_time)}
                     </p>
                   </div>
 
@@ -417,16 +405,29 @@ const Checkout = () => {
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <p className="text-sm">Tickets ({seats.length}x):</p>
+                      <p className="text-sm">Tickets :</p>
                       <p className="text-sm">
-                        {(seats.length * showtime.price).toLocaleString()} VND
+                        x{seats.length}
                       </p>
                     </div>
-                    <div className="flex justify-between mb-2">
-                      <p className="text-sm">Seats:</p>
-                      <p className="text-sm">
-                        {seats.map((seat) => `${seat.seat_row}${seat.seat_col}`).join(", ")}
-                      </p>
+                    <div className="mb-2">
+                      <p className="text-sm bg-green-500">Seats:</p>
+                      <ul className="text-sm">
+                        {seats.map((seat) =>
+                          <li key={seat.id} className="flex justify-between items-center py-1">
+                            <span>
+
+                              {seat.seat_row + seat.seat_col}
+                              {seat.seat_type ? ` (${seat.seat_type.name})` : ""}
+                            </span>
+                            <span>
+
+                              {seat.seat_type ?
+                                `${formatCurrency(Number(booking.showtime.price) + Number(seat.seat_type.extra_price))}` :
+                                formatCurrency(booking.showtime.price)}
+                            </span>
+                          </li>)}
+                      </ul>
                     </div>
                     <div className="flex justify-between mb-2">
                       <p className="text-sm">Booking Fee:</p>
@@ -438,7 +439,7 @@ const Checkout = () => {
 
                   <div className="flex justify-between font-medium">
                     <p>Total Amount:</p>
-                    <p>{totalAmount.toLocaleString()} VND</p>
+                    <p>{booking.total_amount.toLocaleString()} VND</p>
                   </div>
                 </CardContent>
                 {paymentMethod !== "card" && (
