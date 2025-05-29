@@ -1,17 +1,21 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+interface JwtPayload {
+  exp: number;
+}
+
+
+const isDebug = import.meta.env.VITE_WS_DEBUG === '1' || import.meta.env.VITE_WS_DEBUG === 'true';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.example.com';
+// 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://api.example.com',
+  baseURL: apiBaseUrl,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
-
-interface JwtPayload {
-  exp: number;
-}
 
 // Hàm kiểm tra token còn hạn hay không
 function isTokenExpired(token: string): boolean {
@@ -85,5 +89,40 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Debugging interceptor
+if (isDebug) {
+  axiosInstance.interceptors.request.use((config) => {
+    console.log('[Axios Request]', {
+      method: config.method,
+      url: config.url,
+      headers: config.headers,
+      data: config.data,
+    });
+    return config;
+  });
+}
+
+if (isDebug) {
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      console.log('[Axios Response]', {
+        url: response.config.url,
+        status: response.status,
+        data: response.data,
+      });
+      return response;
+    },
+    (error) => {
+      console.error('[Axios Error]', {
+        url: error.config?.url,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+      return Promise.reject(error);
+    }
+  );
+}
+
 
 export default axiosInstance;

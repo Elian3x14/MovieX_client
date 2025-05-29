@@ -21,7 +21,7 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiperInstance, setSwiperInstance] = useState<any>(null);
   // TODO: Fix component rendering issue
-  console.log(movies.length);
+  // console.log('HeroSlider rendered');
 
   return (
     <div className="relative h-[50vh] md:h-[70vh] overflow-hidden">
