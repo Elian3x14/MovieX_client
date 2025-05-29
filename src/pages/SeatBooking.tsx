@@ -114,7 +114,7 @@ const SeatBooking = () => {
     }
 
 
-    navigate(`/checkout/${booking.id}`);
+    navigate(`/checkout`);
   };
 
   if (!showtime) {
