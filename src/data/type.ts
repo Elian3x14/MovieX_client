@@ -94,16 +94,18 @@ export interface Booking {
   id: number;
   user: number;
   status: "pending" | "paid" | "expired" | "cancelled";
-  seats: BookedSeat[];
+  booking_seats: BookingSeat[];
   expired_at: Date;
   showtime?: Showtime;
   total_amount: number;
 }
 
-export interface BookedSeat {
+export interface BookingSeat {
   id: number;
   booking: Booking;
   seat: Seat;
+  status: "available" | "reserved" | "selected" | "unavailable";
+  final_price: number;
 }
 
 export const cinemas: Cinema[] = [

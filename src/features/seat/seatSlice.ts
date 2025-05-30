@@ -6,7 +6,7 @@ import { Seat } from "@/data/type";
 
 interface SeatState {
   seats: Seat[];
-  selectedSeats: Seat[]; // Những seat có status === "hold"
+  selectedSeats: Seat[]; // Danh sách ghế đã chọn
   loading: boolean;
   error: string | null;
 }
@@ -59,8 +59,7 @@ const seatSlice = createSlice({
       .addCase(fetchSeats.fulfilled, (state, action: PayloadAction<Seat[]>) => {
         state.loading = false;
         state.seats = action.payload;
-        // Tự động lọc seat có status = "reserved"
-        state.selectedSeats = action.payload.filter((seat) => seat.status === "reserved");
+        state.selectedSeats = action.payload.filter((seat) => ["selected"].includes(seat.status));
       })
       .addCase(fetchSeats.rejected, (state, action) => {
         state.loading = false;

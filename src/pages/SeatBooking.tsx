@@ -20,7 +20,6 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import {
-  clearSelectedSeats,
   fetchSeats,
 } from "@/features/seat/seatSlice";
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
@@ -47,7 +46,7 @@ const SeatBooking = () => {
   const showtime = useSelector(
     (state: RootState) => state.showtime.selectedShowtime
   );
-
+  
   useEffect(() => {
     if (movieId && showtimeId) {
       dispatch(fetchShowtime(showtimeId));
@@ -59,12 +58,6 @@ const SeatBooking = () => {
       dispatch(fetchSeats(showtimeId));
     }
   }, [dispatch, showtimeId]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(clearSelectedSeats());
-    };
-  }, []);
 
   useEffect(() => {
     if (isLoading) return; // đợi load xong đã
@@ -84,7 +77,7 @@ const SeatBooking = () => {
         const response = await axiosInstance.post(`/bookings/`, payload);
         setBooking(response.data);
 
-        console.log("Booking created:", response.data);
+
         toast.info("Session start! You have 5 minutes to confirm your booking");
       } catch (error) {
         toast.error("Error creating booking");
@@ -117,6 +110,7 @@ const SeatBooking = () => {
     navigate(`/checkout`);
   };
 
+
   if (!showtime) {
     return (
       <div className="container py-12 text-center">
@@ -130,6 +124,9 @@ const SeatBooking = () => {
       total + Number(showtime.price) + Number(seat.seat_type.extra_price),
     0
   );
+
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
@@ -223,8 +220,8 @@ const SeatBooking = () => {
                         <p className="text-sm">
                           {selectedSeats.length > 0
                             ? selectedSeats
-                                .map((s) => `${s.seat_row}${s.seat_col}`)
-                                .join(", ")
+                              .map((s) => `${s.seat_row}${s.seat_col}`)
+                              .join(", ")
                             : "None"}
                         </p>
                       </div>
