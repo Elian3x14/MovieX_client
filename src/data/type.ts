@@ -1,3 +1,7 @@
+export enum PaymentMethod {
+  ZALO_PAY = "zalopay",
+}
+
 export interface User {
   id: number;
   username: string;

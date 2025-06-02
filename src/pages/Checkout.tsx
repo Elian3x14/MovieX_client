@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,21 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Booking, Movie, Seat } from "@/data/type";
-import { cardFormSchema } from "@/schemas/cardFormSchema";
+import { Booking, PaymentMethod, Seat } from "@/data/type";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { formatDate } from "@/lib/formatDate";
@@ -32,22 +20,12 @@ import formatCurrency from "@/lib/formatCurrency";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.ZALO_PAY);
 
-  // Initialize react-hook-form
-  const form = useForm({
-    resolver: zodResolver(cardFormSchema),
-    defaultValues: {
-      cardNumber: "",
-      expiry: "",
-      cvv: "",
-      name: "",
-    },
-  });
+
 
   const [booking, setBooking] = useState<Booking>();
   const [seats, setSeats] = useState<Seat[]>([]);
-
 
   const fetchBookingDetails = async () => {
     try {
@@ -93,14 +71,37 @@ const Checkout = () => {
   }
 
 
-  const handleCompletePayment = (values: any) => {
+  const handleCompletePayment = async (values: any) => {
+    // TODO: thêm mã giảm giá
     // In a real app, you would process the payment here
-    toast.success("Payment successful!", {
-      description: `Your booking for ${booking.showtime!.movie.title} on ${booking.showtime!.start_time} at ${booking.showtime!.end_time} has been confirmed.`,
-    });
+    if (!booking || !booking.id) {
+      toast.error("Invalid booking information.");
+      return;
+    }
 
-    // Navigate to confirmation page or home
-    navigate("/confirmation");
+    try {
+      switch (paymentMethod) {
+        case PaymentMethod.ZALO_PAY:
+          // Handle ZaloPay payment
+          const response = await axiosInstance.post(`bookings/${booking.id}/pay/zalo-pay/`);
+          const paymentUrl = response.data.order_url;
+          if (paymentUrl) {
+            // Redirect to ZaloPay payment page
+            window.location.href = paymentUrl;
+          } else {
+            toast.error("Failed to initiate ZaloPay payment.");
+          }
+          break;
+        default:
+          toast.error("Unsupported payment method.");
+          return;
+      }
+    } catch (error) {
+
+      console.error("Error completing payment:", error);
+      toast.error("Payment failed. Please try again.");
+      return;
+    }
   };
 
 
@@ -123,266 +124,42 @@ const Checkout = () => {
                 <CardContent>
                   <RadioGroup
                     value={paymentMethod}
-                    onValueChange={setPaymentMethod}
+                    onValueChange={
+                      (value: PaymentMethod) => {
+                        setPaymentMethod(value);
+                      }
+                    }
                     className="space-y-4"
                   >
                     <div
-                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === "card"
+                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === PaymentMethod.ZALO_PAY
                         ? "border-cinema-primary bg-cinema-primary/10"
                         : "border-muted"
                         }`}
                     >
-                      <RadioGroupItem value="card" id="card" />
+                      <RadioGroupItem value="zalopay" id="zalopay" />
                       <label
-                        htmlFor="card"
+                        htmlFor="zalopay"
                         className="flex items-center justify-between w-full cursor-pointer"
                       >
                         <div className="flex items-center space-x-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-credit-card"
-                          >
-                            <rect width="20" height="14" x="2" y="5" rx="2" />
-                            <line x1="2" x2="22" y1="10" y2="10" />
-                          </svg>
-                          <div className="font-medium">Credit/Debit Card</div>
+                          <img
+                            src="/icons/zalopay-logo.svg"
+                            alt="ZaloPay Logo"
+                            className="h-6 w-auto"
+                          />
+
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <div className="w-8 h-6 bg-blue-600 rounded-md"></div>
-                          <div className="w-8 h-6 bg-red-500 rounded-md"></div>
-                          <div className="w-8 h-6 bg-yellow-500 rounded-md"></div>
+                        <div className="w-16 h-6 bg-blue-500 text-white text-sm flex items-center justify-center rounded-md font-bold">
+                          ZaloPay
                         </div>
                       </label>
                     </div>
 
-                    <div
-                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === "ewallet"
-                        ? "border-cinema-primary bg-cinema-primary/10"
-                        : "border-muted"
-                        }`}
-                    >
-                      <RadioGroupItem value="ewallet" id="ewallet" />
-                      <label
-                        htmlFor="ewallet"
-                        className="flex items-center justify-between w-full cursor-pointer"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-wallet"
-                          >
-                            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-                            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-                            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
-                          </svg>
-                          <div className="font-medium">E-Wallet</div>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div
-                      className={`flex items-center space-x-3 p-3 rounded-md border ${paymentMethod === "banking"
-                        ? "border-cinema-primary bg-cinema-primary/10"
-                        : "border-muted"
-                        }`}
-                    >
-                      <RadioGroupItem value="banking" id="banking" />
-                      <label
-                        htmlFor="banking"
-                        className="flex items-center justify-between w-full cursor-pointer"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-bank"
-                          >
-                            <rect x="2" y="5" width="20" height="14" rx="2" />
-                            <path d="M12 12h.01" />
-                            <path d="M2 10h20" />
-                          </svg>
-                          <div className="font-medium">Internet Banking</div>
-                        </div>
-                      </label>
-                    </div>
                   </RadioGroup>
                 </CardContent>
               </Card>
 
-              {paymentMethod === "card" && (
-                <Card className="bg-card border-none overflow-hidden">
-                  <CardHeader>
-                    <CardTitle>Card Information</CardTitle>
-                    <CardDescription>Enter your card details</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(handleCompletePayment)}
-                        className="space-y-4"
-                      >
-                        <FormField
-                          control={form.control}
-                          name="cardNumber"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Card Number</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="1234 5678 9012 3456"
-                                  className="bg-background"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="expiry"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Expiry Date</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="MM/YY"
-                                    className="bg-background"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="cvv"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>CVV</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="123"
-                                    className="bg-background"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <FormField
-                          control={form.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Cardholder Name</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder="John Doe"
-                                  className="bg-background"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <Button type="submit" className="w-full mt-4">
-                          Complete Payment
-                        </Button>
-                      </form>
-                    </Form>
-                  </CardContent>
-                </Card>
-              )}
-
-              {(paymentMethod === "ewallet" || paymentMethod === "banking") && (
-                <Card className="bg-card border-none overflow-hidden">
-                  <CardContent className="pt-6">
-                    <div className="flex flex-col items-center justify-center py-6">
-                      <div className="mb-4">
-                        {paymentMethod === "ewallet" ? (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="48"
-                            height="48"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-cinema-muted"
-                          >
-                            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-                            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-                            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
-                          </svg>
-                        ) : (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="48"
-                            height="48"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-cinema-muted"
-                          >
-                            <rect x="2" y="5" width="20" height="14" rx="2" />
-                            <path d="M12 12h.01" />
-                            <path d="M2 10h20" />
-                          </svg>
-                        )}
-                      </div>
-                      <p className="text-center text-cinema-muted mb-6">
-                        {paymentMethod === "ewallet"
-                          ? "You'll be redirected to the e-wallet payment page to complete your transaction."
-                          : "You'll be redirected to your bank's payment page to complete your transaction."}
-                      </p>
-                      <Button
-                        onClick={handleCompletePayment}
-                        className="w-full"
-                      >
-                        Continue to Payment
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
 
             <div>
@@ -442,13 +219,11 @@ const Checkout = () => {
                     <p>{booking.total_amount.toLocaleString()} VND</p>
                   </div>
                 </CardContent>
-                {paymentMethod !== "card" && (
-                  <CardFooter className="border-t border-muted p-4 bg-muted/20">
-                    <Button className="w-full" onClick={handleCompletePayment}>
-                      Complete Payment
-                    </Button>
-                  </CardFooter>
-                )}
+                <CardFooter className="border-t border-muted p-4 bg-muted/20">
+                  <Button className="w-full" onClick={handleCompletePayment}>
+                    Complete Payment
+                  </Button>
+                </CardFooter>
               </Card>
             </div>
           </div>
