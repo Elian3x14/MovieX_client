@@ -27,6 +27,8 @@ import PaymentResult from "./pages/PaymentResult";
 
 const queryClient = new QueryClient();
 
+// TODO: sử lại sang tiếng Việt
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
