@@ -23,6 +23,7 @@ import AdminUsers from "./pages/admin/Users";
 import AdminReports from "./pages/admin/Reports";
 import { AuthProvider } from "./contexts/AuthContext";
 import IndexLayout from "./components/layouts/IndexLayout";
+import PaymentResult from "./pages/PaymentResult";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/payment/zalo-pay/result" element={<PaymentResult />} />
             </Route>
 
             {/* Auth Routes */}
