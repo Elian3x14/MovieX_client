@@ -1,6 +1,6 @@
 
 import { Outlet } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const AdminLayout = () => {
@@ -8,8 +8,15 @@ const AdminLayout = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AdminSidebar />
-        <main className="flex-1 overflow-auto bg-background p-6">
-          <Outlet />
+        
+        <main className="flex-1 overflow-auto bg-background py-4">
+          <div className="border-b pb-4 ps-4">
+            <SidebarTrigger />
+          </div>
+
+          <div className="p-6">
+            <Outlet />
+          </div>
         </main>
       </div>
     </SidebarProvider>
