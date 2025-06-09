@@ -2,8 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchReviewsByMovieId, submitReview } from "@/features/review/reviewSlice";
-import axiosInstance from "@/lib/axios";
-import { ReviewFormData, reviewSchema } from "@/schemas/reviewSchema";
+import { reviewSchema, ReviewFormData } from "@/schemas/reviewSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
 import { useState } from "react";
@@ -14,11 +13,10 @@ import { toast } from "sonner";
 
 const ReviewForm: React.FC = () => {
   const { id: movieId } = useParams<{ id: string }>();
-  const [rating, setRating] = useState<number>(0);
-  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-
   const { user } = useAuth();
 
   const {
@@ -28,69 +26,72 @@ const ReviewForm: React.FC = () => {
     reset,
   } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: {
-      comment: "",
-    },
+    defaultValues: { comment: "" },
   });
 
   const onSubmit = async (data: ReviewFormData) => {
+    if (!movieId) return;
     try {
+      setLoading(true);
       await dispatch(
-        submitReview({ movieId: movieId!, rating, comment: data.comment })
+        submitReview({ movieId, rating, comment: data.comment })
       );
-      dispatch(fetchReviewsByMovieId({ movieId: movieId!, page: 1 })); // Refresh review list
+      dispatch(fetchReviewsByMovieId({ movieId, page: 1 }));
       reset();
       setRating(0);
-      toast.success("Review submitted!");
+      toast.success("Đánh giá đã được gửi!");
     } catch (error) {
-      toast.error("Failed to submit review");
+      toast.error("Gửi đánh giá thất bại");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="bg-card p-6 rounded-lg shadow">
-      <h3 className="text-xl font-semibold mb-4">Write a Review</h3>
+      <h3 className="text-xl font-semibold mb-4">Viết đánh giá</h3>
+
       {!user ? (
         <p className="text-sm text-muted-foreground">
-          You must be{" "}
-          <a
-            href="/login"
-            className="text-cinema-secondary underline hover:opacity-80"
-          >
-            logged in
+          Bạn cần{" "}
+          <a href="/login" className="text-cinema-secondary underline hover:opacity-80">
+            đăng nhập
           </a>{" "}
-          to write a review.
+          để viết đánh giá.
         </p>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Rating</label>
+            <label className="block text-sm font-medium mb-1">Đánh giá</label>
             <div className="flex gap-1">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
-                <Star
-                  key={star}
-                  size={24}
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoveredStar(star)}
-                  onMouseLeave={() => setHoveredStar(null)}
-                  className={`cursor-pointer ${
-                    star <= (hoveredStar ?? rating)
-                      ? "fill-cinema-secondary text-cinema-secondary"
-                      : "text-muted hover:text-cinema-secondary"
-                  }`}
-                />
-              ))}
+              {[...Array(10)].map((_, i) => {
+                const star = i + 1;
+                return (
+                  <Star
+                    key={star}
+                    size={24}
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHover(star)}
+                    onMouseLeave={() => setHover(null)}
+                    className={`cursor-pointer ${
+                      star <= (hover ?? rating)
+                        ? "fill-cinema-secondary text-cinema-secondary"
+                        : "text-muted hover:text-cinema-secondary"
+                    }`}
+                  />
+                );
+              })}
             </div>
           </div>
 
           <div>
             <label htmlFor="comment" className="block text-sm font-medium mb-1">
-              Your Review
+              Nội dung đánh giá
             </label>
             <Textarea
               id="comment"
               {...register("comment")}
-              placeholder="Write your review here..."
+              placeholder="Viết đánh giá của bạn ở đây..."
               className="w-full min-h-[100px]"
             />
             {errors.comment && (
@@ -101,7 +102,7 @@ const ReviewForm: React.FC = () => {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Submitting..." : "Submit Review"}
+            {loading ? "Đang gửi..." : "Gửi đánh giá"}
           </Button>
         </form>
       )}

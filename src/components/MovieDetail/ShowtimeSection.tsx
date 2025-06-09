@@ -1,30 +1,30 @@
-// components/MovieDetail/ShowtimeSection.tsx
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import formatCurrency from "@/lib/formatCurrency";
-import { Calendar } from "lucide-react";
-import formatDaysLeft from "@/lib/formatDaysLeft";
-import { formatDate } from "@/lib/formatDate";
-import { Link, useParams } from "react-router-dom";
+import formatCurrency from "@/lib/formatCurrency"; // Định dạng tiền tệ
+import { Calendar } from "lucide-react"; // Icon lịch
+import formatDaysLeft from "@/lib/formatDaysLeft"; // Định dạng số ngày còn lại
+import { formatDate } from "@/lib/formatDate"; // Định dạng ngày tháng
+import { Link, useParams } from "react-router-dom"; // Link điều hướng và hook lấy param từ URL
 
+// Kiểu dữ liệu cho lịch chiếu theo ngày
 interface ShowTimesByDate {
   [key: string]: {
-    cinema: string;
+    cinema: string; // Tên rạp chiếu
     times: {
       id: string;
       time: string;
-      hall: string;
-      price: number;
+      hall: string; // Phòng chiếu
+      price: number; // Giá vé
     }[];
   }[];
 }
 
+// Props cho component
 interface ShowtimeSectionProps {
-  selectedDate: string | null;
-  setSelectedDate: (date: string) => void;
-  uniqueDates: string[];
-  showtimesByDate: ShowTimesByDate;
+  selectedDate: string | null; // Ngày được chọn
+  setSelectedDate: (date: string) => void; // Hàm thay đổi ngày
+  uniqueDates: string[]; // Danh sách các ngày có lịch chiếu
+  showtimesByDate: ShowTimesByDate; // Lịch chiếu theo từng ngày
 }
 
 const ShowtimeSection: React.FC<ShowtimeSectionProps> = ({
@@ -33,28 +33,28 @@ const ShowtimeSection: React.FC<ShowtimeSectionProps> = ({
   uniqueDates,
   showtimesByDate,
 }) => {
-    const { id: movieId } = useParams<{ id: string }>();
-  
+  const { id: movieId } = useParams<{ id: string }>(); // Lấy movieId từ URL
+
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Select a date</h2>
-      <div className="flex gap-2 overflow-x-auto mb-6">
+      <h2 className="text-xl font-semibold mb-4">Chọn ngày chiếu</h2>
+      <div className="flex flex-wrap gap-2 overflow-x-auto mb-6">
         {uniqueDates.map((date) => (
           <button
             key={date}
             onClick={() => setSelectedDate(date)}
-            className={`flex flex-col items-center min-w-[100px] p-3 rounded-lg border ${
+            className={`flex flex-col items-center min-w-[200px] p-3 rounded-lg border ${
               selectedDate === date
-                ? "border-cinema-primary bg-cinema-primary/10"
-                : "border-muted bg-card"
+                ? "border-cinema-primary bg-cinema-primary/10" // Nếu ngày đang chọn
+                : "border-muted bg-card" // Ngày không được chọn
             }`}
           >
             <Calendar size={18} className="mb-1" />
             <span className="font-medium text-sm">
-              {formatDate(date)}
+              {formatDate(date)} {/* Định dạng ngày hiển thị */}
             </span>
             <span className="text-xs text-cinema-muted mt-1">
-              {formatDaysLeft(date)}
+              {formatDaysLeft(date)} {/* Ví dụ: "Còn 3 ngày nữa" */}
             </span>
           </button>
         ))}
@@ -69,7 +69,7 @@ const ShowtimeSection: React.FC<ShowtimeSectionProps> = ({
                 {group.times.map((time) => (
                   <Button key={time.id} asChild variant="secondary">
                     <Link to={`/booking/${movieId}/${time.id}`}>
-                    {time.time} - {time.hall} ({formatCurrency(time.price)})
+                      {time.time} - {time.hall} ({formatCurrency(time.price)})
                     </Link>
                   </Button>
                 ))}
@@ -78,7 +78,7 @@ const ShowtimeSection: React.FC<ShowtimeSectionProps> = ({
           ))}
         </div>
       ) : (
-        <p>No showtimes available for this date.</p>
+        <p>Không có lịch chiếu cho ngày này.</p>
       )}
     </div>
   );

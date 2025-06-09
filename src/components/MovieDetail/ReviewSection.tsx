@@ -46,15 +46,13 @@ const ReviewSection = () => {
     <div className="space-y-8">
       {reviews && reviews.length > 0 ? (
         <div className="space-y-6">
-          <h3 className="text-xl font-semibold">User Reviews</h3>
+          <h3 className="text-xl font-semibold">Đánh giá từ người xem</h3>
           <div className="space-y-4">
             {reviews.map((review) => (
-              // Review card
               <div
                 key={review.id}
                 className="flex space-x-2 bg-card p-4 rounded-lg shadow"
               >
-                {/*  */}
                 <div className="grow flex gap-2">
                   <Avatar>
                     <AvatarImage src={review.author.avatar} alt="@shadcn" />
@@ -76,7 +74,7 @@ const ReviewSection = () => {
                         <div className="flex items-center gap-1">
                           <Star className="fill-cinema-secondary text-cinema-secondary size-4" />
                           <span className="text-sm text-muted-foreground">
-                            {review.rating.toFixed(1)}
+                            {review.rating.toFixed(1)} điểm
                           </span>
                         </div>
                       </div>
@@ -86,12 +84,11 @@ const ReviewSection = () => {
                     </p>
                   </div>
                 </div>
-                {/*  */}
                 <div className="flex flex-col items-center gap-2">
-                  <button className="border p-2 rounded">
+                  <button className="border p-2 rounded" title="Thích">
                     <ThumbsUp className="size-4" />
                   </button>
-                  <button className="border p-2 rounded">
+                  <button className="border p-2 rounded" title="Không thích">
                     <ThumbsDown className="size-4" />
                   </button>
                 </div>
@@ -99,35 +96,34 @@ const ReviewSection = () => {
             ))}
           </div>
 
-          {/* Pagination Controls */}
           <div className="flex justify-center items-center gap-4 pt-4">
             <Button
               variant="outline"
               onClick={handlePrevious}
               disabled={currentPage === 1}
             >
-              Previous
+              Trước
             </Button>
             <span className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
+              Trang {currentPage} / {totalPages}
             </span>
             <Button
               variant="outline"
               onClick={handleNext}
               disabled={currentPage === totalPages}
             >
-              Next
+              Tiếp
             </Button>
           </div>
         </div>
       ) : loading ? (
-        <div className="text-center py-6">Loading reviews...</div>
+        <div className="text-center py-6">Đang tải đánh giá...</div>
       ) : (
         <div className="text-center py-6 bg-muted/30 rounded-lg">
           <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
-          <h3 className="mt-2 text-lg font-medium">No reviews yet</h3>
+          <h3 className="mt-2 text-lg font-medium">Chưa có đánh giá</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Be the first to review this movie
+            Hãy là người đầu tiên đánh giá bộ phim này!
           </p>
         </div>
       )}

@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import TrailerModal from "@/components/TrailerModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Star, Clock, Calendar, Play } from "lucide-react";
+import { Star, Clock, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import formatCurrency from "@/lib/formatCurrency";
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/app/store";
 import { useSelector } from "react-redux";
@@ -19,7 +16,6 @@ import {
   selectShowtimeLoading,
   selectShowtimesByMovieId,
 } from "@/features/showtime/showtimeSlice";
-import formatDaysLeft from "@/lib/formatDaysLeft";
 import ReviewSection from "@/components/MovieDetail/ReviewSection";
 import ShowtimeSection from "@/components/MovieDetail/ShowtimeSection";
 
@@ -48,6 +44,7 @@ const MovieDetail = () => {
   const showtimes = useSelector((state: RootState) =>
     selectShowtimesByMovieId(state, id!)
   );
+
   const showtimeLoading = useSelector(selectShowtimeLoading);
 
   useEffect(() => {
@@ -108,16 +105,15 @@ const MovieDetail = () => {
       setIsTrailerOpen(true);
     } else {
       toast({
-        title: "Trailer Unavailable",
-        description:
-          "The trailer for this movie is not available at the moment.",
-        variant: "destructive",
+        title: "Trailer không khả dụng",
+        description: "Trailer cho bộ phim này hiện không có sẵn.",
+        variant: "destructive", // kiểu hiển thị cảnh báo (màu đỏ, thường để báo lỗi)
       });
     }
   };
 
   if (!movie) {
-    return <div className="container py-12 text-center">Movie not found.</div>;
+    return <div className="container py-12 text-center">Phim không tồn tại.</div>;
   }
 
   return (
@@ -157,9 +153,9 @@ const MovieDetail = () => {
                     variant="outline"
                     className="bg-cinema-primary border-none"
                   >
-                    {movie.release_status === "now-showing"
-                      ? "Now Showing"
-                      : "Coming Soon"}
+                    {movie.release_status === "now-showing" ?
+                      "Đang chiếu" :
+                      "Sắp chiếu"}
                   </Badge>
                   <div className="flex items-center gap-1">
                     <Star
@@ -176,7 +172,7 @@ const MovieDetail = () => {
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-sm text-cinema-muted">
                   <div className="flex items-center gap-1">
                     <Clock size={16} />
-                    <span>{movie.duration} min</span>
+                    <span>{movie.duration} phút</span>
                   </div>
                   <div>{movie.year}</div>
                   <div>{movie.genres.map((item) => item.name + ",")}</div>
@@ -189,11 +185,15 @@ const MovieDetail = () => {
                 <div className="flex gap-4 mt-auto">
                   {movie.release_status === "now-showing" ? (
                     <Button size="lg" className="min-w-[150px]">
-                      Buy Tickets
+                      <Link to={`/booking/${movie.id}`}>
+                        Mua vé
+                      </Link>
                     </Button>
                   ) : (
                     <Button size="lg" variant="outline">
-                      Coming Soon
+                      <Link to={`/booking/${movie.id}`}>
+                        Đặt vé trước
+                      </Link>
                     </Button>
                   )}
                   <Button
@@ -203,7 +203,7 @@ const MovieDetail = () => {
                     onClick={handleOpenTrailer}
                   >
                     <Play size={16} className="fill-current" />
-                    Trailer
+                    Xem Trailer
                   </Button>
                 </div>
               </div>
@@ -226,31 +226,31 @@ const MovieDetail = () => {
         <section className="py-8 container">
           <Tabs defaultValue="about" className="w-full">
             <TabsList className="w-full flex justify-start mb-6 bg-muted">
-              <TabsTrigger value="about">About</TabsTrigger>
+              <TabsTrigger value="about">Giới thiệu</TabsTrigger>
               <TabsTrigger
                 value="showtimes"
                 disabled={movie.release_status !== "now-showing"}
               >
-                Showtimes
+                Lịch chiếu
               </TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              <TabsTrigger value="reviews">Đánh giá</TabsTrigger>
             </TabsList>
 
             <TabsContent value="about">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-2">
-                  <h2 className="text-xl font-semibold mb-4">Synopsis</h2>
+                  <h2 className="text-xl font-semibold mb-4">Tóm tắt nội dung</h2>
                   <p className="text-cinema-muted mb-6 leading-relaxed">
                     {movie.description}
                   </p>
 
-                  <h2 className="text-xl font-semibold mb-4">Cast & Crew</h2>
+                  <h2 className="text-xl font-semibold mb-4">Diễn viên & Đoàn làm phim</h2>
                   <div className="mb-4">
-                    <h3 className="font-medium mb-2">Director</h3>
+                    <h3 className="font-medium mb-2">Đạo diễn</h3>
                     <p className="text-cinema-muted">{movie.director}</p>
                   </div>
                   <div>
-                    <h3 className="font-medium mb-2">Cast</h3>
+                    <h3 className="font-medium mb-2">Diễn viên</h3>
                     <p className="text-cinema-muted">
                       {movie.actors.map((item) => item.name + ",")}
                     </p>
@@ -259,22 +259,22 @@ const MovieDetail = () => {
                 <div>
                   <Card className="bg-card border-none overflow-hidden">
                     <CardContent className="p-6">
-                      <h3 className="font-semibold mb-4">Movie Info</h3>
+                      <h3 className="font-semibold mb-4">Thông tin phim</h3>
                       <dl className="space-y-3">
                         <div className="flex justify-between">
-                          <dt className="text-cinema-muted">Genre:</dt>
+                          <dt className="text-cinema-muted">Thể loại:</dt>
                           <dd>{movie.genres.map((item) => item.name + ",")}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-cinema-muted">Release Year:</dt>
+                          <dt className="text-cinema-muted">Năm phát hành:</dt>
                           <dd>{movie.year}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-cinema-muted">Duration:</dt>
-                          <dd>{movie.duration} min</dd>
+                          <dt className="text-cinema-muted">Thời lượng:</dt>
+                          <dd>{movie.duration} phút</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-cinema-muted">Rating:</dt>
+                          <dt className="text-cinema-muted">Đánh giá:</dt>
                           <dd className="flex items-center gap-1">
                             <Star
                               className="fill-cinema-secondary text-cinema-secondary"
@@ -289,6 +289,7 @@ const MovieDetail = () => {
                 </div>
               </div>
             </TabsContent>
+
 
             <TabsContent value="showtimes">
               <ShowtimeSection
