@@ -1,22 +1,21 @@
-
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Movie } from "@/data/type";
 import MovieCard from "./MovieCard";
 
 interface MovieSliderProps {
-  nowShowingMovies: Movie[];
-  upcomingMovies: Movie[];
+  nowShowingMovies: Movie[];      // Danh sách phim đang chiếu
+  upcomingMovies: Movie[];        // Danh sách phim sắp chiếu
 }
 
 const MovieSlider = ({ nowShowingMovies, upcomingMovies }: MovieSliderProps) => {
   return (
     <Tabs defaultValue="now-showing" className="w-full">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Movies</h2>
+        <h2 className="text-2xl font-bold">Phim</h2>
         <TabsList className="bg-muted">
-          <TabsTrigger value="now-showing">Now Showing</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="now-showing">Đang chiếu</TabsTrigger>
+          <TabsTrigger value="upcoming">Sắp chiếu</TabsTrigger>
         </TabsList>
       </div>
 

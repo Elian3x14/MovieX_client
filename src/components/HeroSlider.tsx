@@ -1,9 +1,11 @@
+// Import các thành phần cần thiết từ thư viện Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
+// Import các thành phần UI khác
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { Movie } from "@/data/type";
@@ -12,20 +14,20 @@ import TrailerModal from "./TrailerModal";
 import { IoStar } from "react-icons/io5";
 import { useState } from "react";
 
+// Định nghĩa kiểu dữ liệu cho props
 interface HeroSliderProps {
   movies: Movie[];
 }
 
+// Thành phần HeroSlider
 const HeroSlider = ({ movies }: HeroSliderProps) => {
-  const [isTrailerOpen, setIsTrailerOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [swiperInstance, setSwiperInstance] = useState<any>(null);
-  // TODO: Fix component rendering issue
-  // console.log('HeroSlider rendered');
+  const [isTrailerOpen, setIsTrailerOpen] = useState(false); // Trạng thái hiển thị trailer
+  const [activeIndex, setActiveIndex] = useState(0);         // Slide hiện tại
+  const [swiperInstance, setSwiperInstance] = useState<any>(null); // Lưu thể hiện của Swiper
 
   return (
     <div className="relative h-[50vh] md:h-[70vh] overflow-hidden">
-      {/* Trailer Modal */}
+      {/* Hiển thị modal trailer nếu có trailer_url */}
       {movies[activeIndex]?.trailer_url && (
         <TrailerModal
           isOpen={isTrailerOpen}
@@ -38,12 +40,15 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
         />
       )}
 
+      {/* Nếu không có phim */}
       {!movies ||
         (movies.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
-            <p className="text-white text-lg">No movies available</p>
+            <p className="text-white text-lg">Không có phim nào</p>
           </div>
         ))}
+
+      {/* Nếu có danh sách phim */}
       {movies && movies.length > 0 && (
         <Swiper
           modules={[Autoplay, Pagination, EffectFade]}
@@ -58,18 +63,18 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
           {movies.map((movie) => (
             <SwiperSlide key={movie.id}>
               <div className="relative h-full">
-                {/* Background Gradient */}
+                {/* Hiệu ứng nền dạng gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-cinema-background via-transparent to-transparent z-10" />
                 <div className="absolute inset-0 bg-gradient-to-r from-cinema-background to-transparent opacity-70 z-10" />
 
-                {/* Background Image */}
+                {/* Hình nền phim */}
                 <img
                   src={movie.backdrop_url}
                   alt={movie.title}
                   className="w-full h-full object-cover object-center"
                 />
 
-                {/* Content */}
+                {/* Nội dung phần hiển thị */}
                 <div className="absolute inset-0 flex items-center z-20">
                   <div className="container mx-auto px-4">
                     <div className="max-w-lg">
@@ -82,7 +87,7 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
                           <IoStar className="size-3.5" />
                         </div>
                         <span className="text-cinema-muted">
-                          {movie.duration} min
+                          {movie.duration} phút
                         </span>
                       </div>
                       <p className="text-cinema-muted mb-6 line-clamp-3">
@@ -90,7 +95,7 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
                       </p>
                       <div className="flex gap-4">
                         <Link to={`/movie/${movie.id}`}>
-                          <Button size="lg">Book Tickets</Button>
+                          <Button size="lg">Đặt vé</Button>
                         </Link>
                         <Button
                           size="lg"
@@ -98,11 +103,11 @@ const HeroSlider = ({ movies }: HeroSliderProps) => {
                           className="flex items-center gap-2"
                           onClick={() => {
                             setIsTrailerOpen(true);
-                            swiperInstance?.autoplay?.stop(); // Dừng autoplay
+                            swiperInstance?.autoplay?.stop(); // Dừng autoplay khi xem trailer
                           }}
                         >
                           <Play size={16} className="fill-current" />
-                          Watch Trailer
+                          Xem Trailer
                         </Button>
                       </div>
                     </div>
