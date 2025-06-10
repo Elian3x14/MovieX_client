@@ -1,15 +1,14 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Film, MapPin, Calendar, Users, Ticket, ChartBarIcon, TrendingUp, Database } from "lucide-react";
-import { 
-  ChartContainer, 
-  ChartTooltip, 
+import { Film, MapPin, Ticket, TrendingUp } from "lucide-react";
+import {
+  ChartContainer,
+  ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent
 } from "@/components/ui/chart";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import formatCurrency from "@/lib/formatCurrency";
 
 const monthlyRevenue = [
   { name: "Jan", revenue: 45000000 },
@@ -32,6 +31,10 @@ const movieRevenue = [
   { name: "Furiosa", revenue: 18000000, tickets: 1250 },
   { name: "Inside Out 2", revenue: 35000000, tickets: 2800 },
   { name: "The Batman", revenue: 28000000, tickets: 1900 },
+  { name: "Godzilla x Kong", revenue: 26000000, tickets: 1750 },
+  { name: "Kung Fu Panda 4", revenue: 22000000, tickets: 1600 },
+  { name: "The Marvels", revenue: 17000000, tickets: 1200 },
+  { name: "Wonka", revenue: 24000000, tickets: 1800 },
 ];
 
 const cinemaRevenue = [
@@ -42,28 +45,20 @@ const cinemaRevenue = [
   { name: "Beta Cineplex", revenue: 28000000, tickets: 2450 },
 ];
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('vi-VN', { 
-    style: 'currency', 
-    currency: 'VND',
-    maximumFractionDigits: 0 
-  }).format(value);
-};
-
 const AdminDashboard = () => {
   const totalRevenue = monthlyRevenue.reduce((sum, item) => sum + item.revenue, 0);
   const totalTickets = movieRevenue.reduce((sum, item) => sum + item.tickets, 0);
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Movies</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng số phim</CardTitle>
             <Film className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -71,10 +66,10 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted-foreground">+2 added this week</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Cinemas</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng số rạp chiếu</CardTitle>
             <MapPin className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -82,10 +77,10 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted-foreground">Across 5 cities</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Doanh thu tổng</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -93,10 +88,10 @@ const AdminDashboard = () => {
             <p className="text-xs text-muted-foreground">+15% from last year</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Tickets Sold</CardTitle>
+            <CardTitle className="text-sm font-medium">Vé đã bán</CardTitle>
             <Ticket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -105,17 +100,19 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Revenue Charts */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Revenue</CardTitle>
-            <CardDescription>Revenue trends over the past year</CardDescription>
+            <CardTitle>Biểu đồ doanh thu theo tháng</CardTitle>
+            <CardDescription>
+              Tổng doanh thu hàng tháng trong năm
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer 
-              className="h-80" 
+            <ChartContainer
+              className="h-80"
               config={{
                 revenue: { theme: { light: "#0ea5e9", dark: "#0ea5e9" } }
               }}
@@ -124,32 +121,36 @@ const AdminDashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
-                <ChartTooltip 
+                <ChartTooltip
                   content={
-                    <ChartTooltipContent 
+                    <ChartTooltipContent
                       formatter={(value) => formatCurrency(Number(value))}
                     />
                   }
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="revenue" 
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
                   stroke="var(--color-revenue)"
-                  strokeWidth={2} 
-                  name="Revenue" 
+                  strokeWidth={2}
+                  name="Revenue"
                 />
               </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
-            <CardTitle>Top Performing Movies</CardTitle>
-            <CardDescription>Revenue by movie title</CardDescription>
+            <CardTitle>
+              Phim có doanh thu cao nhất
+            </CardTitle>
+            <CardDescription>
+              Doanh thu theo từng bộ phim
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer 
+            <ChartContainer
               className="h-80"
               config={{
                 revenue: { theme: { light: "#10b981", dark: "#10b981" } }
@@ -157,19 +158,19 @@ const AdminDashboard = () => {
             >
               <BarChart data={movieRevenue}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" tick={{fontSize: 12}} />
+                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
-                <ChartTooltip 
+                <ChartTooltip
                   content={
-                    <ChartTooltipContent 
+                    <ChartTooltipContent
                       formatter={(value) => formatCurrency(Number(value))}
                     />
                   }
                 />
-                <Bar 
-                  dataKey="revenue" 
-                  fill="var(--color-revenue)" 
-                  name="Revenue" 
+                <Bar
+                  dataKey="revenue"
+                  fill="var(--color-revenue)"
+                  name="Revenue"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -177,12 +178,14 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Cinema Revenue</CardTitle>
-            <CardDescription>Revenue by cinema location</CardDescription>
+            <CardTitle>Doanh thu theo rạp</CardTitle>
+            <CardDescription>
+              Tổng doanh thu và số vé bán ra theo từng rạp chiếu
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -205,11 +208,15 @@ const AdminDashboard = () => {
             </Table>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
-            <CardTitle>Recent Bookings</CardTitle>
-            <CardDescription>Latest ticket reservations</CardDescription>
+            <CardTitle>
+              Danh sách đặt vé gần đây
+            </CardTitle>
+            <CardDescription>
+              Hiển thị các giao dịch đặt vé gần đây nhất
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
