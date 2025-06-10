@@ -195,9 +195,9 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
         >
           Xác nhận ({selectedSeats.length})
           {selectedSeats.length > 0 &&
-            ` - ${(
-              selectedSeats.length * showtime.price
-            ).toLocaleString()} VND`}
+            ` - ${formatCurrency(selectedSeats.reduce(
+              (total, seat) => total + (Number(seat.seat_type.extra_price) || 0) + Number(showtime.price), 0))
+            }`}
         </Button>
       </div>
     </div>
