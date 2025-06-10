@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Seat, SeatType, Showtime } from "@/data/type";
 import formatCurrency from "@/lib/formatCurrency";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import {
   setSelectedSeats,
@@ -15,11 +14,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const WS_BASE_URL = import.meta.env.VITE_WS_BASE_URL;
 
+// Mô tả trạng thái các ghế
 const seatStatuses = [
-  { color: "bg-cinema-primary", label: "Selected" },
-  { color: "bg-gray-500 opacity-50", label: "Unavailable" },
-  { color: "bg-green-500", label: "Available" },
-  { color: "bg-gray-500 cursor-not-allowed", label: "Reserved" },
+  { color: "bg-cinema-primary", label: "Đã chọn" },
+  { color: "bg-gray-500 opacity-50", label: "Không khả dụng" },
+  { color: "bg-green-500", label: "Có sẵn" },
+  { color: "bg-gray-500 cursor-not-allowed", label: "Đã đặt" },
 ];
 
 interface SeatSelectionProps {
@@ -29,152 +29,126 @@ interface SeatSelectionProps {
 
 const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
   const { user } = useAuth();
-  useEffect(() => {
-    const ws = new WebSocket(`${WS_BASE_URL}booking/${showtime.id}/`);
-    ws.onopen = () => {
-      console.log("WebSocket connection established");
-      ws.send(JSON.stringify({ type: "join", bookingId }));
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("WebSocket message received:", data);
-
-      // Nếu message là do chính mình gửi, bỏ qua
-      if (data.sender_id && data.sender_id === user.id) return;
-
-      if (data.type === "seat_added") {
-        dispatch(
-          updateSeatsStatusByIds({ ids: [data.seat_id], status: "reserved" })
-        );
-      } else if (data.type === "seat_removed") {
-        dispatch(
-          updateSeatsStatusByIds({ ids: [data.seat_id], status: "available" })
-        );
-      }
-    };
-
-    ws.onerror = (err) => console.error("WebSocket error", err);
-    return () => {
-      ws.close();
-    };
-  }, [showtime.id]);
-
   const dispatch = useDispatch();
   const seats = useSelector((state: RootState) => state.seat.seats);
   const selectedSeats = useSelector(
     (state: RootState) => state.seat.selectedSeats
   );
-  // Get unique seat types
-  const seatTypesMap = new Map();
 
-  seats.forEach((seat) => {
-    const st = seat.seat_type;
-    if (!seatTypesMap.has(st.id)) {
-      seatTypesMap.set(st.id, st);
-    }
-  });
+  // Khởi tạo kết nối WebSocket
+  useEffect(() => {
+    const ws = new WebSocket(`${WS_BASE_URL}booking/${showtime.id}/`);
 
-  const seatTypes: SeatType[] = Array.from(seatTypesMap.values()).sort(
-    (a, b) => a.extra_price - b.extra_price
-  );
+    ws.onopen = () => {
+      console.log("Đã kết nối WebSocket");
+      ws.send(JSON.stringify({ type: "join", bookingId }));
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Nhận dữ liệu WebSocket:", data);
+
+      if (data.sender_id && data.sender_id === user.id) return;
+
+      if (data.type === "seat_added") {
+        dispatch(updateSeatsStatusByIds({ ids: [data.seat_id], status: "reserved" }));
+      } else if (data.type === "seat_removed") {
+        dispatch(updateSeatsStatusByIds({ ids: [data.seat_id], status: "available" }));
+      }
+    };
+
+    ws.onerror = (err) => console.error("Lỗi WebSocket", err);
+
+    return () => ws.close();
+  }, [showtime.id]);
+
+  // Lấy danh sách loại ghế duy nhất
+  const seatTypes: SeatType[] = useMemo(() => {
+    const map = new Map();
+    seats.forEach((seat) => {
+      if (!map.has(seat.seat_type.id)) {
+        map.set(seat.seat_type.id, seat.seat_type);
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => a.extra_price - b.extra_price);
+  }, [seats]);
 
   const toggleSeat = async (seat: Seat) => {
     if (!bookingId) {
-      toast.error("Đã có lỗi xảy ra, session chưa được khởi tạo!");
+      toast.error("Lỗi: session chưa được khởi tạo!");
       return;
     }
 
-    if (seat.status === "reserved" || seat.status === "unavailable") return;
+    if (["reserved", "unavailable"].includes(seat.status)) return;
 
     const isSelected = selectedSeats.some((s) => s.id === seat.id);
+
     try {
       if (isSelected) {
-        // Gọi API xoá ghế
-        await axiosInstance.delete(
-          `/bookings/${bookingId}/remove-seat/${seat.id}/`
-        );
-
-        const updatedSelectedSeats = selectedSeats.filter(
-          (s) => s.id !== seat.id
-        );
-        dispatch(setSelectedSeats(updatedSelectedSeats));
+        await axiosInstance.delete(`/bookings/${bookingId}/remove-seat/${seat.id}/`);
+        dispatch(setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id)));
       } else {
-        // Gọi API thêm ghế
         await axiosInstance.post(`/bookings/${bookingId}/add-seat/${seat.id}/`);
-
-        const updatedSelectedSeats = [
-          ...selectedSeats,
-          { ...seat, status: "selected" as const },
-        ];
-        dispatch(setSelectedSeats(updatedSelectedSeats));
+        dispatch(setSelectedSeats([...selectedSeats, { ...seat, status: "selected" }]));
       }
     } catch (error: any) {
-      console.error("Seat API error", error);
+      console.error("Lỗi API ghế", error);
       toast.error(error.response?.data?.error || "Không thể cập nhật ghế.");
     }
   };
 
-  const handleConfirm = () => {
-    // onSeatsSelected(selectedSeats);
-  };
+  const rows = useMemo(() => {
+    return Array.from(new Set(seats.map((s) => s.seat_row))).sort();
+  }, [seats]);
 
-  const rows = Array.from(new Set(seats.map((seat) => seat.seat_row))).sort();
-
-  const getSeatsByRow = (row: string) => {
-    return seats
-      .map((seat) => {
-        if (seat.seat_row === row) {
-          if (selectedSeats.some((s) => s.id === seat.id)) {
-            return { ...seat, status: "selected" };
-          }
-          return seat;
-        }
-        return null;
-      })
+  const getSeatsByRow = (row: string) =>
+    seats
+      .map((seat) =>
+        seat.seat_row === row
+          ? selectedSeats.some((s) => s.id === seat.id)
+            ? { ...seat, status: "selected" }
+            : seat
+          : null
+      )
       .filter(Boolean) as Seat[];
-  };
 
   const getSeatColor = (seat: Seat) => {
-    if (seat.status === "reserved")
-      return "bg-gray-500 cursor-not-allowed opacity-50";
-    if (seat.status === "selected") return "bg-cinema-primary";
-    if (seat.status === "unavailable")
-      return "bg-gray-500 cursor-not-allowed opacity-50";
-    if (seat.status === "available") return "bg-green-700 cursor-pointer";
-    return "bg-muted";
+    switch (seat.status) {
+      case "reserved":
+      case "unavailable":
+        return "bg-gray-500 cursor-not-allowed opacity-50";
+      case "selected":
+        return "bg-cinema-primary";
+      case "available":
+        return "bg-green-700 cursor-pointer hover:bg-cinema-primary/70";
+      default:
+        return "bg-muted";
+    }
+  };
+
+  const handleConfirm = () => {
+    // Thực hiện xử lý khi nhấn xác nhận
   };
 
   return (
     <div className="flex flex-col items-center py-4">
+      {/* Màn hình */}
       <div className="mb-8 bg-black/50 w-4/5 h-2 rounded-lg mx-auto">
-        <div className="text-center text-xs text-cinema-muted mt-1">SCREEN</div>
+        <div className="text-center text-xs text-cinema-muted mt-1">MÀN HÌNH</div>
       </div>
 
+      {/* Sơ đồ ghế */}
       <div className="mb-8 max-w-3xl mx-auto overflow-x-auto">
         {rows.map((row) => (
-          <div
-            key={row}
-            className="flex items-center justify-center gap-1 mb-2"
-          >
+          <div key={row} className="flex items-center justify-center gap-1 mb-2">
             <div className="w-6 text-center font-medium">{row}</div>
             <div className="flex gap-1">
               {getSeatsByRow(row).map((seat) => (
                 <button
                   key={seat.id}
-                  className={`size-6 text-[10px] rounded-t-lg flex items-center justify-center ${getSeatColor(
-                    seat
-                  )} transition-colors ${
-                    seat.status === "available"
-                      ? "hover:bg-cinema-primary/70 cursor-pointer"
-                      : ""
-                  }`}
-                  disabled={
-                    seat.status === "reserved" || seat.status === "unavailable"
-                  }
-                  onClick={() => {
-                    toggleSeat(seat);
-                  }}
+                  className={`size-6 text-[10px] rounded-t-lg flex items-center justify-center ${getSeatColor(seat)} transition-colors`}
+                  disabled={["reserved", "unavailable"].includes(seat.status)}
+                  onClick={() => toggleSeat(seat)}
                 >
                   {seat.seat_type.name.charAt(0).toUpperCase()}
                 </button>
@@ -184,7 +158,7 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
         ))}
       </div>
 
-      {/* Legend */}
+      {/* Chú thích */}
       <div className="flex flex-wrap justify-center gap-8 mb-6">
         {seatStatuses.map(({ color, label }) => (
           <div key={label} className="flex items-center gap-2">
@@ -194,31 +168,32 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
         ))}
       </div>
 
-      {/* SeatType in this room */}
+      {/* Loại ghế */}
       <div className="flex flex-wrap justify-center gap-2 mb-6">
         {seatTypes.map((seatType, index) => (
           <div key={index} className="border p-2 px-4 rounded text-center">
-            <div className="text-sm font-medium"> {seatType.name}</div>
+            <div className="text-sm font-medium">{seatType.name}</div>
             <div className="text-xs text-primary">
-              {formatCurrency(seatType.extra_price + Number(showtime.price))}
+              {formatCurrency(Number(seatType.extra_price) + Number(showtime.price))}
             </div>
           </div>
         ))}
       </div>
 
+      {/* Xác nhận */}
       <div className="mt-4 text-center">
         <p className="mb-4">
-          Selected seats:{" "}
+          Ghế đã chọn:{" "}
           {selectedSeats.length > 0
             ? selectedSeats.map((s) => `${s.seat_row}${s.seat_col}`).join(", ")
-            : "None"}
+            : "Chưa chọn"}
         </p>
         <Button
           onClick={handleConfirm}
           disabled={selectedSeats.length === 0}
           className="min-w-[200px]"
         >
-          Confirm ({selectedSeats.length})
+          Xác nhận ({selectedSeats.length})
           {selectedSeats.length > 0 &&
             ` - ${(
               selectedSeats.length * showtime.price

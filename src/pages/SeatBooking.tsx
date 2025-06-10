@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SeatSelection from "@/components/SeatSelection";
 import { Button } from "@/components/ui/button";
-import { Seat, Movie, Showtime, Booking } from "@/data/type";
+import { Booking } from "@/data/type";
 import {
   Card,
   CardContent,
@@ -27,46 +27,41 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { calculateRemainingSeconds } from "@/lib/calculateRemainingSeconds";
 
+// Component đặt chỗ ngồi
 const SeatBooking = () => {
   const navigate = useNavigate();
-
-  const { movieId, showtimeId } = useParams<{
-    movieId: string;
-    showtimeId: string;
-  }>();
-
+  const { movieId, showtimeId } = useParams<{ movieId: string; showtimeId: string; }>();
   const { user, isLoading } = useAuth();
   const [booking, setBooking] = useState<Booking>();
 
   const dispatch = useDispatch();
-  const selectedSeats = useSelector(
-    (state: RootState) => state.seat.selectedSeats
-  );
+  const selectedSeats = useSelector((state: RootState) => state.seat.selectedSeats);
+  const showtime = useSelector((state: RootState) => state.showtime.selectedShowtime);
 
-  const showtime = useSelector(
-    (state: RootState) => state.showtime.selectedShowtime
-  );
-  
+  // Lấy thông tin suất chiếu
   useEffect(() => {
     if (movieId && showtimeId) {
       dispatch(fetchShowtime(showtimeId));
     }
   }, [dispatch, movieId, showtimeId]);
 
+  // Lấy danh sách ghế
   useEffect(() => {
     if (showtimeId) {
       dispatch(fetchSeats(showtimeId));
     }
   }, [dispatch, showtimeId]);
 
+  // Kiểm tra đăng nhập
   useEffect(() => {
-    if (isLoading) return; // đợi load xong đã
+    if (isLoading) return;
     if (!user) {
-      toast.error("You need to login to book a seat");
+      toast.error("Bạn cần đăng nhập để đặt chỗ ngồi");
       navigate("/login");
     }
   }, [user, isLoading]);
 
+  // Tạo session đặt vé
   useEffect(() => {
     const createBooking = async () => {
       if (!movieId || !showtimeId || !user) return;
@@ -76,67 +71,64 @@ const SeatBooking = () => {
         };
         const response = await axiosInstance.post(`/bookings/`, payload);
         setBooking(response.data);
-
-
-        toast.info("Session start! You have 5 minutes to confirm your booking");
+        toast.info("Phiên đặt vé đã bắt đầu! Bạn có 5 phút để xác nhận đặt chỗ.");
       } catch (error) {
-        toast.error("Error creating booking");
+        toast.error("Lỗi khi tạo phiên đặt vé");
         navigate("/");
-        console.error("Error creating booking:", error);
+        console.error("Lỗi tạo booking:", error);
       }
     };
     createBooking();
   }, [movieId, showtimeId, user]);
 
+  // Xử lý thanh toán
   const handleCheckout = () => {
     if (!booking) {
-      toast.error("Booking session not found. Please try again.");
+      toast.error("Không tìm thấy phiên đặt vé. Vui lòng thử lại.");
       navigate("/");
-      return
+      return;
     }
 
     if (booking?.expired_at && new Date() > new Date(booking.expired_at)) {
-      toast.error("Your booking session has expired. Please try again.");
+      toast.error("Phiên đặt vé đã hết hạn. Vui lòng thử lại.");
       navigate("/");
       return;
     }
 
     if (selectedSeats.length === 0) {
-      toast.error("Please select at least one seat to continue.");
+      toast.error("Vui lòng chọn ít nhất một chỗ ngồi để tiếp tục.");
       return;
     }
-
 
     navigate(`/checkout`);
   };
 
-
+  // Nếu chưa có dữ liệu suất chiếu
   if (!showtime) {
     return (
       <div className="container py-12 text-center">
-        Invalid booking information.
+        Thông tin đặt vé không hợp lệ.
       </div>
     );
   }
 
+  // Tính tổng giá tiền
   const totalPrice = selectedSeats.reduce(
     (total, seat) =>
       total + Number(showtime.price) + Number(seat.seat_type.extra_price),
     0
   );
 
-
-
-
+  // Giao diện chính
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
       <main className="flex-1 py-8 container">
         <div className="max-w-5xl mx-auto">
           <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold mb-2">Select Your Seats</h1>
+              <h1 className="text-2xl font-bold mb-2">Chọn Chỗ Ngồi</h1>
               <p className="text-cinema-muted">
-                Please select the seats you wish to book for this movie.
+                Vui lòng chọn chỗ ngồi bạn muốn đặt cho bộ phim này.
               </p>
             </div>
             {booking && (
@@ -150,7 +142,7 @@ const SeatBooking = () => {
             <div className="md:col-span-2">
               <Card className="bg-card border-none overflow-hidden">
                 <CardHeader className="bg-muted/30">
-                  <CardTitle className="text-lg">Seating Plan</CardTitle>
+                  <CardTitle className="text-lg">Sơ Đồ Ghế Ngồi</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                   <SeatSelection bookingId={booking?.id} showtime={showtime} />
@@ -161,7 +153,7 @@ const SeatBooking = () => {
             <div>
               <Card className="bg-card border-none overflow-hidden sticky top-20">
                 <CardHeader className="bg-muted/30">
-                  <CardTitle className="text-lg">Booking Summary</CardTitle>
+                  <CardTitle className="text-lg">Tóm Tắt Đặt Vé</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-4">
@@ -170,7 +162,7 @@ const SeatBooking = () => {
                         {showtime.movie.title}
                       </h3>
                       <p className="text-sm text-cinema-muted">
-                        {showtime.movie.duration} min •{" "}
+                        {showtime.movie.duration} phút •{" "}
                         {showtime.movie.genres.map((g) => g.name).join(", ")}
                       </p>
                     </div>
@@ -181,7 +173,7 @@ const SeatBooking = () => {
                       <div className="flex items-start gap-2">
                         <Calendar size={16} className="mt-1" />
                         <div>
-                          <p className="text-sm font-medium">Date</p>
+                          <p className="text-sm font-medium">Ngày chiếu</p>
                           <p className="text-sm text-cinema-muted">
                             {formatDate(showtime.start_time)}
                           </p>
@@ -191,7 +183,7 @@ const SeatBooking = () => {
                       <div className="flex items-start gap-2">
                         <Clock size={16} className="mt-1" />
                         <div>
-                          <p className="text-sm font-medium">Time</p>
+                          <p className="text-sm font-medium">Giờ chiếu</p>
                           <p className="text-sm text-cinema-muted">
                             {formatTimeAMPM(showtime.start_time)}
                           </p>
@@ -201,7 +193,7 @@ const SeatBooking = () => {
                       <div className="flex items-start gap-2">
                         <MapPin size={16} className="mt-1" />
                         <div>
-                          <p className="text-sm font-medium">Cinema</p>
+                          <p className="text-sm font-medium">Rạp</p>
                           <p className="text-sm text-cinema-muted">
                             {showtime.cinema}
                           </p>
@@ -216,23 +208,23 @@ const SeatBooking = () => {
 
                     <div>
                       <div className="flex justify-between mb-1">
-                        <p className="text-sm">Selected Seats:</p>
+                        <p className="text-sm">Ghế đã chọn:</p>
                         <p className="text-sm">
                           {selectedSeats.length > 0
                             ? selectedSeats
                               .map((s) => `${s.seat_row}${s.seat_col}`)
                               .join(", ")
-                            : "None"}
+                            : "Chưa chọn"}
                         </p>
                       </div>
                       <div className="flex justify-between mb-2">
-                        <p className="text-sm">Price per Ticket:</p>
+                        <p className="text-sm">Giá mỗi vé:</p>
                         <p className="text-sm">
                           {showtime.price.toLocaleString()} VND
                         </p>
                       </div>
                       <div className="flex justify-between font-medium">
-                        <p>Total:</p>
+                        <p>Tổng cộng:</p>
                         <p>{Number(totalPrice).toLocaleString()} VND</p>
                       </div>
                     </div>
@@ -244,7 +236,7 @@ const SeatBooking = () => {
                     disabled={selectedSeats.length === 0}
                     onClick={handleCheckout}
                   >
-                    Continue to Payment
+                    Tiếp tục thanh toán
                   </Button>
                 </CardFooter>
               </Card>

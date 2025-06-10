@@ -1,7 +1,7 @@
 export default function formatCurrency(price: number): string {
-  return new Number(price).toLocaleString('en-US', {
+  return price.toLocaleString('vi-VN', {
     style: 'currency',
-    maximumFractionDigits: 2,
-    currency: 'USD'
+    currency: 'VND',
+    maximumFractionDigits: 0, // Không có số lẻ
   });
 }
