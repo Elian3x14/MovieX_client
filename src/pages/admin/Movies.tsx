@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,153 +19,143 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PlusCircle, Search, Edit, Trash } from "lucide-react";
+import { Search, Edit, Trash, Plus, ChevronDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar"
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { formatDate } from "@/lib/formatDate";
+import { fetchMovies } from "@/features/movie/movieSlice";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Mock data for movies
-const mockMovies = [
-  {
-    id: 1,
-    title: "Dune: Part Two",
-    director: "Denis Villeneuve",
-    duration: 166,
-    releaseDate: "2024-03-01",
-    status: "Now Showing",
-    genre: ["Sci-Fi", "Adventure"],
-  },
-  {
-    id: 2,
-    title: "Deadpool & Wolverine",
-    director: "Shawn Levy",
-    duration: 127,
-    releaseDate: "2024-07-26",
-    status: "Coming Soon",
-    genre: ["Action", "Comedy"],
-  },
-  {
-    id: 3,
-    title: "Inside Out 2",
-    director: "Kelsey Mann",
-    duration: 96,
-    releaseDate: "2024-06-14",
-    status: "Now Showing",
-    genre: ["Animation", "Comedy"],
-  },
-  {
-    id: 4,
-    title: "The Batman",
-    director: "Matt Reeves",
-    duration: 176,
-    releaseDate: "2022-03-04",
-    status: "Now Showing",
-    genre: ["Action", "Crime", "Drama"],
-  },
-  {
-    id: 5,
-    title: "Furiosa: A Mad Max Saga",
-    director: "George Miller",
-    duration: 148,
-    releaseDate: "2024-05-24",
-    status: "Now Showing",
-    genre: ["Action", "Adventure"],
-  },
-];
+
 
 const AdminMovies = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [movies, setMovies] = useState(mockMovies);
+  const dispatch = useAppDispatch();
+  const { movies, loading, error } = useAppSelector((state) => state.movie);
 
-  const filteredMovies = movies.filter(movie =>
+  const [date, setDate] = useState<Date | null>(null);
+  const [openDatePicker, setOpenDatePicker] = useState(false);
+  useEffect(() => {
+    dispatch(fetchMovies()); // Gọi API để lấy danh sách phim
+  }, [dispatch]);
+
+
+  const filteredMovies = Object.values(movies).filter(movie =>
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Movies Management</h1>
+        <h1 className="text-3xl font-bold">Quản lý phim</h1>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Movie
+              <Plus className="mr-2 h-4 w-4" />
+              Thêm phim mới
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="sm:max-w-[800px]">
             <DialogHeader>
-              <DialogTitle>Add New Movie</DialogTitle>
-              <DialogDescription>
-                Enter the details for the new movie.
-              </DialogDescription>
+              <DialogTitle>Thêm phim mới</DialogTitle>
+              <DialogDescription>Điền đầy đủ thông tin cho bộ phim.</DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="title" className="text-right">
-                  Title
-                </label>
-                <Input
-                  id="title"
-                  className="col-span-3"
-                  placeholder="Movie title"
-                />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="title">Tên phim</label>
+                <Input id="title" placeholder="Nhập tên phim" />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="director" className="text-right">
-                  Director
-                </label>
-                <Input
-                  id="director"
-                  className="col-span-3"
-                  placeholder="Director name"
-                />
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="description">Mô tả</label>
+                <Input id="description" placeholder="Tóm tắt nội dung" />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="duration" className="text-right">
-                  Duration (min)
-                </label>
-                <Input
-                  id="duration"
-                  type="number"
-                  className="col-span-3"
-                  placeholder="120"
-                />
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="poster_url">Poster URL</label>
+                <Input id="poster_url" placeholder="https://..." />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="release" className="text-right">
-                  Release Date
-                </label>
-                <Input
-                  id="release"
-                  type="date"
-                  className="col-span-3"
-                />
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="trailer_url">Trailer URL</label>
+                <Input id="trailer_url" placeholder="https://..." />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="genre" className="text-right">
-                  Genre
-                </label>
-                <Input
-                  id="genre"
-                  className="col-span-3"
-                  placeholder="Action, Drama, Comedy"
-                />
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="backdrop_url">Backdrop URL</label>
+                <Input id="backdrop_url" placeholder="https://..." />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <label htmlFor="status" className="text-right">
-                  Status
-                </label>
-                <Input
-                  id="status"
-                  className="col-span-3"
-                  placeholder="Now Showing, Coming Soon"
-                />
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="rating">Đánh giá</label>
+                <Input id="rating" type="number" step="0.1" placeholder="Ví dụ: 7.5" />
               </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="duration">Thời lượng (phút)</label>
+                <Input id="duration" type="number" placeholder="120" />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="year">Năm sản xuất</label>
+                <Input id="year" type="number" placeholder="2025" />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="director">Đạo diễn</label>
+                <Input id="director" placeholder="Tên đạo diễn" />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="date" className="px-1">
+                  Ngày phát hành
+                </Label>
+                <Popover open={openDatePicker} onOpenChange={setOpenDatePicker}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      id="date"
+                      className=" justify-between font-normal w-full"
+                    >
+                      {date ? date.toLocaleDateString() : "Select date"}
+                      <ChevronDownIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      captionLayout="dropdown"
+                      onSelect={(date) => {
+                        setDate(date)
+                        setOpenDatePicker(false)
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Trạng thái phát hành" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Trạng thái phát hành</SelectLabel>
+                    <SelectItem value="now-showing">Đang chiếu</SelectItem>
+                    <SelectItem value="coming-soon">Sắp chiếu</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
+
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setIsOpen(false)}>Save Movie</Button>
+              <Button variant="outline" onClick={() => setIsOpen(false)}>Huỷ</Button>
+              <Button onClick={() => setIsOpen(false)}>Lưu phim</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -173,8 +163,8 @@ const AdminMovies = () => {
 
       <div className="flex items-center gap-2">
         <Search className="h-4 w-4 text-muted-foreground" />
-        <Input 
-          placeholder="Search movies..." 
+        <Input
+          placeholder="Search movies..."
           className="max-w-md"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -202,16 +192,16 @@ const AdminMovies = () => {
                 <TableCell className="font-medium">{movie.title}</TableCell>
                 <TableCell>{movie.director}</TableCell>
                 <TableCell>{movie.duration} min</TableCell>
-                <TableCell>{movie.releaseDate}</TableCell>
+                <TableCell>{formatDate(movie.release_date)}</TableCell>
                 <TableCell>
-                  <Badge variant={movie.status === "Now Showing" ? "default" : "secondary"}>
-                    {movie.status}
+                  <Badge variant={movie.release_status === "now-showing" ? "default" : "secondary"}>
+                    {movie.release_status === "now-showing" ? "Đang chiếu" : "Sắp chiếu"}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {movie.genre.map((g, i) => (
-                      <Badge key={i} variant="outline">{g}</Badge>
+                    {movie.genres.map((g, i) => (
+                      <Badge key={i} variant="outline">{g.name}</Badge>
                     ))}
                   </div>
                 </TableCell>
