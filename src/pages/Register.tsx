@@ -1,8 +1,6 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,33 +33,26 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterFormInputs) => {
     try {
-      const payload = {
+      const res = await axiosInstance.post("register/", {
         first_name: data.firstName,
         last_name: data.lastName,
         phone_number: data.phone,
         email: data.email,
         password: data.password,
-      };
-
-      // Gửi request tới API đăng ký
-      const response = await axiosInstance.post("register/", payload);
-
-      // Hiển thị thông báo thành công
-      toast({
-        title: "Registration Successful",
-        description: "Please check your email to verify your account.",
       });
 
-      // Chuyển hướng tới trang xác thực email
+      toast({
+        title: "Đăng ký thành công",
+        description: "Vui lòng kiểm tra email để xác minh tài khoản.",
+      });
+
       navigate(`/register/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch (error: any) {
-      // Kiểm tra lỗi từ API và hiển thị thông báo phù hợp
       const errorMessage =
-        error.response?.data?.detail ||
-        "Something went wrong. Please try again.";
+        error.response?.data?.detail ?? "Đã xảy ra lỗi. Vui lòng thử lại.";
 
       toast({
-        title: "Registration Failed",
+        title: "Đăng ký thất bại",
         description: errorMessage,
         variant: "destructive",
       });
@@ -77,19 +68,18 @@ const Register = () => {
 
         <Card className="bg-card border-none shadow-xl">
           <CardHeader>
-            <CardTitle>Create an Account</CardTitle>
-            <CardDescription>
-              Sign up to start booking movie tickets
-            </CardDescription>
+            <CardTitle>Tạo tài khoản</CardTitle>
+            <CardDescription>Đăng ký để bắt đầu đặt vé xem phim</CardDescription>
           </CardHeader>
+
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">Họ</Label>
                   <Input
                     id="firstName"
-                    placeholder="John"
+                    placeholder="Nguyễn"
                     className="bg-background"
                     {...register("firstName")}
                   />
@@ -100,10 +90,10 @@ const Register = () => {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">Tên</Label>
                   <Input
                     id="lastName"
-                    placeholder="Doe"
+                    placeholder="Văn A"
                     className="bg-background"
                     {...register("lastName")}
                   />
@@ -120,7 +110,7 @@ const Register = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="john.doe@example.com"
+                  placeholder="email@example.com"
                   className="bg-background"
                   {...register("email")}
                 />
@@ -130,11 +120,11 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">Số điện thoại</Label>
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="+1234567890"
+                  placeholder="0987654321"
                   className="bg-background"
                   {...register("phone")}
                 />
@@ -144,7 +134,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mật khẩu</Label>
                 <Input
                   id="password"
                   type="password"
@@ -160,7 +150,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -176,27 +166,28 @@ const Register = () => {
               </div>
 
               <Button type="submit" className="w-full">
-                Create Account
+                Tạo tài khoản
               </Button>
             </form>
 
             <AuthProviderButtons />
           </CardContent>
+
           <CardFooter className="flex flex-col space-y-4 items-center justify-center">
             <div className="text-center text-sm">
-              Already have an account?{" "}
+              Đã có tài khoản?{" "}
               <Link to="/login" className="text-cinema-primary hover:underline">
-                Sign in
+                Đăng nhập
               </Link>
             </div>
             <div className="text-center text-xs text-cinema-muted">
-              By signing up, you agree to our{" "}
+              Khi đăng ký, bạn đã đồng ý với{" "}
               <Link to="/terms" className="underline">
-                Terms of Service
+                Điều khoản dịch vụ
               </Link>{" "}
-              and{" "}
+              và{" "}
               <Link to="/privacy" className="underline">
-                Privacy Policy
+                Chính sách bảo mật
               </Link>
             </div>
           </CardFooter>
@@ -207,7 +198,7 @@ const Register = () => {
             to="/"
             className="text-sm text-cinema-muted hover:text-cinema-text"
           >
-            ← Back to Home
+            ← Quay về trang chủ
           </Link>
         </div>
       </div>
