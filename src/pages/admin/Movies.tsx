@@ -18,6 +18,8 @@ import { formatDate } from "@/lib/formatDate";
 import { fetchMovies } from "@/features/movie/movieSlice";
 import MovieDialog from "@/components/admin/MovieDialog";
 import { Movie } from "@/data/type";
+import { DataTable } from "@/components/admin/movies/DataTable";
+import { columns } from "@/components/admin/movies/columns";
 
 const AdminMovies = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,7 +27,7 @@ const AdminMovies = () => {
   const dispatch = useAppDispatch();
   const { movies, loading, error } = useAppSelector((state) => state.movie);
 
-  const [selectedMovie, setSelectedMovie] = useState<Movie|null>(null);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
     dispatch(fetchMovies()); // Gọi API để lấy danh sách phim
@@ -41,6 +43,16 @@ const AdminMovies = () => {
     setIsOpen(true);
   };
 
+  const openEditMovieDialog = (movie: Movie) => {
+    setSelectedMovie(movie);
+    setIsOpen(true);
+  }
+
+  const openDeleteMovieDialog = (movie: Movie) => {
+    setSelectedMovie(movie);
+    setIsOpen(true);
+  }
+
   return (
     <>
       <div className="space-y-6">
@@ -48,69 +60,11 @@ const AdminMovies = () => {
           <h1 className="text-3xl font-bold">Quản lý phim</h1>
           <Button onClick={openAddMovieDialog}>
             <Plus className="mr-2 h-4 w-4" />
-            Thêm phim mới 
+            Thêm phim mới
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search movies..."
-            className="max-w-md"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Director</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Release Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Genre</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredMovies.map((movie) => (
-                <TableRow key={movie.id}>
-                  <TableCell>{movie.id}</TableCell>
-                  <TableCell className="font-medium">{movie.title}</TableCell>
-                  <TableCell>{movie.director}</TableCell>
-                  <TableCell>{movie.duration} min</TableCell>
-                  <TableCell>{formatDate(movie.release_date)}</TableCell>
-                  <TableCell>
-                    <Badge variant={movie.release_status === "now-showing" ? "default" : "secondary"}>
-                      {movie.release_status === "now-showing" ? "Đang chiếu" : "Sắp chiếu"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {movie.genres.map((g, i) => (
-                        <Badge key={i} variant="outline">{g.name}</Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button size="icon" variant="ghost">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost">
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable data={filteredMovies} columns={columns} />
       </div>
       {/* Hidden components */}
       <MovieDialog open={isOpen} setOpen={setIsOpen} />
