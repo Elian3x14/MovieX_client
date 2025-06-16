@@ -9,7 +9,7 @@ import { fetchMovies } from "@/features/movie/movieSlice";
 import MovieDialog from "@/components/admin/MovieDialog";
 import { Movie } from "@/data/type";
 import { DataTable } from "@/components/admin/DataTable";
-import { createMovieColumns } from "@/components/admin/movies/columns";
+import { createMovieColumns } from "@/components/admin/columns/createMovieColumns";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
 
 const AdminMovies = () => {

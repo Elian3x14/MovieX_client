@@ -1,4 +1,3 @@
-// columns.tsx
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ import {
 interface MovieTableCallbacks {
   onViewDetail?: (movie: Movie) => void;
   onDelete?: (movie: Movie) => void;
-  // bạn có thể thêm callback khác nếu muốn, như onEdit,...
 }
 
 export const createMovieColumns = ({
