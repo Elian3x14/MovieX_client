@@ -10,10 +10,12 @@ import MovieDialog from "@/components/admin/MovieDialog";
 import { Movie } from "@/data/type";
 import { DataTable } from "@/components/admin/DataTable";
 import { createMovieColumns } from "@/components/admin/movies/columns";
+import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
 
 const AdminMovies = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const dispatch = useAppDispatch();
   const { movies, loading, error } = useAppSelector((state) => state.movie);
 
@@ -40,13 +42,23 @@ const AdminMovies = () => {
 
   const openDeleteMovieDialog = (movie: Movie) => {
     setSelectedMovie(movie);
-    setIsOpen(true);
+    setOpenDeleteDialog(true);
   }
 
   const columns = createMovieColumns({
     onViewDetail: openEditMovieDialog,
     onDelete: openDeleteMovieDialog,
   });
+
+  const confirmDelete = () => {
+    if (selectedMovie) {
+      // Gọi API để xóa phim
+      // dispatch(deleteMovie(selectedMovie.id));
+      console.log(`Xóa phim: ${selectedMovie.title}`);
+    }
+    setOpenDeleteDialog(false);
+    setSelectedMovie(null);
+  }
 
 
   return (
@@ -65,6 +77,12 @@ const AdminMovies = () => {
       {/* Hidden components */}
       <MovieDialog open={isOpen} setOpen={setIsOpen}
         movie={selectedMovie} />
+      <ConfirmDeleteDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={confirmDelete}
+        objectName={selectedMovie?.title}
+      />
     </>
 
   );
