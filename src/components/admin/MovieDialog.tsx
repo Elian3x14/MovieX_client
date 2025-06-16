@@ -78,7 +78,10 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[800px]">
+            <DialogContent className="sm:max-w-[800px]"
+                onPointerDownOutside={(e) => e.preventDefault()}   // chặn click overlay :contentReference[oaicite:0]{index=0}
+                onEscapeKeyDown={(e) => e.preventDefault()}        // chặn phím Esc (tuỳ chọn)
+            >
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <DialogHeader>
@@ -221,7 +224,7 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel className="mb-2.5">Ngày phát hành</FormLabel>
-                                        <Popover>
+                                        <Popover modal={true}>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button
@@ -240,7 +243,7 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
+                                            <PopoverContent className="w-auto p-0" align="start"  >
                                                 <Calendar
                                                     mode="single"
                                                     selected={field.value ? new Date(field.value) : undefined}
@@ -250,7 +253,6 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
                                                     disabled={(date) =>
                                                         date > new Date() || date < new Date("1900-01-01")
                                                     }
-                                                    captionLayout="dropdown"
                                                 />
                                             </PopoverContent>
                                         </Popover>
