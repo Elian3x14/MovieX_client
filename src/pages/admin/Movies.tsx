@@ -1,25 +1,15 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
-import { Search, Edit, Trash, Plus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+
+import { Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { formatDate } from "@/lib/formatDate";
 import { fetchMovies } from "@/features/movie/movieSlice";
 import MovieDialog from "@/components/admin/MovieDialog";
 import { Movie } from "@/data/type";
-import { DataTable } from "@/components/admin/movies/DataTable";
-import { columns } from "@/components/admin/movies/columns";
+import { DataTable } from "@/components/admin/DataTable";
+import { createMovieColumns } from "@/components/admin/movies/columns";
 
 const AdminMovies = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,6 +43,12 @@ const AdminMovies = () => {
     setIsOpen(true);
   }
 
+  const columns = createMovieColumns({
+    onViewDetail: openEditMovieDialog,
+    onDelete: openDeleteMovieDialog,
+  });
+
+
   return (
     <>
       <div className="space-y-6">
@@ -67,7 +63,8 @@ const AdminMovies = () => {
         <DataTable data={filteredMovies} columns={columns} />
       </div>
       {/* Hidden components */}
-      <MovieDialog open={isOpen} setOpen={setIsOpen} />
+      <MovieDialog open={isOpen} setOpen={setIsOpen}
+        movie={selectedMovie} />
     </>
 
   );

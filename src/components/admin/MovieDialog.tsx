@@ -34,8 +34,6 @@ type Props = {
 
 const MovieDialog = ({ open, setOpen, movie }: Props) => {
     const isEdit = !!movie;
-    const [date, setDate] = useState<Date | undefined>(undefined);
-    const [openDatePicker, setOpenDatePicker] = useState(false);
 
     const form = useForm<MovieFormValues>({
         resolver: zodResolver(movieSchema),
@@ -81,16 +79,17 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-[800px]">
-                <DialogHeader>
-                    <DialogTitle>{isEdit ? "Chỉnh sửa phim" : "Thêm phim mới"}</DialogTitle>
-                    <DialogDescription>
-                        {isEdit
-                            ? "Chỉnh sửa thông tin phim bên dưới."
-                            : "Điền đầy đủ thông tin cho bộ phim."}
-                    </DialogDescription>
-                </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <DialogHeader>
+                            <DialogTitle>{isEdit ? "Chỉnh sửa phim" : "Thêm phim mới"}</DialogTitle>
+                            <DialogDescription>
+                                {isEdit
+                                    ? "Chỉnh sửa thông tin phim bên dưới."
+                                    : "Điền đầy đủ thông tin cho bộ phim."}
+                            </DialogDescription>
+                        </DialogHeader>
+
 
                         <div className="grid grid-cols-2 gap-4 my-3">
                             {/* Tên phim */}
@@ -233,7 +232,7 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
                                                         )}
                                                     >
                                                         {field.value ? (
-                                                            format(field.value, "PPP")
+                                                            format(new Date(field.value), "PPP")  // chuyển sang Date trước khi format
                                                         ) : (
                                                             <span>Chọn ngày phát hành</span>
                                                         )}
@@ -244,8 +243,10 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
                                             <PopoverContent className="w-auto p-0" align="start">
                                                 <Calendar
                                                     mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
+                                                    selected={field.value ? new Date(field.value) : undefined}
+                                                    onSelect={
+                                                        field.onChange
+                                                    }
                                                     disabled={(date) =>
                                                         date > new Date() || date < new Date("1900-01-01")
                                                     }
@@ -260,13 +261,14 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
 
                         </div>
 
+
+
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setOpen(false)}>Huỷ</Button>
+                            <Button type="submit">{isEdit ? "Cập nhật" : "Lưu phim"}</Button>
+                        </DialogFooter>
                     </form>
                 </Form>
-
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>Huỷ</Button>
-                    <Button>{isEdit ? "Cập nhật" : "Lưu phim"}</Button>
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
