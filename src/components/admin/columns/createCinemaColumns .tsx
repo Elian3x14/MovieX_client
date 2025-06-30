@@ -1,8 +1,15 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Cinema } from "@/data/type"; // hoặc nơi bạn đặt interface Cinema
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Cinema } from "@/data/type";
 
 interface CinemaTableCallbacks {
   onViewDetail?: (cinema: Cinema) => void;
@@ -23,28 +30,17 @@ export const createCinemaColumns = ({
     cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
   },
   {
-    accessorKey: "address",
+    id: "full_address",
     header: "Địa chỉ",
+    cell: ({ row }) => {
+      const { street, ward, district, city } = row.original;
+      return [street, ward, district, city].filter(Boolean).join(", ") || "Không có địa chỉ";
+    },
   },
   {
-    accessorKey: "halls",
+    accessorKey: "number_of_rooms",
     header: "Số phòng chiếu",
-    cell: ({ row }) => `${row.original.halls} phòng`,
-  },
-  {
-    accessorKey: "image",
-    header: "Hình ảnh",
-    enableSorting: false,
-    cell: ({ row }) =>
-      row.original.image ? (
-        <img
-          src={row.original.image}
-          alt={row.original.name}
-          className="h-10 w-16 object-cover rounded"
-        />
-      ) : (
-        <span className="text-muted-foreground italic">Chưa có</span>
-      ),
+    cell: ({ row }) => `${row.original.number_of_rooms} phòng`,
   },
   {
     id: "actions",

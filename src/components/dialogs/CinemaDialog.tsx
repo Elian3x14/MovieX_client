@@ -15,6 +15,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 import { Cinema } from "@/data/type";
 import { cinemaSchema, cinemaSchemaDefaultValues, CinemaFormValues } from "@/schemas/cinemaSchema";
+import { useAppDispatch } from "@/app/hooks";
+import { createCinema, updateCinema } from "@/features/cinema/cinemaSlice";
+import { toast } from "sonner";
 
 type Props = {
   open: boolean;
@@ -24,6 +27,7 @@ type Props = {
 
 const CinemaDialog = ({ open, setOpen, cinema }: Props) => {
   const isEdit = !!cinema;
+  const dispatch = useAppDispatch();
 
   const form = useForm<CinemaFormValues>({
     resolver: zodResolver(cinemaSchema),
@@ -34,22 +38,33 @@ const CinemaDialog = ({ open, setOpen, cinema }: Props) => {
     if (cinema) {
       form.reset({
         name: cinema.name,
-        address: cinema.address,
-        halls: cinema.halls,
-        image: cinema.image || "",
+        street: cinema.street,
+        ward: cinema.ward || "",
+        district: cinema.district || "",
+        city: cinema.city || "",
       });
     } else {
       form.reset(cinemaSchemaDefaultValues);
     }
   }, [cinema, open]);
 
+
   const onSubmit = (data: CinemaFormValues) => {
+    console.log("Submitted data:", data);
     if (isEdit) {
       console.log("Cập nhật rạp:", cinema?.id, data);
-      // dispatch(updateCinema(cinema.id, data));
+      dispatch(updateCinema({ id: cinema!.id, data })).unwrap()
+        .then(() => {
+          toast.success("Rạp chiếu đã được cập nhật thành công!");
+        })
+        .catch((error) => { toast.error(`Lỗi khi cập nhật rạp chiếu: ${error.message}`); });
     } else {
       console.log("Tạo rạp mới:", data);
-      // dispatch(createCinema(data));
+      dispatch(createCinema(data)).unwrap()
+        .then(() => {
+          toast.success("Rạp chiếu đã được lưu thành công!")
+        })
+        .catch((error) => { toast.error(`Lỗi khi lưu rạp chiếu: ${error.message}`); });
     }
     setOpen(false);
   };
@@ -90,42 +105,54 @@ const CinemaDialog = ({ open, setOpen, cinema }: Props) => {
             {/* Địa chỉ */}
             <FormField
               control={form.control}
-              name="address"
+              name="street"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Địa chỉ</FormLabel>
+                  <FormLabel>Tên đường</FormLabel>
                   <FormControl>
-                    <Input placeholder="72 Lê Thánh Tôn, Q1" {...field} />
+                    <Input placeholder="72 Lê Thánh Tôn" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Số phòng chiếu */}
             <FormField
               control={form.control}
-              name="halls"
+              name="ward"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Số phòng chiếu</FormLabel>
+                  <FormLabel>Phường (nếu có)</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input placeholder="Bến Nghé" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Ảnh đại diện */}
             <FormField
               control={form.control}
-              name="image"
+              name="district"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ảnh rạp (URL)</FormLabel>
+                  <FormLabel>Quận (nếu có)</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://..." {...field} />
+                    <Input placeholder="Quận 1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thành phố</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Hồ Chí Minh" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

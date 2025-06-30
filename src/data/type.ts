@@ -65,12 +65,15 @@ export interface Showtime {
 }
 
 export interface Cinema {
-  id: string;
+  id: number;
   name: string;
-  address: string;
-  halls: number;
-  image?: string;
+  street: string;
+  ward: string;
+  district: string;
+  city: string;
+  number_of_rooms: number;
 }
+
 
 export interface Promotion {
   id: string;
@@ -111,37 +114,6 @@ export interface BookingSeat {
   status: "available" | "reserved" | "selected" | "unavailable";
   final_price: number;
 }
-
-export const cinemas: Cinema[] = [
-  {
-    id: "cinema1",
-    name: "CGV Cinema",
-    address: "123 Main Street, Downtown",
-    halls: 7,
-    image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: "cinema2",
-    name: "Lotte Cinema",
-    address: "456 Park Avenue, Uptown",
-    halls: 5,
-    image: "https://images.unsplash.com/photo-1596445836561-991bcd39a86d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: "cinema3",
-    name: "BHD Star Cineplex",
-    address: "789 Ocean Boulevard, Seaside",
-    halls: 6,
-    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  },
-  {
-    id: "cinema4",
-    name: "Galaxy Cinema",
-    address: "101 Highland Road, Hillside",
-    halls: 4,
-    image: "https://images.unsplash.com/photo-1615986201152-7686a4867f30?q=80&w=2025&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-  }
-];
 
 export const promotions: Promotion[] = [
   {

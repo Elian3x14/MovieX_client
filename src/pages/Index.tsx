@@ -5,12 +5,13 @@ import CinemaCard from "@/components/CinemaCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { promotions, cinemas, Movie } from "@/data/type";
+import { promotions, Movie } from "@/data/type";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
 import { FaAppStoreIos, FaGooglePlay } from "react-icons/fa";
 
 const Index = () => {
+  const cinemas = []; // Giả sử bạn đã có danh sách rạp chiếu phim
   // Khai báo state để lưu danh sách phim
   const [movies, setMovies] = useState<Movie[]>([]);
 
