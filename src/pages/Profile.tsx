@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
+import { Switch } from "@/components/ui/switch";
 
 // Define form schema
 const profileSchema = z.object({
@@ -57,30 +58,32 @@ const Profile = () => {
   const onSubmit = (data: ProfileFormValues) => {
     // Here you would typically call an API to update the user's profile
     console.log("Form submitted:", data);
-    
+
     // Show success toast
     toast({
       title: "Profile Updated",
       description: "Your profile has been updated successfully.",
     });
-    
+
     setIsEditing(false);
   };
 
   return (
     <div className="container max-w-5xl py-10">
-      <h1 className="text-3xl font-bold mb-6">My Profile</h1>
-      
+      <h1 className="text-3xl font-bold mb-6">Hồ sơ của tôi</h1>
+
+
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-8">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="orders">My Tickets</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
+          <TabsTrigger value="profile">Hồ sơ</TabsTrigger>
+          <TabsTrigger value="orders">Vé đã mua</TabsTrigger>
+          <TabsTrigger value="preferences">Tuỳ chọn</TabsTrigger>
+
         </TabsList>
-        
+
         <TabsContent value="profile">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Profile Card */}
+            {/* Thẻ Hồ sơ */}
             <Card className="md:col-span-1">
               <CardHeader>
                 <div className="flex flex-col items-center">
@@ -97,32 +100,32 @@ const Profile = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Member since</span>
-                    <span>April 2023</span>
+                    <span className="text-muted-foreground">Thành viên từ</span>
+                    <span>Tháng 4, 2023</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status</span>
-                    <span className="text-cinema-primary font-medium">Active</span>
+                    <span className="text-muted-foreground">Trạng thái</span>
+                    <span className="text-cinema-primary font-medium">Hoạt động</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Loyalty Points</span>
-                    <span>750 pts</span>
+                    <span className="text-muted-foreground">Điểm thưởng</span>
+                    <span>750 điểm</span>
                   </div>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button variant="outline" size="sm" className="w-full">
-                  Upload New Photo
+                  Tải ảnh mới
                 </Button>
               </CardFooter>
             </Card>
-            
-            {/* Profile Form */}
+
+            {/* Biểu mẫu Hồ sơ */}
             <Card className="md:col-span-2">
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
+                <CardTitle>Thông tin cá nhân</CardTitle>
                 <CardDescription>
-                  Manage your personal information
+                  Quản lý thông tin cá nhân của bạn
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -133,37 +136,37 @@ const Profile = () => {
                       name="fullName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Full Name</FormLabel>
+                          <FormLabel>Họ và tên</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               disabled={!isEditing}
-                              placeholder="Enter your full name"
+                              placeholder="Nhập họ và tên"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Username</FormLabel>
+                          <FormLabel>Tên người dùng</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               disabled={!isEditing}
-                              placeholder="Enter your username"
+                              placeholder="Nhập tên người dùng"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="email"
@@ -173,52 +176,52 @@ const Profile = () => {
                           <FormControl>
                             <Input
                               {...field}
-                              disabled={!isEditing || true} // Email is always disabled
+                              disabled
                               type="email"
-                              placeholder="Enter your email"
+                              placeholder="Nhập email"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
+                          <FormLabel>Số điện thoại</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               disabled={!isEditing}
-                              placeholder="Enter your phone number"
+                              placeholder="Nhập số điện thoại"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="flex justify-end space-x-4 pt-4">
                       {isEditing ? (
                         <>
-                          <Button 
-                            type="button" 
-                            variant="outline" 
+                          <Button
+                            type="button"
+                            variant="outline"
                             onClick={() => setIsEditing(false)}
                           >
-                            Cancel
+                            Huỷ
                           </Button>
-                          <Button type="submit">Save Changes</Button>
+                          <Button type="submit">Lưu thay đổi</Button>
                         </>
                       ) : (
-                        <Button 
-                          type="button" 
+                        <Button
+                          type="button"
                           onClick={() => setIsEditing(true)}
                         >
-                          Edit Profile
+                          Chỉnh sửa hồ sơ
                         </Button>
                       )}
                     </div>
@@ -228,79 +231,76 @@ const Profile = () => {
             </Card>
           </div>
         </TabsContent>
-        
+
         <TabsContent value="orders">
           <Card>
             <CardHeader>
-              <CardTitle>My Tickets</CardTitle>
+              <CardTitle>Vé của tôi</CardTitle>
               <CardDescription>
-                View your ticket purchase history
+                Xem lịch sử đặt vé của bạn
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-10 text-muted-foreground">
-                <p>You haven't purchased any tickets yet.</p>
+                <p>Bạn chưa mua vé nào.</p>
                 <Button className="mt-4" asChild>
-                  <a href="/movies">Browse Movies</a>
+                  <a href="/movies">Xem phim</a>
                 </Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="preferences">
           <Card>
             <CardHeader>
-              <CardTitle>Account Preferences</CardTitle>
+              <CardTitle>Tùy chọn tài khoản</CardTitle>
               <CardDescription>
-                Manage your account settings and preferences
+                Quản lý cài đặt và tùy chọn tài khoản của bạn
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Email Notifications</h3>
+                <h3 className="text-lg font-medium">Thông báo Email</h3>
                 <Separator />
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">New Releases</p>
+                      <p className="font-medium">Phim mới phát hành</p>
                       <p className="text-sm text-muted-foreground">
-                        Get notified about new movie releases
+                        Nhận thông báo về các phim mới phát hành
                       </p>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Enabled
-                    </Button>
+                    <Switch />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Promotions</p>
+                      <p className="font-medium">Khuyến mãi</p>
                       <p className="text-sm text-muted-foreground">
-                        Receive promotional offers and discounts
+                        Nhận các ưu đãi khuyến mãi và giảm giá
                       </p>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Enabled
-                    </Button>
+                    <Switch />
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Password</h3>
+                <h3 className="text-lg font-medium">Mật khẩu</h3>
                 <Separator />
-                <Button variant="outline">Change Password</Button>
+                <Button variant="outline">Đổi mật khẩu</Button>
               </div>
-              
+
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Danger Zone</h3>
+                <h3 className="text-lg font-medium">Khu vực nguy hiểm</h3>
                 <Separator className="bg-destructive/20" />
-                <Button variant="destructive">Delete Account</Button>
+                <Button variant="destructive">Xóa tài khoản</Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
+
       </Tabs>
     </div>
   );
