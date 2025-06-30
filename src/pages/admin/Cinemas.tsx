@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { fetchCinemas } from "@/features/cinema/cinemaSlice";
+import { deleteCinema, fetchCinemas } from "@/features/cinema/cinemaSlice";
 import { Cinema } from "@/data/type";
 import CinemaDialog from "@/components/dialogs/CinemaDialog";
 import { DataTable } from "@/components/admin/DataTable";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
 import { createCinemaColumns } from "@/components/admin/columns/createCinemaColumns ";
+import { toast } from "sonner";
 
 const AdminCinemas = () => {
   const dispatch = useAppDispatch();
@@ -41,7 +42,13 @@ const AdminCinemas = () => {
 
   const confirmDelete = () => {
     if (selectedCinema) {
-      // dispatch(deleteCinema(selectedCinema.id));
+      dispatch(deleteCinema(selectedCinema.id)).unwrap()
+        .then(() => {
+          toast.success(`Đã xóa rạp chiếu: ${selectedCinema.name}`)
+        })
+        .catch((error) => {
+          toast.error(`Lỗi khi xóa rạp chiếu: ${error.message}`)
+        });
       console.log(`Xóa rạp: ${selectedCinema.name}`);
     }
     setOpenDeleteDialog(false);
