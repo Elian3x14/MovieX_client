@@ -6,32 +6,36 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { promotions, Movie } from "@/data/type";
-import { useEffect, useState } from "react";
-import axiosInstance from "@/lib/axios";
 import { FaAppStoreIos, FaGooglePlay } from "react-icons/fa";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { useEffect } from "react";
+import { fetchCinemas } from "@/features/cinema/cinemaSlice";
+import { fetchMovies } from "@/features/movie/movieSlice";
 
 const Index = () => {
-  const cinemas = []; // Giả sử bạn đã có danh sách rạp chiếu phim
-  // Khai báo state để lưu danh sách phim
-  const [movies, setMovies] = useState<Movie[]>([]);
 
-  // Hàm lấy dữ liệu phim từ API
-  const fetchMovies = async () => {
-    const response = await axiosInstance.get("/movies/");
-    setMovies(response.data);
-  };
+  const dispatch = useAppDispatch();
+  const { movies, loading, error } = useAppSelector((state) => state.movie);
+  const { cinemas } = useAppSelector((state) => state.cinema);
 
-  // Gọi API khi component được render lần đầu
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    if (Object.keys(movies).length === 0) {
+      dispatch(fetchMovies());
+    }
+  }, [dispatch, movies]);
 
-  // Phân loại phim hiện đang chiếu và sắp chiếu
-  const nowShowingMovies = movies;
-  const upcomingMovies = movies;
+  useEffect(() => {
+    if (Object.keys(cinemas).length === 0) {
+      dispatch(fetchCinemas());
+    }
+  }, [dispatch, cinemas]);
 
-  // Lấy 3 phim đầu tiên làm phim nổi bật
-  const featuredMovies = movies.slice(0, 3);
+
+  const nowShowingMovies = Object.values(movies);
+  const upcomingMovies = Object.values(movies);
+
+  // Lấy vài phim đầu tiên làm phim nổi bật
+  const featuredMovies = Object.values(movies).slice(0, 5);
 
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
@@ -53,7 +57,7 @@ const Index = () => {
           <div className="container">
             <h2 className="text-2xl font-bold mb-6">Rạp chiếu phim của chúng tôi</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {cinemas.map((cinema) => (
+              {Object.values(cinemas).map((cinema) => (
                 <CinemaCard key={cinema.id} cinema={cinema} />
               ))}
             </div>
