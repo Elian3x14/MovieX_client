@@ -11,8 +11,8 @@ const menuItems = [
   {
     path: "/admin",
     icon: Home,
-    label: "Bảng điều khiển",
-    tooltip: "Bảng điều khiển",
+    label: "Tổng quan",
+    tooltip: "Tổng quan",
   },
   {
     path: "/admin/movies",

@@ -1,6 +1,6 @@
 // components/admin/MovieDialog.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,19 +11,21 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Movie } from "@/data/type";
 import { MovieFormValues, movieSchema, movieSchemaDefaultValues } from "@/schemas/movieSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useAppDispatch } from "@/app/hooks";
+import { createMovie, updateMovie } from "@/features/movie/movieSlice";
+import { toast } from "sonner";
 
 
 type Props = {
@@ -34,6 +36,7 @@ type Props = {
 
 const MovieDialog = ({ open, setOpen, movie }: Props) => {
     const isEdit = !!movie;
+    const dispatch = useAppDispatch();
 
     const form = useForm<MovieFormValues>({
         resolver: zodResolver(movieSchema),
@@ -65,16 +68,16 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
     const onSubmit = (data: MovieFormValues) => {
         if (isEdit) {
             console.log("Cập nhật phim:", movie?.id, data);
-            // dispatch(updateMovie(movie.id, data));
+            dispatch(updateMovie({ id: movie!.id, data }));
         } else {
             console.log("Tạo phim mới:", data);
-            // dispatch(createMovie(data));
+            dispatch(createMovie(data))
+                .unwrap()
+                .then(() => toast.success("Tạo phim thành công"))
+                .catch((err) => toast.error(err));
         }
         setOpen(false);
     };
-
-
-
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

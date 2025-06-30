@@ -33,7 +33,7 @@ const Login = () => {
       await login(data.email, data.password);
       toast({
         title: "Đăng nhập thành công",
-        description: "Chào mừng bạn quay lại với CinemaPlus!",
+        description: "Chào mừng bạn quay lại với MovieX!",
       });
       navigate("/");
     } catch (error) {

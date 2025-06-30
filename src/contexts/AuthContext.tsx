@@ -70,9 +70,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("user", JSON.stringify(loggedInUser));
       setUser(loggedInUser);
       setIsAuthenticated(true);
-
-      // Điều hướng sau khi đăng nhập thành công
-      navigate("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
       throw new Error("Invalid email or password");
