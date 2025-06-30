@@ -68,7 +68,10 @@ const MovieDialog = ({ open, setOpen, movie }: Props) => {
     const onSubmit = (data: MovieFormValues) => {
         if (isEdit) {
             console.log("Cập nhật phim:", movie?.id, data);
-            dispatch(updateMovie({ id: movie!.id, data }));
+            dispatch(updateMovie({ id: movie!.id, data }))
+                .unwrap()
+                .then(() => toast.success("Cập nhật phim thành công"))
+                .catch((err) => toast.error(err));
         } else {
             console.log("Tạo phim mới:", data);
             dispatch(createMovie(data))

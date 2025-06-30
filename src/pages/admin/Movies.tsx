@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 
 import { Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { fetchMovies } from "@/features/movie/movieSlice";
+import { deleteMovie, fetchMovies } from "@/features/movie/movieSlice";
 import MovieDialog from "@/components/admin/MovieDialog";
 import { Movie } from "@/data/type";
 import { DataTable } from "@/components/admin/DataTable";
 import { createMovieColumns } from "@/components/admin/columns/createMovieColumns";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
+import { toast } from "sonner";
 
 const AdminMovies = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,9 +53,13 @@ const AdminMovies = () => {
 
   const confirmDelete = () => {
     if (selectedMovie) {
-      // Gọi API để xóa phim
-      // dispatch(deleteMovie(selectedMovie.id));
       console.log(`Xóa phim: ${selectedMovie.title}`);
+      // Gọi API để xóa phim
+      dispatch(deleteMovie(selectedMovie.id)).unwrap()
+        .then(() => { toast.success("Xóa phim thành công") })
+        .catch((err) => {
+          toast.error(err)
+        });
     }
     setOpenDeleteDialog(false);
     setSelectedMovie(null);
