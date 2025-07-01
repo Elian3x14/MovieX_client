@@ -24,6 +24,7 @@ import AdminReports from "./pages/admin/Reports";
 import { AuthProvider } from "./contexts/AuthContext";
 import IndexLayout from "./components/layouts/IndexLayout";
 import PaymentResult from "./pages/PaymentResult";
+import AdminRooms from "./pages/admin/Rooms";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ const App = () => (
               <Route index element={<AdminDashboard />} />
               <Route path="movies" element={<AdminMovies />} />
               <Route path="cinemas" element={<AdminCinemas />} />
+              <Route path="rooms" element={<AdminRooms />} />
               <Route path="showtimes" element={<AdminShowtimes />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="reports" element={<AdminReports />} />

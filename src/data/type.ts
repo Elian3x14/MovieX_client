@@ -49,9 +49,11 @@ export interface Movie {
 
 export interface Room {
   id: number;
+  cinema_id: number;
   cinema?: Cinema;
   name: string;
-  total_seats: number;
+  no_row: number;
+  no_column: number;
 }
 
 export interface Showtime {

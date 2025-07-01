@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   Film, MapPin, Calendar, Users, Home, Database, ChartBar, MoveLeft,
+  LayoutPanelLeft,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarHeader,
@@ -25,6 +26,12 @@ const menuItems = [
     icon: MapPin,
     label: "Rạp chiếu",
     tooltip: "Rạp chiếu",
+  },
+  {
+    path: "/admin/rooms",
+    icon: LayoutPanelLeft,
+    label: "Phòng chiếu",
+    tooltip: "Phòng chiếu",
   },
   {
     path: "/admin/showtimes",
