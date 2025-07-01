@@ -18,6 +18,7 @@ import {
 } from "@/features/showtime/showtimeSlice";
 import ReviewSection from "@/components/MovieDetail/ReviewSection";
 import ShowtimeSection from "@/components/MovieDetail/ShowtimeSection";
+import { fetchCinemas } from "@/features/cinema/cinemaSlice";
 
 interface ShowTimesByDate {
   [key: string]: {
@@ -34,10 +35,13 @@ interface ShowTimesByDate {
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
+  const { toast } = useToast();
+
   const movie = useSelector((state: RootState) =>
     id ? state.movie.movies[id] : undefined
   );
   const loading = useSelector((state: RootState) => state.movie.loading);
+  const { cinemas } = useSelector((state: RootState) => state.cinema);
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -47,18 +51,32 @@ const MovieDetail = () => {
 
   const showtimeLoading = useSelector(selectShowtimeLoading);
 
-  useEffect(() => {
-    if (id && showtimes.length === 0) {
-      dispatch(fetchShowtimes(id));
-    }
-  }, [id, dispatch]);
-  const { toast } = useToast();
 
+  // Lấy thông tin movie khi component mount hoặc khi id thay đổi
   useEffect(() => {
     if (id && !movie) {
       dispatch(fetchMovieById(id));
     }
   }, [id, movie, dispatch]);
+  // Lấy lịch chiếu khi component mount hoặc khi id thay đổi
+  useEffect(() => {
+    if (id && showtimes.length === 0) {
+      dispatch(fetchShowtimes(id));
+      // Lấy danh sách rạp chiếu cho lịch chiếu
+      if (Object.keys(cinemas).length === 0) {
+        dispatch(fetchCinemas())
+          .unwrap()
+          .catch((err) =>
+            toast({
+              title: "Lỗi tải rạp chiếu",
+              description: `Không thể tải danh sách rạp chiếu: ${err.message}`,
+              variant: "destructive",
+            })
+          );
+      }
+    }
+  }, [id, dispatch, showtimes]);
+
 
   const uniqueDates = [
     ...new Set(
@@ -77,7 +95,7 @@ const MovieDetail = () => {
     }
 
     const existingCinema = showtimesByDate[date].find(
-      (group) => group.cinema === showtime.room.cinema.name
+      (group) => group.cinema === cinemas[showtime.room.cinema_id].name
     );
 
     const showtimeInfo = {
@@ -94,7 +112,7 @@ const MovieDetail = () => {
       existingCinema.times.push(showtimeInfo);
     } else {
       showtimesByDate[date].push({
-        cinema: showtime.room.cinema.name,
+        cinema: cinemas[showtime.room.cinema_id].name,
         times: [showtimeInfo],
       });
     }
