@@ -25,6 +25,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import IndexLayout from "./components/layouts/IndexLayout";
 import PaymentResult from "./pages/PaymentResult";
 import AdminRooms from "./pages/admin/Rooms";
+import RoomSeatsPage from "./pages/admin/RoomSeatsPage";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="movies" element={<AdminMovies />} />
               <Route path="cinemas" element={<AdminCinemas />} />
               <Route path="rooms" element={<AdminRooms />} />
+              <Route path="rooms/:roomId/seats" element={<RoomSeatsPage />} />
               <Route path="showtimes" element={<AdminShowtimes />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="reports" element={<AdminReports />} />

@@ -90,13 +90,26 @@ export interface SeatType {
   name: string;
   extra_price: number;
 }
-
 export interface Seat {
   id: number;
   seat_row: string;
   seat_col: number;
-  status: "available" | "reserved" | "selected" | "unavailable";
+  seat_type_id: number;
   seat_type: SeatType;
+  is_maintenance?: boolean;
+}
+
+export interface RoomSeat extends Seat {
+}
+
+enum SeatStatus {
+  AVAILABLE = "available",
+  RESERVED = "reserved",
+  SELECTED = "selected",
+  UNAVAILABLE = "unavailable",
+}
+export interface ShowtimeSeat extends Seat {
+  status: SeatStatus;
 }
 
 export interface Booking {
@@ -112,7 +125,7 @@ export interface Booking {
 export interface BookingSeat {
   id: number;
   booking: Booking;
-  seat: Seat;
+  seat: ShowtimeSeat;
   status: "available" | "reserved" | "selected" | "unavailable";
   final_price: number;
 }

@@ -11,9 +11,12 @@ import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
 import { createRoomColumns } from "@/components/admin/columns/createRoomColumns";
 import { toast } from "sonner";
 import { fetchCinemas } from "@/features/cinema/cinemaSlice";
+import RoomSeatsDialog from "@/components/dialogs/RoomSeatsDialog";
+import { useNavigate } from "react-router-dom";
 
 const AdminRooms = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { rooms, loading, error } = useAppSelector((state) => state.room);
     const { cinemas } = useAppSelector((state) => state.cinema);
 
@@ -51,6 +54,7 @@ const AdminRooms = () => {
         setOpenDeleteDialog(true);
     };
 
+
     const confirmDelete = () => {
         if (selectedRoom) {
             dispatch(deleteRoom(selectedRoom.id)).unwrap()
@@ -68,6 +72,9 @@ const AdminRooms = () => {
     const columns = createRoomColumns({
         onViewDetail: openEditRoomDialog,
         onDelete: openDeleteRoomDialog,
+        onManageSeats: (room: Room) => {
+            navigate(`/admin/rooms/${room.id}/seats`);
+        },
     });
 
     return (

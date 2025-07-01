@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Seat, SeatType, Showtime } from "@/data/type";
+import { ShowtimeSeat, SeatType, Showtime } from "@/data/type";
 import formatCurrency from "@/lib/formatCurrency";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
@@ -73,7 +73,7 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
     return Array.from(map.values()).sort((a, b) => a.extra_price - b.extra_price);
   }, [seats]);
 
-  const toggleSeat = async (seat: Seat) => {
+  const toggleSeat = async (seat: ShowtimeSeat) => {
     if (!bookingId) {
       toast.error("Lỗi: session chưa được khởi tạo!");
       return;
@@ -110,9 +110,9 @@ const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
             : seat
           : null
       )
-      .filter(Boolean) as Seat[];
+      .filter(Boolean) as ShowtimeSeat[];
 
-  const getSeatColor = (seat: Seat) => {
+  const getSeatColor = (seat: ShowtimeSeat) => {
     switch (seat.status) {
       case "reserved":
       case "unavailable":

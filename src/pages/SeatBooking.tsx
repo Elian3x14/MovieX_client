@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import {
-  fetchSeats,
+  fetchShowtimeSeats,
 } from "@/features/seat/seatSlice";
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
 import { toast } from "sonner";
@@ -48,7 +48,7 @@ const SeatBooking = () => {
   // Lấy danh sách ghế
   useEffect(() => {
     if (showtimeId) {
-      dispatch(fetchSeats(showtimeId));
+      dispatch(fetchShowtimeSeats(showtimeId));
     }
   }, [dispatch, showtimeId]);
 

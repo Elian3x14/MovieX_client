@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Booking, PaymentMethod, Seat } from "@/data/type";
+import { Booking, PaymentMethod, ShowtimeSeat } from "@/data/type";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axios";
 import { formatDate } from "@/lib/formatDate";
@@ -22,7 +22,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.ZALO_PAY);
   const [booking, setBooking] = useState<Booking>();
-  const [seats, setSeats] = useState<Seat[]>([]);
+  const [seats, setSeats] = useState<ShowtimeSeat[]>([]);
 
   const fetchBookingDetails = async () => {
     try {
