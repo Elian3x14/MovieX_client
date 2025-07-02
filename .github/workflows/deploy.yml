@@ -26,6 +26,9 @@ jobs:
 
       - name: Build project
         run: npm run build
+      
+      - name: Cleanup old files
+        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "rm -rf /var/www/moviex-client/*"
 
       - name: Copy files to VPS via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -33,7 +36,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: "dist/" # Thư mục chứa các file đã build
+          source: "dist/**" # Thư mục chứa các file đã build
           target: "/var/www/moviex-client/" # Thư mục đích trên VPS
 
       - name: Restart nginx (nếu cần)
