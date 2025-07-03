@@ -89,8 +89,10 @@ export interface Promotion {
 export interface SeatType {
   id: number;
   name: string;
-  extra_price: number;
+  short_name: string;
+  color: string;
 }
+
 export interface Seat {
   id: number;
   seat_row: string;

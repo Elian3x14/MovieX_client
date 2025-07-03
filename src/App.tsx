@@ -28,6 +28,7 @@ import AdminRooms from "./pages/admin/Rooms";
 import RoomSeatsPage from "./pages/admin/RoomSeatsPage";
 import MovieFormPage from "./pages/admin/MovieFormPage";
 import AdminCinemaRoomsPage from "./pages/admin/AdminCinemaRoomsPage";
+import AdminCinemaRoomSeatsPage from "./pages/admin/AdminCinemaRoomSeatsPage";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
               <Route path="movies/create" element={<MovieFormPage />} />
               <Route path="cinemas" element={<AdminCinemasPage />} />
               <Route path="cinemas/:id/rooms" element={<AdminCinemaRoomsPage />} />
+              <Route path="cinemas/:cinemaId/rooms/:roomId/seats" element={<AdminCinemaRoomSeatsPage />} />
               <Route path="rooms" element={<AdminRooms />} />
               <Route path="rooms/:roomId/seats" element={<RoomSeatsPage />} />
               <Route path="showtimes" element={<AdminShowtimes />} />

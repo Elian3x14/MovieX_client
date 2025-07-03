@@ -5,6 +5,7 @@ import reviewReducer from '../features/review/reviewSlice';
 import seatReducer from '../features/seat/seatSlice';
 import cinemaReducer from '../features/cinema/cinemaSlice';
 import roomReducer from '../features/room/roomSlice';
+import seatTypeReducer from '../features/seatType/seatTypeSlice'; 
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
     review: reviewReducer,
     seat: seatReducer,
     cinema: cinemaReducer,
-    room: roomReducer
+    room: roomReducer,
+    seatType: seatTypeReducer, 
   },
 });
 

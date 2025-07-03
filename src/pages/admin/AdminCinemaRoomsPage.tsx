@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Plus } from "lucide-react";
 
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
 import { Badge } from "@/components/ui/badge";
@@ -15,9 +15,9 @@ const AdminCinemaRoomsPage = () => {
     if (!cinema) {
         return (
             <Card className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Phòng chiếu không tồn tại</h1>
+                <h1 className="text-2xl font-bold mb-4">Rạp chiếu không tồn tại</h1>
                 <p className="text-muted-foreground mb-6">
-                    Không tìm thấy thông tin phòng chiếu cho rạp này.
+                    Không tìm thấy thông tin rạp chiếu này.
                 </p>
             </Card>
         );
@@ -86,8 +86,10 @@ const AdminCinemaRoomsPage = () => {
                         </div>
                     </div>
                 </div>
-                <Button size="sm" className="w-full mt-4">
-                    Quản lý ghế ngồi
+                <Button asChild size="sm" className="w-full mt-4">
+                    <Link to={`/admin/cinemas/${cinema.id}/rooms/${1}/seats`}>
+                        Quản lý ghế ngồi
+                    </Link>
                 </Button>
             </Card>
 
