@@ -42,7 +42,6 @@ export interface Movie {
   year: number;
   director: string;
   actors: Actor[];
-  release_status: "now-showing" | "coming-soon";
   release_date?: Date;
   reviews?: Review[];
 }

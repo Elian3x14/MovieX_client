@@ -11,12 +11,13 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useEffect } from "react";
 import { fetchCinemas } from "@/features/cinema/cinemaSlice";
 import { fetchMovies } from "@/features/movie/movieSlice";
+import { RootState } from "@/app/store";
 
 const Index = () => {
 
   const dispatch = useAppDispatch();
-  const { movies, loading, error } = useAppSelector((state) => state.movie);
-  const { cinemas } = useAppSelector((state) => state.cinema);
+  const { movies, loading, error } = useAppSelector((state: RootState) => state.movie);
+  const { cinemas } = useAppSelector((state: RootState) => state.cinema);
 
   useEffect(() => {
     if (Object.keys(movies).length === 0) {

@@ -26,6 +26,7 @@ import IndexLayout from "./components/layouts/IndexLayout";
 import PaymentResult from "./pages/PaymentResult";
 import AdminRooms from "./pages/admin/Rooms";
 import RoomSeatsPage from "./pages/admin/RoomSeatsPage";
+import MovieFormPage from "./pages/admin/MovieFormPage";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,8 @@ const App = () => (
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="movies" element={<AdminMovies />} />
+              <Route path="movies/:id/edit" element={<MovieFormPage />} />
+              <Route path="movies/create" element={<MovieFormPage />} />
               <Route path="cinemas" element={<AdminCinemas />} />
               <Route path="rooms" element={<AdminRooms />} />
               <Route path="rooms/:roomId/seats" element={<RoomSeatsPage />} />

@@ -10,7 +10,6 @@ export const movieSchema = z.object({
   duration: z.coerce.number().min(1),
   year: z.coerce.number().min(1900),
   director: z.string(),
-  release_status: z.enum(["now-showing", "coming-soon"]),
   release_date: z.date().optional(),
 });
 
@@ -27,5 +26,4 @@ export const movieSchemaDefaultValues: Partial<MovieFormValues> = {
   duration: 0,
   year: new Date().getFullYear(),
   director: "",
-  release_status: "coming-soon",
 };

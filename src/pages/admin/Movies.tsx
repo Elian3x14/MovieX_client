@@ -12,8 +12,10 @@ import { DataTable } from "@/components/admin/DataTable";
 import { createMovieColumns } from "@/components/admin/columns/createMovieColumns";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
 import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminMovies = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -36,9 +38,8 @@ const AdminMovies = () => {
     setIsOpen(true);
   };
 
-  const openEditMovieDialog = (movie: Movie) => {
-    setSelectedMovie(movie);
-    setIsOpen(true);
+  const onViewDetail = (movie: Movie) => {
+    navigate(`/admin/movies/${movie.id}/edit`);
   }
 
   const openDeleteMovieDialog = (movie: Movie) => {
@@ -47,7 +48,7 @@ const AdminMovies = () => {
   }
 
   const columns = createMovieColumns({
-    onViewDetail: openEditMovieDialog,
+    onViewDetail: onViewDetail,
     onDelete: openDeleteMovieDialog,
   });
 
@@ -71,17 +72,17 @@ const AdminMovies = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Quản lý phim</h1>
-          <Button onClick={openAddMovieDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            Thêm phim mới
+          <Button asChild>
+            <Link to="/admin/movies/create" className="flex items-center">
+              <Plus className="mr-2 size-4" />
+              Thêm phim mới
+            </Link>
           </Button>
         </div>
 
         <DataTable data={filteredMovies} columns={columns} />
       </div>
       {/* Hidden components */}
-      <MovieDialog open={isOpen} setOpen={setIsOpen}
-        movie={selectedMovie} />
       <ConfirmDeleteDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
