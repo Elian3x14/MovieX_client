@@ -5,12 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Cinema } from "@/data/type";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 interface CinemaCardProps {
   cinema: Cinema;
+  onEdit?: (cinema: Cinema) => void;
+  onDelete?: (cinema: Cinema) => void;
 }
 
-const CinemaCard = ({ cinema }: CinemaCardProps) => {
+const CinemaCard = ({ cinema, onEdit, onDelete }: CinemaCardProps) => {
   const fullAddress = [cinema.street, cinema.ward, cinema.district, cinema.city]
     .filter(Boolean) // Bỏ các phần undefined hoặc chuỗi rỗng
     .join(", ");
@@ -91,8 +94,10 @@ const CinemaCard = ({ cinema }: CinemaCardProps) => {
           </div>
         </div>
 
-        <Button className="w-full" size="sm" >
-          Quản lý phòng chiếu
+        <Button asChild className="w-full" size="sm">
+          <Link to={`/admin/cinemas/${cinema.id}/rooms`}>
+            Quản lý phòng chiếu
+          </Link>
         </Button>
       </CardContent>
     </Card>

@@ -88,8 +88,8 @@ const AdminSidebar = () => {
       <SidebarFooter className="border-t border-border/50 p-4">
         <div className="flex flex-col space-y-2">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
-            <div className="flex gap-2 items-center">
-              <MoveLeft /> Return to website
+            <div className="flex gap-2 items-center font-medium">
+              <MoveLeft /> Trở về trang chính
             </div>
           </Link>
         </div>
