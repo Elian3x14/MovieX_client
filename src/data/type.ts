@@ -72,6 +72,8 @@ export interface Cinema {
   ward: string;
   district: string;
   city: string;
+  opening_time: string;
+  closing_time: string;
   number_of_rooms: number;
 }
 

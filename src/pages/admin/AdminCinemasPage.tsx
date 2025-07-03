@@ -10,8 +10,9 @@ import { DataTable } from "@/components/admin/DataTable";
 import { ConfirmDeleteDialog } from "@/components/dialogs/ConfirmDeleteDialog";
 import { createCinemaColumns } from "@/components/admin/columns/createCinemaColumns ";
 import { toast } from "sonner";
+import CinemaCard from "@/components/CinemaCard";
 
-const AdminCinemas = () => {
+const AdminCinemasPage = () => {
   const dispatch = useAppDispatch();
   const { cinemas, loading, error } = useAppSelector((state) => state.cinema);
 
@@ -71,7 +72,17 @@ const AdminCinemas = () => {
           </Button>
         </div>
 
-        <DataTable data={filteredCinemas} columns={columns} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {filteredCinemas.map((cinema) => (
+            <CinemaCard
+              key={cinema.id}
+              cinema={cinema}
+              // onEdit={() => openEditCinemaDialog(cinema)}
+              // onDelete={() => openDeleteCinemaDialog(cinema)}
+            />
+          ))}
+        </div>
+        {/* <DataTable data={filteredCinemas} columns={columns} /> */}
       </div>
 
       <CinemaDialog open={isOpen} setOpen={setIsOpen} cinema={selectedCinema} />
@@ -86,4 +97,4 @@ const AdminCinemas = () => {
   );
 };
 
-export default AdminCinemas;
+export default AdminCinemasPage;

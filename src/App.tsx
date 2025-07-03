@@ -17,7 +17,7 @@ import NotFound from "./pages/NotFound";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminMovies from "./pages/admin/Movies";
-import AdminCinemas from "./pages/admin/Cinemas";
+import AdminCinemasPage from "./pages/admin/AdminCinemasPage";
 import AdminShowtimes from "./pages/admin/Showtimes";
 import AdminUsers from "./pages/admin/Users";
 import AdminReports from "./pages/admin/Reports";
@@ -63,7 +63,7 @@ const App = () => (
               <Route path="movies" element={<AdminMovies />} />
               <Route path="movies/:id/edit" element={<MovieFormPage />} />
               <Route path="movies/create" element={<MovieFormPage />} />
-              <Route path="cinemas" element={<AdminCinemas />} />
+              <Route path="cinemas" element={<AdminCinemasPage />} />
               <Route path="rooms" element={<AdminRooms />} />
               <Route path="rooms/:roomId/seats" element={<RoomSeatsPage />} />
               <Route path="showtimes" element={<AdminShowtimes />} />
