@@ -125,8 +125,10 @@ const AdminCinemaRoomSeatsPage = () => {
                                         <div
                                             key={seat.id}
                                             className={cn(
-                                                "aspect-square size-8 flex items-center justify-center border rounded cursor-pointer text-xs font-semibold",
-                                                seat.is_maintenance ? "opacity-0" : "opacity-100",
+                                                "aspect-square size-8 flex items-center justify-center border rounded cursor-pointer text-xs font-semibold relative",
+                                                seat.is_maintenance ?
+                                                    "before:content-[''] before:absolute before:top-1/2 before:left-0 before:w-full before:h-[2px] before:bg-red-500 before:rotate-45 opacity-50" :
+                                                    "opacity-100",
                                             )}
                                             style={{
                                                 backgroundColor: seatTypes.find((seatType) => seatType.id == seat.seat_type)?.color,
@@ -142,15 +144,14 @@ const AdminCinemaRoomSeatsPage = () => {
                             </div>
                         ))}
 
-                        <div className="col-span-12 text-center text-sm text-muted-foreground mt-12 border-t pt-2">
-                            <div className="flex justify-center gap-6 mt-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 bg-green-200 border rounded" /> Bình thường
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 bg-red-400 border rounded" /> Bảo trì
-                                </div>
-                            </div>
+                        <div className="border-t mt-6 py-6 flex justify-center gap-2">
+                            {
+                                seatTypes.map((type) => (
+                                    <span key={type.id} className="flex items-center gap-1">
+                                        <SeatTypeLengend seatType={type} />
+                                    </span>
+                                ))
+                            }
                         </div>
                     </div>
 
