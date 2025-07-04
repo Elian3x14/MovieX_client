@@ -6,6 +6,7 @@ import seatReducer from '../features/seat/seatSlice';
 import cinemaReducer from '../features/cinema/cinemaSlice';
 import roomReducer from '../features/room/roomSlice';
 import seatTypeReducer from '../features/seatType/seatTypeSlice'; 
+import roomSeatReducer from '../features/roomSeat/roomSeatSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     cinema: cinemaReducer,
     room: roomReducer,
     seatType: seatTypeReducer, 
+    roomSeat: roomSeatReducer, 
   },
 });
 

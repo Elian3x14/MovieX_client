@@ -90,39 +90,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// Debugging interceptor
-if (isDebug) {
-  axiosInstance.interceptors.request.use((config) => {
-    console.log('[Axios Request]', {
-      method: config.method,
-      url: config.url,
-      headers: config.headers,
-      data: config.data,
-    });
-    return config;
-  });
-}
-
-if (isDebug) {
-  axiosInstance.interceptors.response.use(
-    (response) => {
-      console.log('[Axios Response]', {
-        url: response.config.url,
-        status: response.status,
-        data: response.data,
-      });
-      return response;
-    },
-    (error) => {
-      console.error('[Axios Error]', {
-        url: error.config?.url,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-      return Promise.reject(error);
-    }
-  );
-}
-
-
 export default axiosInstance;

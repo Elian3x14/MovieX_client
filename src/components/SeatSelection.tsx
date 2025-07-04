@@ -30,7 +30,7 @@ interface SeatSelectionProps {
 const SeatSelection = ({ bookingId, showtime }: SeatSelectionProps) => {
   const { user } = useAuth();
   const dispatch = useDispatch();
-  const seats = useSelector((state: RootState) => state.seat.seats);
+  const seats = useSelector((state: RootState) => state.seat.showtimeSeats);
   const selectedSeats = useSelector(
     (state: RootState) => state.seat.selectedSeats
   );

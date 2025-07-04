@@ -68,8 +68,6 @@ const App = () => (
               <Route path="cinemas" element={<AdminCinemasPage />} />
               <Route path="cinemas/:id/rooms" element={<AdminCinemaRoomsPage />} />
               <Route path="cinemas/:cinemaId/rooms/:roomId/seats" element={<AdminCinemaRoomSeatsPage />} />
-              <Route path="rooms" element={<AdminRooms />} />
-              <Route path="rooms/:roomId/seats" element={<RoomSeatsPage />} />
               <Route path="showtimes" element={<AdminShowtimes />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="reports" element={<AdminReports />} />

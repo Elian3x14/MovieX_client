@@ -9,7 +9,6 @@ const AdminLayout = () => {
   const { user, isAuthenticated, isLoading } = useAuth(); // thêm loading nếu có
   const location = useLocation();
 
-  console.log("AdminLayout - user:", user);
 
   // Chờ dữ liệu user load xong (tránh redirect sớm)
   if (isLoading) {

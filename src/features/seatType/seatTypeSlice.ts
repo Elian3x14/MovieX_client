@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { SeatType } from "@/data/type"; // Interface định nghĩa loại ghế
-import { fetchAllSeatTypesAPI } from "@/features/seatType/seatTypeAPI"; // API call
+import { SeatType } from "@/data/type"; 
+import { fetchAllSeatTypesAPI } from "@/features/seatType/seatTypeAPI";
 
 interface SeatTypeState {
   seatTypes: SeatType[];

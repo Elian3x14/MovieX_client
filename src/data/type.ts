@@ -101,8 +101,7 @@ export interface Seat {
   id: number;
   seat_row: string;
   seat_col: number;
-  seat_type_id: number;
-  seat_type: SeatType;
+  seat_type: number;
   is_maintenance?: boolean;
 }
 
