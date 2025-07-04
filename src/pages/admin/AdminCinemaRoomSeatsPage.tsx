@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Plus } from "lucide-react";
+import { Clock, MapPin, Pencil, PencilLine, Plus } from "lucide-react";
 
 import { Link, useParams } from "react-router-dom";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -16,6 +16,12 @@ import { fetchSeatsByRoom } from "@/features/roomSeat/roomSeatSlice";
 import CinemaNotFoundCard from "@/components/admin/errors/not-found/CinemaNotFoundCard";
 import RoomNotFoundCard from "@/components/admin/errors/not-found/RoomNotFoundCard";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+enum ToolType {
+    ChangeSeatType = "change-seat-type",
+    ToggleMaintenance = "toggle-maintenance",
+}
 
 const AdminCinemaRoomSeatsPage = () => {
     const { cinemaId, roomId } = useParams<{ cinemaId: string, roomId: string }>();
@@ -24,6 +30,10 @@ const AdminCinemaRoomSeatsPage = () => {
     const { rooms } = useAppSelector((state: RootState) => state.room);
     const { seatTypes, loading: seatTypeLoading } = useAppSelector((state: RootState) => state.seatType);
     const { roomSeats } = useAppSelector((state: RootState) => state.roomSeat);
+
+    const [editMode, setEditMode] = useState(false);
+    const [toolType, setToolType] = useState<ToolType>(ToolType.ChangeSeatType);
+    const [selectedSeats, setSelectedSeats] = useState<RoomSeat[]>([]);
 
     const seatsInRoom = useMemo(() => {
         return Object.values(roomSeats[roomId!] || {});
@@ -98,14 +108,26 @@ const AdminCinemaRoomSeatsPage = () => {
                     {room.no_row} x {room.no_column}
                 </Badge>
             </div>
-
         </Card>
 
 
         <div className="grid grid-cols-5 gap-6 mt-4">
             {/*  */}
             <Card className="col-span-4 p-4">
-                <h3 className="text-xl font-semibold">Sơ đồ ghế</h3>
+                <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold">Sơ đồ ghế</h3>
+                    {
+                        editMode ? (
+                            <Button variant="secondary" size="sm" onClick={() => setEditMode(!editMode)}>
+                                <PencilLine className="size-3.5" />
+                            </Button>
+                        ) :
+                            <Button variant="secondary" size="sm" onClick={() => setEditMode(!editMode)}>
+                                Lưu thay đổi
+                            </Button>
+                    }
+
+                </div>
                 <div className="flex flex-col gap-2 mt-2 px-20">
                     {/* Màn hình */}
                     <div className="flex flex-col gap-2 items-center ">
@@ -158,42 +180,124 @@ const AdminCinemaRoomSeatsPage = () => {
                 </div>
             </Card >
 
-            <div className="">
-                <Card className="p-4">
-                    <h3 className="text-xl font-semibold">Thống Kê Ghế</h3>
+            <div >
 
-                    <div className="flex flex-col gap-2 mt-2">
-                        <div className="text-muted-foreground flex items-center justify-between">
-                            <span>Tổng số ghế</span>
-                            <span>120</span>
-                        </div>
-                        <div className="text-muted-foreground flex items-center justify-between">
-                            <span>Khả dụng</span>
-                            <span className="text-green-500">120</span>
-                        </div>
-                        <div className="text-muted-foreground flex items-center justify-between">
-                            <span>Bảo trì</span>
-                            <span className="text-red-500">0</span>
-                        </div>
-                        <hr />
-                        <div>
-                            <h3 className="font-medium mb-2">Phân bố theo loại ghế</h3>
-                            <div>
-                                {
-                                    seatTypes.map((type, index) => (
-                                        <div key={type.id} className="flex items-center justify-between" >
-                                            <SeatTypeLengend seatType={type} />
-                                            <span>
-                                                {/* TODO: thêm giá trị thật sau này */}
-                                                43
-                                            </span>
-                                        </div>
-                                    ))
-                                }
+                {
+                    editMode ? (
+                        <Card className="p-4 mb-4">
+                            <h3 className="text-lg font-semibold">Công cụ chỉnh sửa</h3>
+                            <div className="flex flex-col gap-2 mt-2">
+                                <Select defaultValue={ToolType.ChangeSeatType} onValueChange={(value) => setToolType(value as ToolType)}    >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn công cụ" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectItem value={ToolType.ChangeSeatType}>
+                                                Thay đổi loại ghế
+                                            </SelectItem>
+                                            <SelectItem value={ToolType.ToggleMaintenance}>
+                                                Chặn / Bỏ chặn ghế
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
                             </div>
-                        </div>
-                    </div>
-                </Card>
+
+                            {
+                                toolType === ToolType.ChangeSeatType && (
+                                    <div className="mt-4">
+                                        <Select
+                                            defaultValue={seatTypes[0]?.id.toString()}
+                                            onValueChange={(value) => {
+                                                const selectedType = seatTypes.find(type => type.id.toString() === value);
+                                                if (selectedType) {
+                                                    setSelectedSeats(seatsInRoom.filter(seat => seat.seat_type === selectedType.id));
+                                                }
+                                            }}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn loại ghế" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {seatTypes.map((type) => (
+                                                    <SelectItem key={type.id} value={type.id.toString()}>
+                                                        <SeatTypeLengend seatType={type} />
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <h4 className="text-sm font-semibold mt-3">Hướng dẫn:</h4>
+                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-sm text-muted-foreground">
+                                            <li >
+                                                Chọn loại ghế từ danh sách bên trên.
+                                            </li>
+                                            <li >
+                                                Nhấn vào từng ghế để thay đổi loại ghế.
+                                            </li>
+                                            <li >
+                                                Nhấn nút "Lưu thay đổi" để lưu.
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                )
+                            }
+                            {
+                                toolType === ToolType.ToggleMaintenance && (
+                                    <div className="mt-4">
+                                        <h4 className="text-sm font-semibold mt-3">Hướng dẫn:</h4>
+                                        <ul className="list-disc pl-5 mt-1 space-y-1 text-sm text-muted-foreground">
+                                            <li >
+                                                Nhấn vào từng ghế để chuyển trạng thái bảo trì (chặn) hoặc bỏ chặn.
+                                            </li>
+                                            <li >
+                                                Nhấn nút "Lưu thay đổi" để lưu.
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )
+                            }
+
+
+                        </Card>
+                    ) :
+                        <Card className="p-4">
+                            <h3 className="text-lg font-semibold">Thống Kê Ghế</h3>
+
+                            <div className="flex flex-col gap-2 mt-2">
+                                <div className="text-muted-foreground flex items-center justify-between">
+                                    <span>Tổng số ghế</span>
+                                    <span>120</span>
+                                </div>
+                                <div className="text-muted-foreground flex items-center justify-between">
+                                    <span>Khả dụng</span>
+                                    <span className="text-green-500">120</span>
+                                </div>
+                                <div className="text-muted-foreground flex items-center justify-between">
+                                    <span>Bảo trì</span>
+                                    <span className="text-red-500">0</span>
+                                </div>
+                                <hr />
+                                <div>
+                                    <h3 className="font-medium mb-2">Phân bố theo loại ghế</h3>
+                                    <div>
+                                        {
+                                            seatTypes.map((type, index) => (
+                                                <div key={type.id} className="flex items-center justify-between" >
+                                                    <SeatTypeLengend seatType={type} />
+                                                    <span>
+                                                        {/* TODO: thêm giá trị thật sau này */}
+                                                        43
+                                                    </span>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                }
             </div>
 
 
