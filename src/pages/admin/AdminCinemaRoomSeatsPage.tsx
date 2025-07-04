@@ -18,6 +18,7 @@ import RoomNotFoundCard from "@/components/admin/errors/not-found/RoomNotFoundCa
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+
 enum ToolType {
     ChangeSeatType = "change-seat-type",
     ToggleMaintenance = "toggle-maintenance",
@@ -30,13 +31,17 @@ const AdminCinemaRoomSeatsPage = () => {
     const { rooms } = useAppSelector((state: RootState) => state.room);
     const { seatTypes, loading: seatTypeLoading } = useAppSelector((state: RootState) => state.seatType);
     const { roomSeats } = useAppSelector((state: RootState) => state.roomSeat);
-
+    // For edit mode
     const [editMode, setEditMode] = useState(false);
     const [toolType, setToolType] = useState<ToolType>(ToolType.ChangeSeatType);
-    const [selectedSeats, setSelectedSeats] = useState<RoomSeat[]>([]);
+    const [selectedSeatTypeId, setSelectedSeatTypeId] = useState<number | null>(null);
+    const [selectedSeats, setSelectedSeats] = useState<RoomSeat[]>([]); // Danh sách ghế đã thay đổi 'để gửi server'
+    const [seatsInRoom, setSeatsInRoom] = useState<RoomSeat[]>([]);
 
-    const seatsInRoom = useMemo(() => {
-        return Object.values(roomSeats[roomId!] || {});
+    useEffect(() => {
+        if (roomSeats[roomId!]) {
+            setSeatsInRoom(Object.values(roomSeats[roomId!]));
+        }
     }, [roomSeats, roomId]);
 
     useEffect(() => {
@@ -44,6 +49,10 @@ const AdminCinemaRoomSeatsPage = () => {
             dispatch(fetchAllSeatTypes());
         }
     }, [dispatch, seatTypeLoading, seatTypes]);
+
+    useEffect(() => {
+        setSelectedSeatTypeId(seatTypes[0]?.id || null);
+    }, [seatTypes])
 
     useEffect(() => {
         if (!cinemas[cinemaId!]) dispatch(fetchCinemaById(Number(cinemaId!)));
@@ -92,6 +101,52 @@ const AdminCinemaRoomSeatsPage = () => {
         return <RoomNotFoundCard />;
     }
 
+    const updateSeat = (seat: RoomSeat, updates: Partial<RoomSeat>) => {
+        const updatedSeat = { ...seat, ...updates };
+
+        // Cập nhật danh sách ghế đã chọn để gửi server
+        setSelectedSeats((prev) => [...prev, updatedSeat]);
+
+        // Cập nhật UI danh sách ghế
+        setSeatsInRoom((prevSeats) =>
+            prevSeats.map((s) => (s.id === seat.id ? updatedSeat : s))
+        );
+    };
+
+    const onSeatClick = (seat: RoomSeat) => {
+        if (!editMode) return;
+        if (toolType === ToolType.ChangeSeatType) {
+            updateSeat(seat, { seat_type: selectedSeatTypeId });
+
+        } else if (toolType === ToolType.ToggleMaintenance) {
+            updateSeat(seat, { is_maintenance: !seat.is_maintenance });
+
+        }
+    };
+
+    function getLatestSeatUpdates(seats: RoomSeat[]): RoomSeat[] {
+        const latestMap = new Map<number, RoomSeat>();
+
+        for (const seat of seats) {
+            // Ghi đè nếu gặp cùng id => giữ bản cuối cùng
+            latestMap.set(seat.id, seat);
+        }
+
+        return Array.from(latestMap.values());
+    }
+
+    const onSaveClick = () => {
+        if (selectedSeats.length === 0) {
+            alert("Không có thay đổi nào để lưu.");
+            return;
+        }
+        // Gọi API cập nhật ghế
+        console.log("Saving changes for seats:", selectedSeats);
+        const latestUpdates = getLatestSeatUpdates(selectedSeats);
+        console.log("Latest updates to save:", latestUpdates);
+        setEditMode(false);
+    }
+
     return (<>
         <Card className="p-6">
             <h1 className="text-xl font-bold mb-4">
@@ -117,12 +172,12 @@ const AdminCinemaRoomSeatsPage = () => {
                 <div className="flex justify-between items-center">
                     <h3 className="text-xl font-semibold">Sơ đồ ghế</h3>
                     {
-                        editMode ? (
-                            <Button variant="secondary" size="sm" onClick={() => setEditMode(!editMode)}>
+                        !editMode ? (
+                            <Button variant="secondary" size="sm" onClick={() => setEditMode(true)}>
                                 <PencilLine className="size-3.5" />
                             </Button>
                         ) :
-                            <Button variant="secondary" size="sm" onClick={() => setEditMode(!editMode)}>
+                            <Button variant="secondary" size="sm" onClick={onSaveClick}>
                                 Lưu thay đổi
                             </Button>
                     }
@@ -146,6 +201,7 @@ const AdminCinemaRoomSeatsPage = () => {
                                     {seats.map((seat) => (
                                         <div
                                             key={seat.id}
+                                            onClick={() => onSeatClick(seat)}
                                             className={cn(
                                                 "aspect-square size-8 flex items-center justify-center border rounded cursor-pointer text-xs font-semibold relative",
                                                 seat.is_maintenance ?
@@ -208,12 +264,10 @@ const AdminCinemaRoomSeatsPage = () => {
                                 toolType === ToolType.ChangeSeatType && (
                                     <div className="mt-4">
                                         <Select
-                                            defaultValue={seatTypes[0]?.id.toString()}
+                                            defaultValue={selectedSeatTypeId?.toString() || ""}
                                             onValueChange={(value) => {
-                                                const selectedType = seatTypes.find(type => type.id.toString() === value);
-                                                if (selectedType) {
-                                                    setSelectedSeats(seatsInRoom.filter(seat => seat.seat_type === selectedType.id));
-                                                }
+                                                const typeId = parseInt(value);
+                                                setSelectedSeatTypeId(typeId);
                                             }}
                                         >
                                             <SelectTrigger>
