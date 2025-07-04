@@ -27,6 +27,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Switch } from "@/components/ui/switch";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
+import { UserRole } from "@/data/type";
 
 // Define form schema
 const profileSchema = z.object({
@@ -43,7 +46,6 @@ const Profile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Initialize the form with user data
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -54,12 +56,7 @@ const Profile = () => {
     },
   });
 
-  // Handle form submission
   const onSubmit = (data: ProfileFormValues) => {
-    // Here you would typically call an API to update the user's profile
-    console.log("Form submitted:", data);
-
-    // Show success toast
     toast({
       title: "Profile Updated",
       description: "Your profile has been updated successfully.",
@@ -70,15 +67,26 @@ const Profile = () => {
 
   return (
     <div className="container max-w-5xl py-10">
-      <h1 className="text-3xl font-bold mb-6">Hồ sơ của tôi</h1>
+      <div className="mb-6 flex justify-between items-center">
 
+        <h1 className="text-3xl font-bold">Hồ sơ của tôi</h1>
+        {
+          user?.role == UserRole.ADMIN && (
+            <Button asChild variant="link" className="text-sm">
+              <Link to="/admin" className="text-cinema-primary hover:underline">
+                Trang quản trị 
+                <ExternalLink className="size-4" />
+              </Link>
+            </Button>
+          )
+        }
+      </div>
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-8">
           <TabsTrigger value="profile">Hồ sơ</TabsTrigger>
           <TabsTrigger value="orders">Vé đã mua</TabsTrigger>
           <TabsTrigger value="preferences">Tuỳ chọn</TabsTrigger>
-
         </TabsList>
 
         <TabsContent value="profile">

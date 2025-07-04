@@ -13,15 +13,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import AuthProviderButtons from "@/components/AuthProviderButtons";
 import { RegisterFormInputs, registerSchema } from "@/schemas/registerSchema";
 import axiosInstance from "@/lib/axios";
 import Brand from "@/components/Brand";
+import { toast } from "sonner";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const {
     register,
@@ -41,20 +40,15 @@ const Register = () => {
         password: data.password,
       });
 
-      toast({
-        title: "Đăng ký thành công",
-        description: "Vui lòng kiểm tra email để xác minh tài khoản.",
-      });
+      toast.success("Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.");
 
       navigate(`/register/verify-email?email=${encodeURIComponent(data.email)}`);
     } catch (error: any) {
       const errorMessage =
         error.response?.data?.detail ?? "Đã xảy ra lỗi. Vui lòng thử lại.";
 
-      toast({
-        title: "Đăng ký thất bại",
-        description: errorMessage,
-        variant: "destructive",
+      toast.error(errorMessage, {
+        description: "Vui lòng kiểm tra lại thông tin đã nhập.",
       });
     }
   };

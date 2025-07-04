@@ -9,15 +9,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import Brand from "@/components/Brand";
 import { LoginFormInputs, loginSchema } from "@/schemas/loginSchema";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthProviderButtons from "@/components/AuthProviderButtons";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { login } = useAuth();
 
   const {
@@ -31,17 +30,10 @@ const Login = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       await login(data.email, data.password);
-      toast({
-        title: "Đăng nhập thành công",
-        description: "Chào mừng bạn quay lại với MovieX!",
-      });
+      toast.success("Đăng nhập thành công");
       navigate("/");
     } catch (error) {
-      toast({
-        title: "Đăng nhập thất bại",
-        description: error instanceof Error ? error.message : "Đã xảy ra lỗi.",
-        variant: "destructive",
-      });
+      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.");
     }
   };
 

@@ -1,12 +1,16 @@
 export enum PaymentMethod {
   ZALO_PAY = "zalopay",
 }
+export enum UserRole {
+  ADMIN = "admin",
+  USER = "user",
+}
 
 export interface User {
   id: number;
   username: string;
   email: string;
-  role: string;
+  role: UserRole;
   avatar?: string;
 }
 export interface Review {
