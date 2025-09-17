@@ -12,7 +12,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import VerifyEmail from "./pages/VerifyEmail";
 import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/errors/NotFound";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminMovies from "./pages/admin/Movies";
