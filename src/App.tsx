@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,11 +23,10 @@ import AdminReports from "./pages/admin/Reports";
 import { AuthProvider } from "./contexts/AuthContext";
 import IndexLayout from "./components/layouts/IndexLayout";
 import PaymentResult from "./pages/PaymentResult";
-import AdminRooms from "./pages/admin/Rooms";
-import RoomSeatsPage from "./pages/admin/RoomSeatsPage";
 import MovieFormPage from "./pages/admin/MovieFormPage";
 import AdminCinemaRoomsPage from "./pages/admin/AdminCinemaRoomsPage";
 import AdminCinemaRoomSeatsPage from "./pages/admin/AdminCinemaRoomSeatsPage";
+import GoogleSuccess from "./pages/functions/GoogleCallback";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +34,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner position="top-center"/>
+      <Sonner position="top-center" />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -53,7 +51,10 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/payment/zalo-pay/result" element={<PaymentResult />} />
+              <Route
+                path="/payment/zalo-pay/result"
+                element={<PaymentResult />}
+              />
             </Route>
 
             {/* Auth Routes */}
@@ -66,13 +67,21 @@ const App = () => (
               <Route path="movies/:id/edit" element={<MovieFormPage />} />
               <Route path="movies/create" element={<MovieFormPage />} />
               <Route path="cinemas" element={<AdminCinemasPage />} />
-              <Route path="cinemas/:id/rooms" element={<AdminCinemaRoomsPage />} />
-              <Route path="cinemas/:cinemaId/rooms/:roomId/seats" element={<AdminCinemaRoomSeatsPage />} />
+              <Route
+                path="cinemas/:id/rooms"
+                element={<AdminCinemaRoomsPage />}
+              />
+              <Route
+                path="cinemas/:cinemaId/rooms/:roomId/seats"
+                element={<AdminCinemaRoomSeatsPage />}
+              />
               <Route path="showtimes" element={<AdminShowtimes />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="reports" element={<AdminReports />} />
             </Route>
 
+            {/* Api */}
+            <Route path="/google-success" element={<GoogleSuccess />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
