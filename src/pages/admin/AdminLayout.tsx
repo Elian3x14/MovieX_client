@@ -1,14 +1,15 @@
-
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { useAuth } from "@/contexts/AuthContext";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
 
 const AdminLayout = () => {
-
-  const { user, isAuthenticated, isLoading } = useAuth(); // thêm loading nếu có
   const location = useLocation();
 
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   // Chờ dữ liệu user load xong (tránh redirect sớm)
   if (isLoading) {
@@ -21,10 +22,9 @@ const AdminLayout = () => {
   }
 
   // Nếu không phải admin
-  if (user.role !== "admin") {
+  if (user?.role !== "admin") {
     return <Navigate to="/unauthorized" replace />;
   }
-
 
   return (
     <SidebarProvider>

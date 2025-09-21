@@ -5,6 +5,15 @@ interface JwtPayload {
   exp: number;
 }
 
+interface ErrorResponse {
+  response?: {
+    status: number;
+    data?: {
+      detail?: string;
+    };
+  };
+}
+
 
 const isDebug = import.meta.env.VITE_WS_DEBUG === '1' || import.meta.env.VITE_WS_DEBUG === 'true';
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.example.com';

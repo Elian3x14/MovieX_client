@@ -1,14 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/contexts/AuthContext";
-import { fetchReviewsByMovieId, submitReview } from "@/features/review/reviewSlice";
+import {
+  fetchReviewsByMovieId,
+  submitReview,
+} from "@/features/review/reviewSlice";
 import { reviewSchema, ReviewFormData } from "@/schemas/reviewSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams, Link } from "react-router-dom";
+import { AppDispatch, RootState } from "@/app/store";
 import { toast } from "sonner";
 
 const ReviewForm: React.FC = () => {
@@ -16,8 +19,8 @@ const ReviewForm: React.FC = () => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const { user } = useAuth();
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const {
     register,
@@ -30,18 +33,19 @@ const ReviewForm: React.FC = () => {
   });
 
   const onSubmit = async (data: ReviewFormData) => {
-    if (!movieId) return;
+    if (!movieId || !user) return;
+
     try {
       setLoading(true);
       await dispatch(
         submitReview({ movieId, rating, comment: data.comment })
-      );
-      dispatch(fetchReviewsByMovieId({ movieId, page: 1 }));
+      ).unwrap();
+      await dispatch(fetchReviewsByMovieId({ movieId, page: 1 })).unwrap();
       reset();
       setRating(0);
       toast.success("Đánh giá đã được gửi!");
-    } catch (error) {
-      toast.error("Gửi đánh giá thất bại");
+    } catch (error: any) {
+      toast.error(error?.message || "Gửi đánh giá thất bại");
     } finally {
       setLoading(false);
     }
@@ -54,9 +58,12 @@ const ReviewForm: React.FC = () => {
       {!user ? (
         <p className="text-sm text-muted-foreground">
           Bạn cần{" "}
-          <a href="/login" className="text-cinema-secondary underline hover:opacity-80">
+          <Link
+            to="/login"
+            className="text-cinema-secondary underline hover:opacity-80"
+          >
             đăng nhập
-          </a>{" "}
+          </Link>{" "}
           để viết đánh giá.
         </p>
       ) : (

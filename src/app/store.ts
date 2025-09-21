@@ -7,9 +7,11 @@ import cinemaReducer from '../features/cinema/cinemaSlice';
 import roomReducer from '../features/room/roomSlice';
 import seatTypeReducer from '../features/seatType/seatTypeSlice'; 
 import roomSeatReducer from '../features/roomSeat/roomSeatSlice';
+import authReducer from '../features/auth/authSlice';
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     movie: movieReducer,
     showtime: showtimeReducer,
     review: reviewReducer,

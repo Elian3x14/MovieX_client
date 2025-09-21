@@ -8,8 +8,8 @@ import Movies from "./pages/Movies";
 import MovieDetail from "./pages/MovieDetail";
 import SeatBooking from "./pages/SeatBooking";
 import Checkout from "./pages/Checkout";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
 import VerifyEmail from "./pages/VerifyEmail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/errors/NotFound";
@@ -20,7 +20,6 @@ import AdminCinemasPage from "./pages/admin/AdminCinemasPage";
 import AdminShowtimes from "./pages/admin/Showtimes";
 import AdminUsers from "./pages/admin/Users";
 import AdminReports from "./pages/admin/Reports";
-import { AuthProvider } from "./contexts/AuthContext";
 import IndexLayout from "./components/layouts/IndexLayout";
 import PaymentResult from "./pages/PaymentResult";
 import MovieFormPage from "./pages/admin/MovieFormPage";
@@ -36,55 +35,54 @@ const App = () => (
       <Toaster />
       <Sonner position="top-center" />
       <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<IndexLayout />}>
-              <Route index element={<Index />} />
-              <Route path="/movies" element={<Movies />} />
-              <Route path="/movie/:id" element={<MovieDetail />} />
-              <Route
-                path="/booking/:movieId/:showtimeId"
-                element={<SeatBooking />}
-              />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route
-                path="/payment/zalo-pay/result"
-                element={<PaymentResult />}
-              />
-            </Route>
-
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<IndexLayout />}>
+            <Route index element={<Index />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/movie/:id" element={<MovieDetail />} />
+            <Route
+              path="/booking/:movieId/:showtimeId"
+              element={<SeatBooking />}
+            />
+            <Route path="/checkout" element={<Checkout />} />
             {/* Auth Routes */}
-            <Route path="/register/verify-email" element={<VerifyEmail />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/payment/zalo-pay/result"
+              element={<PaymentResult />}
+            />
+          </Route>
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="movies" element={<AdminMovies />} />
-              <Route path="movies/:id/edit" element={<MovieFormPage />} />
-              <Route path="movies/create" element={<MovieFormPage />} />
-              <Route path="cinemas" element={<AdminCinemasPage />} />
-              <Route
-                path="cinemas/:id/rooms"
-                element={<AdminCinemaRoomsPage />}
-              />
-              <Route
-                path="cinemas/:cinemaId/rooms/:roomId/seats"
-                element={<AdminCinemaRoomSeatsPage />}
-              />
-              <Route path="showtimes" element={<AdminShowtimes />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="reports" element={<AdminReports />} />
-            </Route>
+          {/* Auth Routes */}
+          <Route path="/register/verify-email" element={<VerifyEmail />} />
 
-            {/* Api */}
-            <Route path="/google-success" element={<GoogleSuccess />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="movies" element={<AdminMovies />} />
+            <Route path="movies/:id/edit" element={<MovieFormPage />} />
+            <Route path="movies/create" element={<MovieFormPage />} />
+            <Route path="cinemas" element={<AdminCinemasPage />} />
+            <Route
+              path="cinemas/:id/rooms"
+              element={<AdminCinemaRoomsPage />}
+            />
+            <Route
+              path="cinemas/:cinemaId/rooms/:roomId/seats"
+              element={<AdminCinemaRoomSeatsPage />}
+            />
+            <Route path="showtimes" element={<AdminShowtimes />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="reports" element={<AdminReports />} />
+          </Route>
+
+          {/* Api */}
+          <Route path="/google-success" element={<GoogleSuccess />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

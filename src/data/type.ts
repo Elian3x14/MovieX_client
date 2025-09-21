@@ -1,18 +1,27 @@
 export enum PaymentMethod {
   ZALO_PAY = "zalopay",
 }
+
 export enum UserRole {
   ADMIN = "admin",
   USER = "user",
 }
 
-export interface User {
+interface BaseEntity {
   id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface User extends BaseEntity {
   username: string;
   email: string;
   role: UserRole;
   avatar?: string;
+  fullName?: string;
+  phone?: string;
 }
+
 export interface Review {
   id: number;
   author: User
@@ -101,19 +110,20 @@ export interface Seat {
   id: number;
   seat_row: string;
   seat_col: number;
-  seat_type: number;
+  seat_type: SeatType;
   is_maintenance?: boolean;
 }
 
 export interface RoomSeat extends Seat {
 }
 
-enum SeatStatus {
+export enum SeatStatus {
   AVAILABLE = "available",
   RESERVED = "reserved",
   SELECTED = "selected",
   UNAVAILABLE = "unavailable",
 }
+
 export interface ShowtimeSeat extends Seat {
   status: SeatStatus;
 }

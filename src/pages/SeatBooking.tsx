@@ -11,44 +11,47 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Clock, Calendar, MapPin, Timer } from "lucide-react";
+import { Clock, Calendar, MapPin } from "lucide-react";
 import axiosInstance from "@/lib/axios";
 import { TimerContainer } from "@/components/SeatBooking/TimerContainer";
 import { formatDate } from "@/lib/formatDate";
 import { formatTimeAMPM } from "@/lib/formatTimeAMPM";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
-import {
-  fetchShowtimeSeats,
-} from "@/features/seat/seatSlice";
+import { fetchShowtimeSeats } from "@/features/seat/seatSlice";
 import { fetchShowtime } from "@/features/showtime/showtimeSlice";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 import { calculateRemainingSeconds } from "@/lib/calculateRemainingSeconds";
 
-// Component đặt chỗ ngồi
 const SeatBooking = () => {
   const navigate = useNavigate();
-  const { movieId, showtimeId } = useParams<{ movieId: string; showtimeId: string; }>();
-  const { user, isLoading } = useAuth();
+  const { movieId, showtimeId } = useParams<{
+    movieId: string;
+    showtimeId: string;
+  }>();
   const [booking, setBooking] = useState<Booking>();
 
   const dispatch = useDispatch();
-  const selectedSeats = useSelector((state: RootState) => state.seat.selectedSeats);
-  const showtime = useSelector((state: RootState) => state.showtime.selectedShowtime);
+  const selectedSeats = useSelector(
+    (state: RootState) => state.seat.selectedSeats
+  );
+  const showtime = useSelector(
+    (state: RootState) => state.showtime.selectedShowtime
+  );
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
 
   // Lấy thông tin suất chiếu
   useEffect(() => {
     if (movieId && showtimeId) {
-      dispatch(fetchShowtime(showtimeId));
+      dispatch(fetchShowtime(showtimeId) as any);
     }
   }, [dispatch, movieId, showtimeId]);
 
   // Lấy danh sách ghế
   useEffect(() => {
     if (showtimeId) {
-      dispatch(fetchShowtimeSeats(showtimeId));
+      dispatch(fetchShowtimeSeats(showtimeId) as any);
     }
   }, [dispatch, showtimeId]);
 
@@ -59,7 +62,7 @@ const SeatBooking = () => {
       toast.error("Bạn cần đăng nhập để đặt chỗ ngồi");
       navigate("/login");
     }
-  }, [user, isLoading]);
+  }, [user, isLoading, navigate]);
 
   // Tạo session đặt vé
   useEffect(() => {
@@ -71,7 +74,9 @@ const SeatBooking = () => {
         };
         const response = await axiosInstance.post(`/bookings/`, payload);
         setBooking(response.data);
-        toast.info("Phiên đặt vé đã bắt đầu! Bạn có 5 phút để xác nhận đặt chỗ.");
+        toast.info(
+          "Phiên đặt vé đã bắt đầu! Bạn có 5 phút để xác nhận đặt chỗ."
+        );
       } catch (error) {
         toast.error("Lỗi khi tạo phiên đặt vé");
         navigate("/");
@@ -79,7 +84,7 @@ const SeatBooking = () => {
       }
     };
     createBooking();
-  }, [movieId, showtimeId, user]);
+  }, [movieId, showtimeId, user, navigate]);
 
   // Xử lý thanh toán
   const handleCheckout = () => {
@@ -114,12 +119,10 @@ const SeatBooking = () => {
 
   // Tính tổng giá tiền
   const totalPrice = selectedSeats.reduce(
-    (total, seat) =>
-      total + Number(showtime.price) + Number(seat.seat_type.extra_price),
+    (total, seat) => total + Number(showtime.price),
     0
   );
 
-  // Giao diện chính
   return (
     <div className="min-h-screen flex flex-col bg-cinema-background text-cinema-text">
       <main className="flex-1 py-8 container">
@@ -212,8 +215,8 @@ const SeatBooking = () => {
                         <p className="text-sm">
                           {selectedSeats.length > 0
                             ? selectedSeats
-                              .map((s) => `${s.seat_row}${s.seat_col}`)
-                              .join(", ")
+                                .map((s) => `${s.seat_row}${s.seat_col}`)
+                                .join(", ")
                             : "Chưa chọn"}
                         </p>
                       </div>

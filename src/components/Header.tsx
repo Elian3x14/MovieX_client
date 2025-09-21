@@ -4,16 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Film, User, Search, Ticket, LogOut } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/contexts/AuthContext";
 import Brand from "./Brand";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store";
+import { logout } from "@/features/auth/authSlice";
 
 const Header = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const { user, logout, isAuthenticated } = useAuth();
+  const dispatch = useDispatch();
+
+  const { user, isAuthenticated } = useSelector((state: RootState) => ({
+    user: state.auth.user,
+    isAuthenticated: state.auth.isAuthenticated,
+  }));
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate("/");
   };
 
@@ -25,7 +32,6 @@ const Header = () => {
     { to: "/promotions", label: "Khuyến mãi" },
   ];
 
-  // Thành phần liên kết điều hướng
   const NavLinks = () => (
     <nav className="flex gap-6 items-center">
       {navLinks.map((link) => (
@@ -40,7 +46,6 @@ const Header = () => {
     </nav>
   );
 
-  // Thành phần xác thực (đăng nhập/đăng xuất)
   const AuthSection = () => (
     <div className="flex gap-4 items-center">
       {isAuthenticated ? (
@@ -76,9 +81,8 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-black/90 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
-        {/* Phần logo và menu trái */}
+        {/* Logo và menu trái */}
         <div className="flex items-center gap-4">
-          {/* Menu cho thiết bị di động */}
           {isMobile && (
             <Sheet>
               <SheetTrigger asChild>
@@ -143,7 +147,7 @@ const Header = () => {
           {!isMobile && <NavLinks />}
         </div>
 
-        {/* Phần bên phải: tìm kiếm và xác thực */}
+        {/* Phần bên phải */}
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon">
             <Search />

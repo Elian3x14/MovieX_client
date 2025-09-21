@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,11 +24,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/contexts/AuthContext";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
 import { UserRole } from "@/data/type";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/store";
 
 // Define form schema
 const profileSchema = z.object({
@@ -42,7 +42,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const Profile = () => {
-  const { user } = useAuth();
+  const user = useSelector((state: RootState) => state.auth.user);
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -52,7 +52,7 @@ const Profile = () => {
       username: user?.username || "",
       email: user?.email || "",
       fullName: "",
-      phone: "",
+      phone:  "",
     },
   });
 
@@ -61,25 +61,24 @@ const Profile = () => {
       title: "Profile Updated",
       description: "Your profile has been updated successfully.",
     });
-
     setIsEditing(false);
+
+    // TODO: dispatch action cập nhật user vào Redux store nếu cần
+    // dispatch(updateUserProfile(data))
   };
 
   return (
     <div className="container max-w-5xl py-10">
       <div className="mb-6 flex justify-between items-center">
-
         <h1 className="text-3xl font-bold">Hồ sơ của tôi</h1>
-        {
-          user?.role == UserRole.ADMIN && (
-            <Button asChild variant="link" className="text-sm">
-              <Link to="/admin" className="text-cinema-primary hover:underline">
-                Trang quản trị 
-                <ExternalLink className="size-4" />
-              </Link>
-            </Button>
-          )
-        }
+        {user?.role === UserRole.ADMIN && (
+          <Button asChild variant="link" className="text-sm">
+            <Link to="/admin" className="text-cinema-primary hover:underline">
+              Trang quản trị
+              <ExternalLink className="size-4" />
+            </Link>
+          </Button>
+        )}
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -89,9 +88,10 @@ const Profile = () => {
           <TabsTrigger value="preferences">Tuỳ chọn</TabsTrigger>
         </TabsList>
 
+        {/* Tab Hồ sơ */}
         <TabsContent value="profile">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Thẻ Hồ sơ */}
+            {/* Card avatar */}
             <Card className="md:col-span-1">
               <CardHeader>
                 <div className="flex flex-col items-center">
@@ -109,7 +109,7 @@ const Profile = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Thành viên từ</span>
-                    <span>Tháng 4, 2023</span>
+                    <span>{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Trạng thái</span>
@@ -117,7 +117,7 @@ const Profile = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Điểm thưởng</span>
-                    <span>750 điểm</span>
+                    <span>{0} điểm</span>
                   </div>
                 </div>
               </CardContent>
@@ -128,13 +128,11 @@ const Profile = () => {
               </CardFooter>
             </Card>
 
-            {/* Biểu mẫu Hồ sơ */}
+            {/* Form update profile */}
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle>Thông tin cá nhân</CardTitle>
-                <CardDescription>
-                  Quản lý thông tin cá nhân của bạn
-                </CardDescription>
+                <CardDescription>Quản lý thông tin cá nhân của bạn</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
@@ -146,11 +144,7 @@ const Profile = () => {
                         <FormItem>
                           <FormLabel>Họ và tên</FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              disabled={!isEditing}
-                              placeholder="Nhập họ và tên"
-                            />
+                            <Input {...field} disabled={!isEditing} placeholder="Nhập họ và tên" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -164,11 +158,7 @@ const Profile = () => {
                         <FormItem>
                           <FormLabel>Tên người dùng</FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              disabled={!isEditing}
-                              placeholder="Nhập tên người dùng"
-                            />
+                            <Input {...field} disabled={!isEditing} placeholder="Nhập tên người dùng" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -182,12 +172,7 @@ const Profile = () => {
                         <FormItem>
                           <FormLabel>Email</FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              disabled
-                              type="email"
-                              placeholder="Nhập email"
-                            />
+                            <Input {...field} disabled type="email" placeholder="Nhập email" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -201,11 +186,7 @@ const Profile = () => {
                         <FormItem>
                           <FormLabel>Số điện thoại</FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              disabled={!isEditing}
-                              placeholder="Nhập số điện thoại"
-                            />
+                            <Input {...field} disabled={!isEditing} placeholder="Nhập số điện thoại" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -225,10 +206,7 @@ const Profile = () => {
                           <Button type="submit">Lưu thay đổi</Button>
                         </>
                       ) : (
-                        <Button
-                          type="button"
-                          onClick={() => setIsEditing(true)}
-                        >
+                        <Button type="button" onClick={() => setIsEditing(true)}>
                           Chỉnh sửa hồ sơ
                         </Button>
                       )}
@@ -240,13 +218,12 @@ const Profile = () => {
           </div>
         </TabsContent>
 
+        {/* Tab Orders */}
         <TabsContent value="orders">
           <Card>
             <CardHeader>
               <CardTitle>Vé của tôi</CardTitle>
-              <CardDescription>
-                Xem lịch sử đặt vé của bạn
-              </CardDescription>
+              <CardDescription>Xem lịch sử đặt vé của bạn</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-10 text-muted-foreground">
@@ -259,13 +236,12 @@ const Profile = () => {
           </Card>
         </TabsContent>
 
+        {/* Tab Preferences */}
         <TabsContent value="preferences">
           <Card>
             <CardHeader>
               <CardTitle>Tùy chọn tài khoản</CardTitle>
-              <CardDescription>
-                Quản lý cài đặt và tùy chọn tài khoản của bạn
-              </CardDescription>
+              <CardDescription>Quản lý cài đặt và tùy chọn tài khoản của bạn</CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="space-y-4">
@@ -281,7 +257,6 @@ const Profile = () => {
                     </div>
                     <Switch />
                   </div>
-
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">Khuyến mãi</p>
@@ -308,7 +283,6 @@ const Profile = () => {
             </CardContent>
           </Card>
         </TabsContent>
-
       </Tabs>
     </div>
   );
