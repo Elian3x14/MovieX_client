@@ -25,6 +25,8 @@ import {
   ChangePasswordFormValues,
   changePasswordSchema,
 } from "@/schemas/changePasswordSchema";
+import axiosInstance from "@/lib/axios";
+import axios from "@/lib/axios";
 
 type Props = {
   open: boolean;
@@ -32,9 +34,9 @@ type Props = {
 };
 
 const defaultValues: ChangePasswordFormValues = {
-  oldPassword: "",
-  newPassword: "",
-  confirmPassword: "",
+  old_password: "",
+  new_password: "",
+  confirm_password: "",
 };
 
 const ChangePasswordDialog = ({ open, setOpen }: Props) => {
@@ -49,14 +51,18 @@ const ChangePasswordDialog = ({ open, setOpen }: Props) => {
     }
   }, [open]);
 
-  const onSubmit = (data: ChangePasswordFormValues) => {
-    console.log("Submitted data:", data);
-
-    // TODO: gọi API đổi mật khẩu ở đây
-    // ví dụ: dispatch(changePassword(data))
-
-    toast.success("Mật khẩu đã được thay đổi thành công!");
-    setOpen(false);
+  const onSubmit = async (data: ChangePasswordFormValues) => {
+    try {
+      await axiosInstance.post("/change-password/", data);
+      toast.success("Đổi mật khẩu thành công!");
+      setOpen(false);
+    } catch (error) {
+      if (error.response?.status === 400) {
+        toast.error("Mật khẩu cũ không đúng. Vui lòng thử lại.");
+      } else {
+        toast.error("Đổi mật khẩu thất bại! Vui lòng thử lại sau.");
+      }
+    }
   };
 
   return (
@@ -77,7 +83,7 @@ const ChangePasswordDialog = ({ open, setOpen }: Props) => {
 
             <FormField
               control={form.control}
-              name="oldPassword"
+              name="old_password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Mật khẩu cũ</FormLabel>
@@ -95,7 +101,7 @@ const ChangePasswordDialog = ({ open, setOpen }: Props) => {
 
             <FormField
               control={form.control}
-              name="newPassword"
+              name="new_password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Mật khẩu mới</FormLabel>
@@ -113,7 +119,7 @@ const ChangePasswordDialog = ({ open, setOpen }: Props) => {
 
             <FormField
               control={form.control}
-              name="confirmPassword"
+              name="confirm_password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Xác nhận mật khẩu mới</FormLabel>
