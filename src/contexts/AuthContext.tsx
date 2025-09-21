@@ -12,6 +12,7 @@ import { User } from "@/data/type";
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (code: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   isAuthorized: (requiredRole: string) => boolean;
@@ -76,6 +77,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const loginWithGoogle = async (code: string) => {
+    try {
+      // TODO: chỗ nào cast thành type User luôn đi
+      const response = await axiosInstance.post("/auth/google/exchange/", { code });
+
+      const accessToken = response.data.access;
+      const refreshToken = response.data.refresh;
+      const loggedInUser = {
+        id: response.data.user.id,
+        email: response.data.user.email,
+        username: response.data.user.name,
+        role: response.data.user.role,
+        avatar: response.data.user.avatar,
+      };
+
+      // Lưu vào localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
+
+      // Cập nhật state
+      setUser(loggedInUser);
+      setIsAuthenticated(true);
+
+      // gắn token mặc định vào axios
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${accessToken}`;
+    } catch (err) {
+      console.error("Google login failed:", err);
+      throw err;
+    }
+  };
   // Hàm đăng xuất
   const logout = () => {
     localStorage.removeItem("accessToken");
@@ -97,7 +131,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isAuthenticated, isAuthorized, isLoading }}
+      value={{
+        user,
+        login,
+        loginWithGoogle,
+        logout,
+        isAuthenticated,
+        isAuthorized,
+        isLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>

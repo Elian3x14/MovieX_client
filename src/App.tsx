@@ -26,7 +26,7 @@ import PaymentResult from "./pages/PaymentResult";
 import MovieFormPage from "./pages/admin/MovieFormPage";
 import AdminCinemaRoomsPage from "./pages/admin/AdminCinemaRoomsPage";
 import AdminCinemaRoomSeatsPage from "./pages/admin/AdminCinemaRoomSeatsPage";
-import GoogleSuccess from "./pages/functions/GoogleCallback";
+import GoogleSuccess from "./pages/functions/GoogleSuccess";
 
 const queryClient = new QueryClient();
 

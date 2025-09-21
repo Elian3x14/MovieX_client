@@ -2,18 +2,18 @@ import { z } from "zod";
 
 export const registerSchema = z
   .object({
-    firstName: z.string().min(1, "First Name is required"),
-    lastName: z.string().min(1, "Last Name is required"),
-    email: z.string().email("Invalid email address"),
+    firstName: z.string().min(1, "Tên không được để trống"),
+    lastName: z.string().min(1, "Họ không được để trống"),
+    email: z.string().email("Email không hợp lệ"),
     phone: z
       .string()
-      .regex(/^(03|05|07|08|09)\d{8}$/, "Phone number must include country code and be valid"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-    confirmPassword: z.string().min(6, "Confirm Password is required"),
+      .regex(/^(03|05|07|08|09)\d{8}$/, "Số điện thoại phải đúng định dạng và hợp lệ"),
+    password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+    confirmPassword: z.string().min(6, "Xác nhận mật khẩu không được để trống"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
-    message: "Passwords must match",
+    message: "Mật khẩu xác nhận không khớp",
   });
 
 export type RegisterFormInputs = z.infer<typeof registerSchema>;
