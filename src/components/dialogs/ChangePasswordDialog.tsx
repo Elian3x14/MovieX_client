@@ -1,77 +1,142 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { toast } from "sonner";
+import {
+  ChangePasswordFormValues,
+  changePasswordSchema,
+} from "@/schemas/changePasswordSchema";
 
-const ChangePasswordDialog: React.FC = () => {
-  const [oldPassword, setOldPassword] = useState<string>("");
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+type Props = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};
 
-  const handleChangePassword = (): void => {
-    if (newPassword !== confirmPassword) {
-      alert("Mật khẩu mới và xác nhận mật khẩu không khớp");
-      return;
+const defaultValues: ChangePasswordFormValues = {
+  oldPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+};
+
+const ChangePasswordDialog = ({ open, setOpen }: Props) => {
+  const form = useForm<ChangePasswordFormValues>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues,
+  });
+
+  useEffect(() => {
+    if (open) {
+      form.reset(defaultValues);
     }
+  }, [open]);
 
-    // TODO: gọi API đổi mật khẩu ở đây (ví dụ dùng axios)
-    console.log({
-      oldPassword,
-      newPassword,
-    });
+  const onSubmit = (data: ChangePasswordFormValues) => {
+    console.log("Submitted data:", data);
+
+    // TODO: gọi API đổi mật khẩu ở đây
+    // ví dụ: dispatch(changePassword(data))
+
+    toast.success("Mật khẩu đã được thay đổi thành công!");
+    setOpen(false);
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="default">Đổi mật khẩu</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Đổi mật khẩu</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="oldPassword">Mật khẩu cũ</Label>
-            <Input
-              id="oldPassword"
-              type="password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              placeholder="Nhập mật khẩu cũ"
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent
+        className="sm:max-w-[500px]"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle>Đổi mật khẩu</DialogTitle>
+              <DialogDescription>
+                Vui lòng nhập mật khẩu cũ và mật khẩu mới bên dưới.
+              </DialogDescription>
+            </DialogHeader>
+
+            <FormField
+              control={form.control}
+              name="oldPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mật khẩu cũ</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Nhập mật khẩu cũ"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Mật khẩu mới</Label>
-            <Input
-              id="newPassword"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Nhập mật khẩu mới"
+
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mật khẩu mới</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Nhập mật khẩu mới"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Nhập lại mật khẩu mới"
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Xác nhận mật khẩu mới</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Nhập lại mật khẩu mới"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <Button onClick={handleChangePassword} className="w-full">
-            Xác nhận
-          </Button>
-        </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Huỷ
+              </Button>
+              <Button type="submit">Xác nhận</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

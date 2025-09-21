@@ -11,7 +11,7 @@ import Checkout from "./pages/Checkout";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import VerifyEmail from "./pages/VerifyEmail";
-import Profile from "./pages/Profile";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/errors/NotFound";
 import AdminLayout from "./components/layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -49,8 +49,8 @@ const App = () => (
             {/* Auth Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/profile" element={<Profile />} />
-            
+            <Route path="/profile" element={<ProfilePage />} />
+
             <Route
               path="/payment/zalo-pay/result"
               element={<PaymentResult />}
