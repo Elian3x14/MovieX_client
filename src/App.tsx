@@ -27,6 +27,7 @@ import AdminCinemaRoomsPage from "./pages/admin/AdminCinemaRoomsPage";
 import AdminCinemaRoomSeatsPage from "./pages/admin/AdminCinemaRoomSeatsPage";
 import GoogleSuccess from "./pages/functions/GoogleSuccess";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             {/* Payment Result */}
             <Route
               path="/payment/zalo-pay/result"
