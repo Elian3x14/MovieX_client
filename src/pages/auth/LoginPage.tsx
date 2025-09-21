@@ -37,7 +37,7 @@ const LoginPage = () => {
         toast.success("Đăng nhập thành công");
         navigate("/");
       } else {
-        toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại email và mật khẩu.");
+        toast.error("Vui lòng kiểm tra lại email và mật khẩu.");
       }
     } catch (error) {
       toast.error("Đăng nhập thất bại. Vui lòng thử lại sau.");
