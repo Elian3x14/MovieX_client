@@ -13,7 +13,7 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import VerifyEmail from "./pages/VerifyEmail";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/errors/NotFound";
-import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLayout from "./components/layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminMovies from "./pages/admin/Movies";
 import AdminCinemasPage from "./pages/admin/AdminCinemasPage";

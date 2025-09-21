@@ -2,26 +2,35 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "@/data/type";
 import axiosInstance from "@/lib/axios";
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+/**
+ * Lấy dữ liệu từ localStorage nếu có (giúp giữ trạng thái đăng nhập khi reload trang)
+ */
+const storedUser = localStorage.getItem("user");
+const storedAccessToken = localStorage.getItem("accessToken");
+const storedRefreshToken = localStorage.getItem("refreshToken");
 
 const initialState: AuthState = {
-  user: null,
-  accessToken: null,
-  refreshToken: null,
-  isAuthenticated: false,
-  isLoading: false,
+  user: storedUser ? JSON.parse(storedUser) : null,
+  accessToken: storedAccessToken,
+  refreshToken: storedRefreshToken,
+  isAuthenticated: !!storedAccessToken,
+  isLoading: false, // lúc khởi tạo thì coi như đã biết trạng thái
 };
 
 // Thunk login thường
 export const login = createAsyncThunk(
   "auth/login",
-  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+  async (
+    { email, password }: { email: string; password: string },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await axiosInstance.post("/login/", { email, password });
       const accessToken = response.data.access;
@@ -48,7 +57,9 @@ export const loginWithGoogle = createAsyncThunk(
   async (code: string, { rejectWithValue }) => {
     try {
       // Gửi code cho backend để backend lấy token và trả user
-      const response = await axiosInstance.post("/auth/google/exchange/", { code });
+      const response = await axiosInstance.post("/auth/google/exchange/", {
+        code,
+      });
 
       const accessToken = response.data.access;
       const refreshToken = response.data.refresh;
