@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import ForbiddenPage from "@/pages/errors/ForbiddenPage";
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -10,11 +11,6 @@ const AdminLayout = () => {
   const { user, isAuthenticated, isLoading } = useSelector(
     (state: RootState) => state.auth
   );
-
-
-    console.log("AdminLayout - isAuthenticated:", isAuthenticated);
-    console.log("AdminLayout - user:", user);
-    console.log("AdminLayout - isLoading:", isLoading);
 
   // Chờ dữ liệu user load xong (tránh redirect sớm)
   if (isLoading) {
@@ -28,7 +24,7 @@ const AdminLayout = () => {
 
   // Nếu không phải admin
   if (user?.role !== "admin") {
-    return <Navigate to="/unauthorized" replace />;
+    return <ForbiddenPage />;
   }
 
   return (

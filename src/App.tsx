@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<Profile />} />
+            
             <Route
               path="/payment/zalo-pay/result"
               element={<PaymentResult />}
