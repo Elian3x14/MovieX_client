@@ -26,6 +26,7 @@ import MovieFormPage from "./pages/admin/MovieFormPage";
 import AdminCinemaRoomsPage from "./pages/admin/AdminCinemaRoomsPage";
 import AdminCinemaRoomSeatsPage from "./pages/admin/AdminCinemaRoomSeatsPage";
 import GoogleSuccess from "./pages/functions/GoogleSuccess";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 
 const queryClient = new QueryClient();
 
@@ -50,7 +51,8 @@ const App = () => (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            {/* Payment Result */}
             <Route
               path="/payment/zalo-pay/result"
               element={<PaymentResult />}
