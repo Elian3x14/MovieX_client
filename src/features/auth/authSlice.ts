@@ -48,7 +48,7 @@ export const loginWithGoogle = createAsyncThunk(
   async (code: string, { rejectWithValue }) => {
     try {
       // Gửi code cho backend để backend lấy token và trả user
-      const response = await axiosInstance.post("/auth/google/", { code });
+      const response = await axiosInstance.post("/auth/google/exchange/", { code });
 
       const accessToken = response.data.access;
       const refreshToken = response.data.refresh;
